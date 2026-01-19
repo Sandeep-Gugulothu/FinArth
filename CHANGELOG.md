@@ -12,4 +12,6 @@
 - Call-to-action buttons for user engagement
 
 ## [0.1.1] - 2026-01-19
-- Readme document file draft with various sections to describe the project.
+- Readme document file Initial version update.
+    - Various section(s) specification.
+    - Indentation update.
