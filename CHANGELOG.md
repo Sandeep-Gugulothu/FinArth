@@ -33,5 +33,3 @@
 ## [0.1.3] - 2026-01-22
 ### Changes
 - Open router API example with 'xiaomi/mimo-v2-flash:free' model
-### Limitations
-- A dedicated class to maintain open source model APIs
