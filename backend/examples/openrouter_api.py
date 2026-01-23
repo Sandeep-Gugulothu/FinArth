@@ -15,6 +15,10 @@ source <path/to/venv>/bin/activate
 pip<3/x> install requests
 4. Run the script:
 python openrouter_api.py
+
+Note: Make sure you update the API key with yours. If you don't have one, then
+please feel to create one from the website below.
+https://openrouter.ai/settings/keys
 '''
 # Import the required libraries
 import requests
@@ -24,7 +28,7 @@ import json
 response = requests.post(
   url="https://openrouter.ai/api/v1/chat/completions",
   headers={
-    "Authorization": "Bearer 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",
+    "Authorization": "Bearer <YOUR API KEY>",
     "Content-Type": "application/json",
   },
   data=json.dumps({
@@ -62,7 +66,7 @@ messages = [
 response2 = requests.post(
   url="https://openrouter.ai/api/v1/chat/completions",
   headers={
-    "Authorization": "Bearer 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",
+    "Authorization": "Bearer <YOUR API KEY>",
     "Content-Type": "application/json",
   },
   data=json.dumps({
