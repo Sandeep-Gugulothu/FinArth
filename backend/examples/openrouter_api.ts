@@ -35,7 +35,7 @@
         let response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
             headers: {
-                "Authorization": `Bearer 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`,
+                "Authorization": `Bearer <API KEY>`,
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
@@ -80,7 +80,7 @@
         let response2 = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
             headers: {
-                "Authorization": `Bearer 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`,
+                "Authorization": `Bearer <API KEY>`,
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
