@@ -38,3 +38,7 @@
 ## [0.1.4] - 2026-01-24
 ### Back-end Changes
 - Open router API type script example with the 'xiaomi' model
+
+## [0.1.5] - 2026-01-24
+### Back-end Changes
+- Opik integration update in the example(s) of both python and typescript
