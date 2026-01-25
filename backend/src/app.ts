@@ -6,6 +6,7 @@ import healthRouter from './routes/health';
 import usersRouter from './routes/users';
 import dbRouter from './routes/db';
 import portfolioRouter from './routes/portfolio';
+import agentRouter from './routes/agent';
 import './database'; // Initialize database
 
 dotenv.config();
@@ -22,6 +23,7 @@ app.use('/api/health', healthRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/db', dbRouter);
 app.use('/api/portfolio', portfolioRouter);
+app.use('/api/agent', agentRouter);
 
 // Root route
 app.get('/', (req, res) => {

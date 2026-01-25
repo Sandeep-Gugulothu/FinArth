@@ -1,164 +1,137 @@
-# FinArth - AI Financial Confidence Builder
+# FinArth - AI-Powered Finance Advisor
 
-> Transform financial anxiety into actionable confidence through personalized investment guidance
+FinArth is an AI-powered financial planning platform that converts life goals into safe, automated, and understandable financial action. It helps users move from financial uncertainty to confident investment decisions through personalized guidance and transparent recommendations.
 
-## 🎯 **What FinArth Does**
+## Features
 
-Input your financial goal → Get personalized, AI-validated investment recommendations
+- **AI-Powered Financial Planning**: Intelligent analysis and personalized investment recommendations
+- **Goal-Based Planning**: Convert specific life goals into actionable financial plans
+- **Personalized Math**: Exact calculations based on individual financial situations
+- **Clear Action Steps**: Specific investment allocations with transparent explanations
+- **Modern UI**: Responsive React frontend with animated components and dark theme
+<!-- [TODO] can specify safety and compliance data as additional feature based on project validation -->
 
-**Example Flow:**
-- **Input:** "I have ₹8 lakhs, want ₹50 lakhs for house in 7 years"
-- **AI Analysis:** Calculates 20% required returns, assigns "Frontier" personality
-- **Output:** Specific investment plan with asset allocations and clear explanations
+## Architecture
 
-## 🚀 **Quick Start**
+FinArth can follow modular monolith architecture and can migrate to a microservices architecture slowly based on project's budget, bandwidth, and scope.
 
-```bash
-# 1. Clone repository
-git clone <repo>
-cd FinArth
-
-# 2. Install dependencies
-npm install
-
-# 3. Start all services
-npm run dev
-
-# Services will run on:
-# Frontend: http://localhost:3000
-# Backend: http://localhost:8000
-# AI Services: http://localhost:8001
-```
-
-### **Manual Setup (Alternative)**
-```bash
-# Backend (Terminal 1)
-cd backend
-npm install
-npm run dev
-
-# Frontend (Terminal 2)
-cd frontend
-npm install
-npm start
-
-# AI Services (Terminal 3)
-cd ai-services
-pip install -r requirements.txt
-python main.py
-```
-
-## 📁 **Project Structure**
+The three main components:
 
 ```
 FinArth/
 ├── frontend/          # React + TypeScript UI
-├── backend/           # Node.js + TypeScript API
-├── ai-services/       # Python AI/ML services
-├── data/             # JSON data files
-└── tests/            # Test files
+├── backend/           # Node.js + Express API
+├── ai-services/       # Python FastAPI AI services
+└── package.json       # Workspace configuration
 ```
 
-## 🎭 **Three Investment Personalities**
+<!-- [TODO] The project can have Frontend section with sub-sections such as
+      Technology, Features, Styling, and Responsive-->
+<!-- [TODO] The project can have Backend section with sub-sections such as
+      Technology, Features, Routes, and Environment-->
+<!-- [TODO] The project can have AI Services section with sub-sections such as
+      Technology, Features, Dependencies, and Monitoring-->
 
-- **🛡️ Guardian:** Conservative, 7-10% returns (bonds, FDs, blue-chip stocks)
-- **⚖️ Strategist:** Balanced, 10-15% returns (mixed portfolio)
-- **🚀 Frontier:** Aggressive, 15%+ returns (growth stocks, international funds)
+## Prerequisites
 
-## 🔧 **Tech Stack**
+### macOS Setup
+- **Node.js**: >= 18.0.0 (install via [Homebrew](https://brew.sh): `brew install node`)
+- **npm**: >= 9.0.0 (comes with Node.js)
+- **Python**: >= 3.8 (install via Homebrew: `brew install python`)
+- **Xcode Command Line Tools**: `xcode-select --install`
 
-- **Frontend:** React + TypeScript + Tailwind CSS
-- **Backend:** Node.js + Express + TypeScript
-- **AI Services:** Python + FastAPI + OpenAI + Opik
-- **Data:** JSON files (PostgreSQL ready for production)
+## Installation
 
-## 📊 **API Endpoints**
+### macOS Instructions
 
-```javascript
-// Generate Financial Plan
-POST /api/plans/generate
-{
-  "current": 800000,
-  "target": 5000000,
-  "years": 7,
-  "riskTolerance": "medium"
-}
+1. **Install Homebrew** (if not already installed)
+   ```bash
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   ```
 
-// AI Validation
-POST /ai/validate-plan
-{
-  "personality": "frontier",
-  "requiredReturn": 0.20,
-  "recommendations": [...]
-}
+2. **Install Node.js and Python**
+   ```bash
+   brew install node python
+   ```
+
+3. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd FinArth
+   ```
+
+## Development
+<!-- [TODO] Define run configuration commands -->
+
+### Individual service commands
+<!-- [TODO] Define Individual service commands -->
+
+## Build
+<!-- [TODO] Define Build commands -->
+
+## Testing
+<!-- [TODO] Define test commands -->
+
+## Project Structure
+
+```
+FinArth/
+├── frontend/
+│   ├── public/
+│   │   └── index.html
+│   ├── src/
+│   │   ├── index.tsx        # React app entry point
+│   │   └── page.tsx         # Main landing page component
+│   └── package.json
+├── backend/
+│   ├── src/
+│   │   └── app.ts           # Express server setup
+│   └── package.json
+├── ai-services/
+│   ├── requirements.txt     # Python dependencies
+│   └── main.py             # FastAPI application
+├── .gitignore
+├── CHANGELOG.md
+└── package.json            # Workspace configuration
 ```
 
-## 🧪 **Testing**
+## Configuration
 
-```bash
-npm run test           # Run all tests
-npm run test:frontend  # Frontend tests only
-npm run test:backend   # Backend tests only
-```
+### Environment Variables
+<!-- [TODO] Create / define environment configuration -->
 
-## 🚀 **Deployment**
+### macOS-specific Notes
+- Use `python3` and `pip3` commands instead of `python` and `pip`
+- If you encounter permission issues, use `sudo` or virtual environments
+- For M1/M2 Macs, ensure all dependencies are compatible with ARM architecture
 
-```bash
-# Build for production
-npm run build
+## API Endpoints
+<!-- [TODO] API endpoint description if required, we can maintain dedicated
+      folder called docs-->
 
-# Deploy frontend to Vercel/Netlify
-# Deploy backend to Railway/Render
-```
+## UI Components
+<!-- [TODO] UI Component description -->
 
-## 🎯 **Development Roadmap**
+## Dependencies
+<!-- [TODO] Frontend dependency description -->
+<!-- [TODO] Backend dependency description -->
+<!-- [TODO] AI service dependency description -->
 
-### **Phase 1 (Current): MVP**
-- ✅ Core financial calculations
-- ✅ Three personality types
-- ✅ Basic React frontend
-- ✅ Express API backend
+## Important Disclaimers
+<!-- [TODO] Important notes to people who visit this repository -->
 
-### **Phase 2: AI Integration**
-- 🔄 OpenAI integration for explanations
-- 🔄 Opik validation for compliance
-- 🔄 Enhanced recommendations
+## Development Notes
+<!-- [TODO] General development notes -->
 
-### **Phase 3: Production Ready**
-- ⏳ User authentication
-- ⏳ Database integration
-- ⏳ Advanced monitoring
-- ⏳ Cloud deployment
-
-## 🔐 **Environment Variables**
-
-Copy `.env.example` to `.env` and configure:
-
-```bash
-# Backend
-PORT=8000
-NODE_ENV=development
-
-# AI Services
-OPENAI_API_KEY=your-openai-key
-OPIK_API_KEY=your-opik-key
-
-# Frontend
-REACT_APP_API_URL=http://localhost:8000
-```
-
-## 🤝 **Contributing**
+## Contributing
 
 1. Fork the repository
-2. Create feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push to branch: `git push origin feature/amazing-feature`
-5. Open Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Run tests to ensure everything works
+5. Submit a pull request
 
-## 📄 **License**
-
-MIT License - see [LICENSE](LICENSE) file for details.
+## License
+<!-- [TODO] Specify licensing information-->
 
 ---
-
-**Built with ❤️ for financial empowerment**

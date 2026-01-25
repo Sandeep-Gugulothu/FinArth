@@ -494,19 +494,55 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = inputMessage;
     setInputMessage('');
     setIsTyping(true);
 
-    setTimeout(() => {
-      const botResponse: Message = {
+    try {
+      // Call ReAct agent API
+      const response = await fetch('http://localhost:8000/api/agent/generate-insight', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: currentInput })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        // Add reasoning steps as separate messages
+        const stepMessages: Message[] = data.data.steps.map((step: any, index: number) => ({
+          id: messages.length + 2 + index,
+          type: 'bot' as const,
+          content: `**Step ${index + 1}**\n\n**Thought:** ${step.thought}${step.action ? `\n\n**Action:** ${step.action}` : ''}${step.observation ? `\n\n**Observation:** ${step.observation}` : ''}`,
+          timestamp: new Date()
+        }));
+
+        // Add final answer
+        const finalMessage: Message = {
+          id: messages.length + 2 + data.data.steps.length,
+          type: 'bot' as const,
+          content: `**Final Answer:**\n\n${data.data.finalAnswer}`,
+          timestamp: new Date()
+        };
+
+        setMessages(prev => [...prev, ...stepMessages, finalMessage]);
+      } else {
+        throw new Error(data.error || 'Failed to get response');
+      }
+    } catch (error) {
+      console.error('Error calling ReAct agent:', error);
+      const errorMessage: Message = {
         id: messages.length + 2,
         type: 'bot' as const,
-        content: "I understand you're looking for investment advice. Based on your current portfolio and goals, I'd recommend reviewing your asset allocation. Would you like me to analyze your risk profile and suggest some adjustments?",
+        content: "I apologize, but I'm having trouble processing your request right now. Please try again later.",
         timestamp: new Date()
       };
-      setMessages(prev => [...prev, botResponse]);
-      setIsTyping(false);
-    }, 2000);
+      setMessages(prev => [...prev, errorMessage]);
+    }
+    
+    setIsTyping(false);
   };
 
   const formatTime = (date: Date) => {
@@ -598,17 +634,29 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
   const renderAgent = () => (
     <div className="bg-white border border-stone-200 shadow-sm h-[600px] flex flex-col">
       <div className="p-6 border-b border-stone-200 bg-stone-50">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 bg-stone-800 flex items-center justify-center">
-            <Bot size={20} />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 bg-stone-800 flex items-center justify-center">
+              <Bot size={20} />
+            </div>
+            <div>
+              <h3 className="font-semibold text-stone-900">FinArth AI Agent</h3>
+              <p className="text-sm text-stone-600 flex items-center gap-1">
+                <span className="h-2 w-2 bg-stone-600 rounded-full"></span>
+                Online
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="font-semibold text-stone-900">FinArth AI Agent</h3>
-            <p className="text-sm text-stone-600 flex items-center gap-1">
-              <span className="h-2 w-2 bg-stone-600 rounded-full"></span>
-              Online
-            </p>
-          </div>
+          <button
+            onClick={() => {
+              const query = "What are key risks in this project plan?";
+              setInputMessage(query);
+              setTimeout(() => sendMessage(), 100);
+            }}
+            className="px-4 py-2 bg-stone-800 text-stone-50 text-sm rounded-lg hover:bg-stone-900 transition-colors"
+          >
+            Analyze Risks
+          </button>
         </div>
       </div>
 
@@ -620,7 +668,11 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
                 ? 'bg-stone-800 text-stone-50 border-stone-700' 
                 : 'bg-white text-stone-900 border-stone-200'
             } px-4 py-3`}>
-              <p className="text-sm">{message.content}</p>
+              <div className="text-sm whitespace-pre-wrap">
+                {message.content.split('**').map((part, index) => 
+                  index % 2 === 1 ? <strong key={index}>{part}</strong> : part
+                )}
+              </div>
               <p className={`text-xs mt-1 font-mono ${
                 message.type === 'user' ? 'text-stone-300' : 'text-stone-500'
               }`}>
@@ -649,9 +701,10 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
             type="text"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+            onKeyPress={(e) => e.key === 'Enter' && !isTyping && sendMessage()}
             placeholder="Ask me about your investments, goals, or financial planning..."
             className="flex-1 px-4 py-3 border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-500 focus:border-stone-500"
+            disabled={isTyping}
           />
           <button
             onClick={sendMessage}

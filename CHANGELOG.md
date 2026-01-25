@@ -51,3 +51,30 @@
 ### Limitations
 - User preference feed to the LLM along with user's prompt.
 - Data store flow involvement during LLM calls.
+
+## [0.1.2] - 2026-01-19
+### Added
+- A little change in the folder structure to make dashboard effecient.
+- 
+
+### Other significant updates
+- Landing page added more interactive features and animations
+
+### Debug
+- View demo button on login page (remove in production)
+## [0.2.1] - 2026-01-24
+### Major Features Added
+- Portfolio Management System: Complete CRUD functionality for investment holdings Still in development
+- Interactive Portfolio Dashboard: Treemap heatmap visualization  
+- Multi-page Architecture: Organized component structure with proper routing.
+
+### Backend Enhancements
+- Portfolio API Routes: New endpoints for portfolio data management
+- Enhanced app.ts: Integration of both portfolio and agent routes
+
+### Frontend Restructure
+- Pages Organization: Moved components to dedicated pages directory
+  - Login.tsx → pages/Login.tsx
+  - onboarding.tsx → pages/onboarding.tsx
+  - New: Dashboard.tsx, HomePage.tsx, Portfolio.tsx
+- Component Architecture: Separated PortfolioHeatmap into reusable component
