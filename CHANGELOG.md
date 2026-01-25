@@ -29,3 +29,25 @@
 
 ### Debug
 - View demo button on login page (remove in production)
+
+## [0.1.3] - 2026-01-22
+### Back-end Changes
+- Open router API python example with the 'xiaomi/mimo-v2-flash:free' model
+- API Key spec
+
+## [0.1.4] - 2026-01-24
+### Back-end Changes
+- Open router API type script example with the 'xiaomi' model
+
+## [0.2.0] - 2026-01-24
+### Front-end Changes
+- page update to redirect user prompt to LLM
+### Back-end Changes
+- opik integration update example update.
+- User's prompt feed to a LLM update in the back-end system
+    - React pattern update
+### Documentation Changes
+- docs folder update to maintain technical documentation.
+### Limitations
+- User preference feed to the LLM along with user's prompt.
+- Data store flow involvement during LLM calls.

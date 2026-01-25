@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import OnboardingPage from './onboarding.tsx';
+import OnboardingPage from './pages/onboarding.tsx';
+import Portfolio from './pages/Portfolio.tsx';
 
 // Login Component
 const Login = ({ onLogin }: { 
@@ -12,6 +13,12 @@ const Login = ({ onLogin }: {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+
+  const ArrowRight = ({ size = 20 }) => (
+    <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+    </svg>
+  );
 
   const Eye = ({ size = 20 }) => (
     <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -209,6 +216,12 @@ const Signup = ({ onSignup }: {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const ArrowRight = ({ size = 20 }) => (
+    <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+    </svg>
+  );
 
   const Eye = ({ size = 20 }) => (
     <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -659,6 +672,8 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
     switch (activeTab) {
       case 'overview':
         return renderOverview();
+      case 'portfolio':
+        return <Portfolio />;
       case 'agent':
         return renderAgent();
       default:
@@ -896,20 +911,6 @@ const Hero = ({ onGetStarted, isConnecting }: { onGetStarted: () => void; isConn
       {/* Trust indicators */}
       <div className="mt-12 flex flex-col items-center gap-4 scroll-animate">
         <p className="text-sm text-stone-500">Trusted by 10,000+ investors</p>
-        <div className="flex items-center gap-6 text-stone-400">
-          <div className="flex items-center gap-2">
-            <Shield size={16} />
-            <span className="text-xs">Bank-level Security</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle size={16} />
-            <span className="text-xs">SEBI Registered</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Target size={16} />
-            <span className="text-xs">AI-Powered</span>
-          </div>
-        </div>
       </div>
     </div>
   </section>
