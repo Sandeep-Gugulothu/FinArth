@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { trackOpenAI } from 'opik-openai';
 
 interface ReActStep {
   thought: string;
@@ -27,10 +28,14 @@ const mockTools = {
 };
 
 export async function generateInsightWithReasonAct(query: string): Promise<ReActResult> {
+  // Initialize the original Open AI client
   const open_ai = new OpenAI({
     apiKey: process.env.OPENROUTER_API_KEY,
     baseURL: "https://openrouter.ai/api/v1"
   });
+
+  // Wrap the client with opik tracking
+  const trackedOpenAI = trackOpenAI(open_ai);
 
   const steps: ReActStep[] = [];
   let context = `User Query: ${query}\n\n`;
@@ -49,7 +54,7 @@ Respond with your reasoning in this format:
 Thought: [your reasoning]
 Action: [tool_name] (if needed, otherwise say "none")`;
 
-    const thoughtResponse = await open_ai.chat.completions.create({
+    const thoughtResponse = await trackedOpenAI.chat.completions.create({
       model: "xiaomi/mimo-v2-flash:free",
       messages: [{ role: "user", content: thoughtPrompt }],
       max_tokens: 200
@@ -83,13 +88,16 @@ Based on your analysis above, provide a comprehensive final answer to the user's
 
 Focus on actionable insights and specific recommendations.`;
 
-  const finalResponse = await open_ai.chat.completions.create({
+  const finalResponse = await trackedOpenAI.chat.completions.create({
     model: "xiaomi/mimo-v2-flash:free",
     messages: [{ role: "user", content: finalPrompt }],
     max_tokens: 300
   });
 
   const finalAnswer = finalResponse.choices[0].message.content || "Unable to generate final answer.";
+
+  // Ensure all traces are sent before sending the response to user
+  await trackedOpenAI.flush();
 
   return { steps, finalAnswer };
 }

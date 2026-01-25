@@ -45,9 +45,18 @@
 ### Back-end Changes
 - opik integration update example update.
 - User's prompt feed to a LLM update in the back-end system
-    - React pattern update
+    - ReAct agent pattern implementation with mock tools
 ### Documentation Changes
 - docs folder update to maintain technical documentation.
 ### Limitations
 - User preference feed to the LLM along with user's prompt.
 - Data store flow involvement during LLM calls.
+- opik integration update
+
+## [0.2.1] - 2026-01-25
+### Back-end Changes
+- react agent update with opik tracking
+### Documentation Changes
+- REACT_SETUP.md file updated with pre-requisites instructions.
+### Notes
+- Make sure re-init through npm is executed before launching the front and back-end systems as package json is not getting committed to the repository. eg: `npm install`
