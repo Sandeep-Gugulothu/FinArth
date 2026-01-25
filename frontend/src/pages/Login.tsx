@@ -106,8 +106,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 style={{ display: 'block', width: '100%', padding: '12px', border: '1px solid #d6d3d1', borderRadius: '8px', fontSize: '16px', outline: 'none', transition: 'all 0.2s' }}
                 placeholder="Enter your email"
                 required
-                onFocus={(e) => e.target.style.borderColor = '#78716c'}
-                onBlur={(e) => e.target.style.borderColor = '#d6d3d1'}
+                onFocus={(e) => (e.target as HTMLInputElement).style.borderColor = '#78716c'}
+                onBlur={(e) => (e.target as HTMLInputElement).style.borderColor = '#d6d3d1'}
               />
             </div>
 
@@ -122,8 +122,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 style={{ display: 'block', width: '100%', padding: '12px', border: '1px solid #d6d3d1', borderRadius: '8px', fontSize: '16px', outline: 'none', transition: 'all 0.2s' }}
                 placeholder="Enter your password"
                 required
-                onFocus={(e) => e.target.style.borderColor = '#78716c'}
-                onBlur={(e) => e.target.style.borderColor = '#d6d3d1'}
+                onFocus={(e) => (e.target as HTMLInputElement).style.borderColor = '#78716c'}
+                onBlur={(e) => (e.target as HTMLInputElement).style.borderColor = '#d6d3d1'}
               />
             </div>
 
@@ -139,8 +139,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                   style={{ display: 'block', width: '100%', padding: '12px', border: '1px solid #d6d3d1', borderRadius: '8px', fontSize: '16px', outline: 'none', transition: 'all 0.2s' }}
                   placeholder="Confirm your password"
                   required
-                  onFocus={(e) => e.target.style.borderColor = '#78716c'}
-                  onBlur={(e) => e.target.style.borderColor = '#d6d3d1'}
+                  onFocus={(e) => (e.target as HTMLInputElement).style.borderColor = '#78716c'}
+                  onBlur={(e) => (e.target as HTMLInputElement).style.borderColor = '#d6d3d1'}
                 />
               </div>
             )}
@@ -149,8 +149,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               type="submit"
               disabled={isLoading}
               style={{ width: '100%', padding: '12px 16px', background: '#1c1917', color: '#fafaf9', fontWeight: '600', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '16px', opacity: isLoading ? 0.5 : 1, transition: 'all 0.2s' }}
-              onMouseOver={(e) => !isLoading && (e.target.style.background = '#292524')}
-              onMouseOut={(e) => (e.target.style.background = '#1c1917')}
+              onMouseOver={(e) => !isLoading && ((e.target as HTMLButtonElement).style.background = '#292524')}
+              onMouseOut={(e) => ((e.target as HTMLButtonElement).style.background = '#1c1917')}
             >
               {isLoading ? 'Loading...' : (isSignup ? 'Sign up' : 'Sign in')}
             </button>
@@ -165,8 +165,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           <button
             onClick={handleQuickLogin}
             style={{ width: '100%', padding: '12px 16px', border: '1px solid #d6d3d1', color: '#44403c', fontWeight: '500', borderRadius: '8px', background: 'white', cursor: 'pointer', fontSize: '16px', transition: 'all 0.2s' }}
-            onMouseOver={(e) => (e.target.style.background = '#fafaf9')}
-            onMouseOut={(e) => (e.target.style.background = 'white')}
+            onMouseOver={(e) => ((e.target as HTMLButtonElement).style.background = '#fafaf9')}
+            onMouseOut={(e) => ((e.target as HTMLButtonElement).style.background = 'white')}
           >
             Quick Demo Login
           </button>
@@ -183,8 +183,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 setConfirmPassword('');
               }}
               style={{ color: '#44403c', fontWeight: '500', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px' }}
-              onMouseOver={(e) => (e.target.style.color = '#1c1917')}
-              onMouseOut={(e) => (e.target.style.color = '#44403c')}
+              onMouseOver={(e) => ((e.target as HTMLButtonElement).style.color = '#1c1917')}
+              onMouseOut={(e) => ((e.target as HTMLButtonElement).style.color = '#44403c')}
             >
               {isSignup ? 'Sign in' : 'Sign up for free'}
             </button>
