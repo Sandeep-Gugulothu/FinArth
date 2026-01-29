@@ -1,33 +1,72 @@
 import express from 'express';
+import db from '../database';
+
 const router = express.Router();
 
-// Update investment date
-router.post('/update-date', async (req, res) => {
-  try {
-    const { categoryIdx, holdingIdx, newDate } = req.body;
-    
-    // Here you would typically update your database
-    // For now, we'll just log the update
-    console.log(`Updating investment date: Category ${categoryIdx}, Holding ${holdingIdx}, New Date: ${newDate}`);
-    
-    // In a real implementation, you would:
-    // 1. Get user ID from session/token
-    // 2. Update the database record
-    // 3. Return success/failure
-    
-    res.json({ 
-      success: true, 
-      message: 'Investment date updated successfully',
-      data: { categoryIdx, holdingIdx, newDate }
-    });
-    
-  } catch (error) {
-    console.error('Error updating investment date:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to update investment date' 
-    });
-  }
+// Get user portfolio
+router.get('/:userId', (req, res) => {
+  const { userId } = req.params;
+  
+  db.all(
+    'SELECT * FROM portfolio_holdings WHERE user_id = ? ORDER BY created_at DESC',
+    [userId],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json({ holdings: rows });
+    }
+  );
+});
+
+// Add new holding
+router.post('/:userId/holdings', (req, res) => {
+  const { userId } = req.params;
+  const { name, category, amount, date, symbol = '' } = req.body;
+  
+  db.run(
+    'INSERT INTO portfolio_holdings (user_id, name, category, amount, date, symbol) VALUES (?, ?, ?, ?, ?, ?)',
+    [userId, name, category, amount, date, symbol],
+    function(err) {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json({ id: this.lastID, message: 'Holding added successfully' });
+    }
+  );
+});
+
+// Update holding
+router.put('/:userId/holdings/:holdingId', (req, res) => {
+  const { userId, holdingId } = req.params;
+  const { name, category, amount, date, symbol = '' } = req.body;
+  
+  db.run(
+    'UPDATE portfolio_holdings SET name = ?, category = ?, amount = ?, date = ?, symbol = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?',
+    [name, category, amount, date, symbol, holdingId, userId],
+    function(err) {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json({ message: 'Holding updated successfully' });
+    }
+  );
+});
+
+// Delete holding
+router.delete('/:userId/holdings/:holdingId', (req, res) => {
+  const { userId, holdingId } = req.params;
+  
+  db.run(
+    'DELETE FROM portfolio_holdings WHERE id = ? AND user_id = ?',
+    [holdingId, userId],
+    function(err) {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json({ message: 'Holding deleted successfully' });
+    }
+  );
 });
 
 export default router;

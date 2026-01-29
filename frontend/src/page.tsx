@@ -86,9 +86,7 @@ const Login = ({ onLogin }: {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-3 mb-4">
-            <div className="h-12 w-12 bg-stone-800 rounded-lg flex items-center justify-center shadow-sm">
-              <span className="text-stone-50 font-bold text-xl">F</span>
-            </div>
+            <img src="/logo.png" alt="FinArth" className="h-12 w-12" />
             <span className="text-2xl font-bold text-stone-900">FinArth</span>
           </div>
           <h1 className="text-2xl font-bold text-stone-900 mb-2">Welcome back</h1>
@@ -293,9 +291,7 @@ const Signup = ({ onSignup }: {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-3 mb-4">
-            <div className="h-12 w-12 bg-stone-800 rounded-lg flex items-center justify-center shadow-sm">
-              <span className="text-stone-50 font-bold text-xl">F</span>
-            </div>
+            <img src="/logo.png" alt="FinArth" className="h-12 w-12" />
             <span className="text-2xl font-bold text-stone-900">FinArth</span>
           </div>
           <h1 className="text-2xl font-bold text-stone-900 mb-2">Create Account</h1>
@@ -740,9 +736,7 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
       <div className="w-64 bg-white border-r border-stone-200 flex flex-col">
         <div className="p-6 border-b border-stone-200">
           <div className="flex items-center gap-3">
-            <div className="h-8 w-8 bg-stone-800 rounded-lg flex items-center justify-center">
-              <span className="text-stone-50 font-bold text-sm">F</span>
-            </div>
+            <img src="/logo.png" alt="FinArth" className="h-8 w-8" />
             <span className="text-xl font-bold text-stone-900">FinArth</span>
           </div>
         </div>
@@ -870,12 +864,8 @@ const Navbar = ({ onGetStarted, isConnecting }: { onGetStarted: () => void; isCo
     
     <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between relative z-10">
       <div className="flex items-center gap-2">
-        <div className="h-8 w-8 bg-stone-800 rounded-lg flex items-center justify-center">
-          <span className="text-stone-50 font-bold text-xl">F</span>
-        </div>
-        <span className="text-xl font-bold text-stone-900">
-          FinArth
-        </span>
+        <img src="/logo.png" alt="FinArth" className="h-8 w-8" />
+        <span className="text-xl font-bold text-stone-900">FinArth</span>
       </div>
       
       <div className="hidden md:flex items-center gap-8 text-sm font-medium text-stone-700">
@@ -1330,7 +1320,7 @@ const Footer = () => (
     <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
       <div className="col-span-1 md:col-span-2">
         <div className="flex items-center gap-2 mb-4">
-          <div className="h-6 w-6 bg-stone-800 rounded flex items-center justify-center text-xs text-white font-bold">F</div>
+          <img src="/logo.png" alt="FinArth" className="h-6 w-6" />
           <span className="text-lg font-bold text-stone-900">FinArth</span>
         </div>
         <p className="text-stone-600 text-sm max-w-xs">

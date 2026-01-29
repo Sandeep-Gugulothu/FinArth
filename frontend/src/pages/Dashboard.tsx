@@ -58,9 +58,7 @@ const Sidebar = ({ activeTab, setActiveTab }: { activeTab: string; setActiveTab:
     <div className="w-64 bg-white border-r border-slate-200 flex flex-col">
       <div className="p-6 border-b border-slate-200">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">F</span>
-          </div>
+          <img src="/logo.png" alt="FinArth" className="h-8 w-8" />
           <span className="text-xl font-bold text-slate-900">FinArth</span>
         </div>
       </div>

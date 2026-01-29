@@ -46,15 +46,21 @@ router.get('/', (req, res) => {
                 <h2>🎯 User Objectives</h2>
                 <div id="objectives-table">Loading...</div>
             </div>
+            
+            <div class="section">
+                <h2>📈 Portfolio Holdings</h2>
+                <div id="portfolio-table">Loading...</div>
+            </div>
         </div>
 
         <script>
             async function loadData() {
                 try {
-                    const [users, investments, objectives] = await Promise.all([
+                    const [users, investments, objectives, portfolio] = await Promise.all([
                         fetch('/api/db/users').then(r => r.json()),
                         fetch('/api/db/investments').then(r => r.json()),
-                        fetch('/api/db/objectives').then(r => r.json())
+                        fetch('/api/db/objectives').then(r => r.json()),
+                        fetch('/api/db/portfolio').then(r => r.json())
                     ]);
 
                     // Render users table
@@ -108,9 +114,29 @@ router.get('/', (req, res) => {
                         </table>
                     \` : '<p class="empty">No objectives found</p>';
 
+                    // Render portfolio table
+                    const portfolioHtml = portfolio.length ? \`
+                        <table>
+                            <tr><th>ID</th><th>User</th><th>Name</th><th>Category</th><th>Amount</th><th>Date</th><th>Symbol</th><th>Created</th></tr>
+                            \${portfolio.map(holding => \`
+                                <tr>
+                                    <td>\${holding.id}</td>
+                                    <td>\${holding.user_id}</td>
+                                    <td>\${holding.name}</td>
+                                    <td><span class="badge">\${holding.category}</span></td>
+                                    <td>₹\${holding.amount.toLocaleString()}</td>
+                                    <td>\${holding.date}</td>
+                                    <td>\${holding.symbol || '<span class="empty">None</span>'}</td>
+                                    <td>\${new Date(holding.created_at).toLocaleString()}</td>
+                                </tr>
+                            \`).join('')}
+                        </table>
+                    \` : '<p class="empty">No portfolio holdings found</p>';
+
                     document.getElementById('users-table').innerHTML = usersHtml;
                     document.getElementById('investments-table').innerHTML = investmentsHtml;
                     document.getElementById('objectives-table').innerHTML = objectivesHtml;
+                    document.getElementById('portfolio-table').innerHTML = portfolioHtml;
                 } catch (error) {
                     console.error('Error loading data:', error);
                     document.body.innerHTML += '<div style="color: red; margin: 20px;">Error loading data. Make sure the backend is running.</div>';
@@ -143,6 +169,13 @@ router.get('/investments', (req, res) => {
 
 router.get('/objectives', (req, res) => {
   db.all("SELECT * FROM user_objectives", (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+router.get('/portfolio', (req, res) => {
+  db.all("SELECT * FROM portfolio_holdings ORDER BY created_at DESC", (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(rows);
   });
