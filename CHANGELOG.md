@@ -77,8 +77,38 @@
 ### Documentation Changes
 - REACT_SETUP.md file updated with pre-requisites instructions.
 ### Notes
-- Make sure re-init through npm is executed before launching the front and back-end systems as package json is not getting committed to the repository. eg: `npm install`
+- Make sure re-init through npm is executed before launching the front and
+  back-end systems as package json is not getting committed to the repository.
+  eg: `npm install`
 ### Limitations
 - User preference feed to the LLM along with user's prompt.
 - Data store flow involvement during LLM calls.
 - Validate the latest merged changes
+
+## [0.3.0] - 2026-01-29
+### Back-end Changes
+- Financial preference consideration update
+  - Relevant database and active session cache updates
+- Logger update
+  - four-mode consideration with color identifier
+  - basic pattern inclusion
+### Front-end Changes
+- User-Id consideration and redirection update
+- datastore update
+### Documentation Changes
+- logging_system.md file update to illustrate log design for the current system
+- user_preferences_implementation.md file update to specify the user financial
+  preference consideration implementation.
+### Notes
+- Most of the limitations got covered from the previous version.
+- Make sure re-init through npm is executed before launching the front and
+  back-end systems as package json is not getting committed to the repository.
+  eg: `npm install`
+### Limitations
+- Expected return estimates, Age, and Financial objectives are not being
+  considered along with users' prompt
+- Recreation of the database tables and update with existing db details if we
+  have any latest changes with respect to create query, specifically new table
+  introduction scenarios.
+- LLM agent classification for considering financial preferences separately
+  along with user's prompt.
