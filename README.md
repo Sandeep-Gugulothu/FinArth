@@ -13,24 +13,27 @@ FinArth is an AI-powered financial planning platform that converts life goals in
 
 ## Architecture
 
-FinArth can follow modular monolith architecture and can migrate to a microservices architecture slowly based on project's budget, bandwidth, and scope.
+Initially, FinArth followed traditional three-tier architecture and based on the project progress it is growing towards modular monolith architecture and it can migrate to a microservices architecture in future based on project's budget, bandwidth, scope, and maintenance.
 
-The three main components:
+The three main components of the three-tier architecture:
 
-```
-FinArth/
-├── frontend/          # React + TypeScript UI
-├── backend/           # Node.js + Express API
-├── ai-services/       # Python FastAPI AI services
-└── package.json       # Workspace configuration
-```
+1. Frontend system
+    - Technology: HTML, CSS, TypeScript
+2. Backend system
+    - Technology: TypeScipt, JavaScript, Python
+3. Storage system
+    - Technology: Sqlite
 
 <!-- [TODO] The project can have Frontend section with sub-sections such as
-      Technology, Features, Styling, and Responsive-->
+     Features, Styling, and Responsive-->
 <!-- [TODO] The project can have Backend section with sub-sections such as
-      Technology, Features, Routes, and Environment-->
+      Features, Routes, and Environment-->
 <!-- [TODO] The project can have AI Services section with sub-sections such as
-      Technology, Features, Dependencies, and Monitoring-->
+      Features, Dependencies, and Monitoring-->
+
+## Project Structure
+
+We can find the project structure [here](./docs/project_structure.md).
 
 ## Prerequisites
 
@@ -71,29 +74,6 @@ FinArth/
 
 ## Testing
 <!-- [TODO] Define test commands -->
-
-## Project Structure
-
-```
-FinArth/
-├── frontend/
-│   ├── public/
-│   │   └── index.html
-│   ├── src/
-│   │   ├── index.tsx        # React app entry point
-│   │   └── page.tsx         # Main landing page component
-│   └── package.json
-├── backend/
-│   ├── src/
-│   │   └── app.ts           # Express server setup
-│   └── package.json
-├── ai-services/
-│   ├── requirements.txt     # Python dependencies
-│   └── main.py             # FastAPI application
-├── .gitignore
-├── CHANGELOG.md
-└── package.json            # Workspace configuration
-```
 
 ## Configuration
 
