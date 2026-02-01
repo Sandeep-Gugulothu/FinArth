@@ -121,14 +121,21 @@
   - Architecture and project structure detail update
 - Project structure mark down file draft
 ### Notes
-- Make sure re-init through npm is executed before launching the front and
-  back-end systems as package json is not getting committed to the repository.
-  eg: `npm install`
+- Make sure re-init through npm is executed before launching the front and back-end systems as package json is not getting committed to the repository. Example: `npm install`
 ### Limitations
-- Expected return estimates, Age, and Financial objectives are not being
-  considered along with users' prompt
-- Recreation of the database tables and update with existing db details if we
-  have any latest changes with respect to create query, specifically new table
-  introduction scenarios.
-- LLM agent classification for considering financial preferences separately
-  along with user's prompt.
+- Expected return estimates, Age, and Financial objectives are not being considered along with users' prompt.
+- Recreation of the database tables and update with existing db details if we have any latest changes with respect to create query, specifically new table introduction scenarios.
+- LLM agent classification for considering financial preferences separately along with user's prompt.
+
+## [0.3.2] - 2026-02-01
+### Documentation Changes
+- README file update
+  - Architecture detail update
+  - Build detail update.
+- Project structure comment update
+### Notes
+- Make sure re-init through npm is executed before launching the front and back-end systems as package json is not getting committed to the repository. Example: `npm install`
+### Limitations
+- Expected return estimates, Age, and Financial objectives are not being considered along with users' prompt.
+- Recreation of the database tables and update with existing db details if we have any latest changes with respect to create query, specifically new table introduction scenarios.
+- LLM agent classification for considering financial preferences separately along with user's prompt.
