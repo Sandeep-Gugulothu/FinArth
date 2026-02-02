@@ -13,24 +13,39 @@ FinArth is an AI-powered financial planning platform that converts life goals in
 
 ## Architecture
 
-FinArth can follow modular monolith architecture and can migrate to a microservices architecture slowly based on project's budget, bandwidth, and scope.
+Initially, FinArth followed traditional three-tier architecture and based on the project progress it is growing towards modular monolith architecture and it can migrate to a microservices architecture in future based on project's budget, bandwidth, scope, and maintenance.
 
-The three main components:
+The three main components of the three-tier architecture:
 
-```
-FinArth/
-├── frontend/          # React + TypeScript UI
-├── backend/           # Node.js + Express API
-├── ai-services/       # Python FastAPI AI services
-└── package.json       # Workspace configuration
-```
+1. Frontend system
+    - Technology
+        - HTML: We used HTML to render our web-page by embedding executable code.
+        - CSS: We used Cascading Style Sheet to style our webpage.
+        - TypeScript: We are using TypeScript to make our webpage actionable.
+    - Features: There are numerous features in our project, but we would like highlight the primary ones as below.
+        - Home page: This is our landing page. The user will see our project's home page after running our site. We are hosting it through pages typescript. In this page you may find our feature offerings and work procedure.
+        - Login: The user can register their account using 'Sign up for free' button in our login page and can able to login to our system with their credentials there after. If they aren't have one or don't want to register, then they can use our 'Quick Demo Login' option to login as a guest user.
+        - Onboarding: We gather user financial preferences through this feature. The user who logged in for the first time will go through the sequence of their financial preference steps along with the agreement we made for the user.
+        - Dashboard: This feature is the core of our system where user can view their financial details or get answers for their financial queries.
+            - Financial overview
+            - Portfolio
+            - Goals
+            - Financial AI agent
+2. Backend system
+    - Technology: TypeScipt, JavaScript, Python
+3. Storage system
+    - Technology: Sqlite
 
 <!-- [TODO] The project can have Frontend section with sub-sections such as
-      Technology, Features, Styling, and Responsive-->
+     Features, Styling, and Responsive-->
 <!-- [TODO] The project can have Backend section with sub-sections such as
-      Technology, Features, Routes, and Environment-->
+      Features, Routes, and Environment-->
 <!-- [TODO] The project can have AI Services section with sub-sections such as
-      Technology, Features, Dependencies, and Monitoring-->
+      Features, Dependencies, and Monitoring-->
+
+## Project Structure
+
+We can find the project structure [here](./docs/project_structure.md).
 
 ## Prerequisites
 
@@ -67,33 +82,22 @@ FinArth/
 <!-- [TODO] Define Individual service commands -->
 
 ## Build
-<!-- [TODO] Define Build commands -->
+
+### Development Scope
+We are building our project locally and validating them through local host. Below are the corresponding commands.
+- In the root directory of our project, we give this command to install required packages `npm install`
+- We run this command to run the front-end system on a configured local host by changing to the frontend directory.
+    - Change the directory: `cd frontend`
+    - Host the front-end system: `npm start run`
+- We run this command to run the back-end system on a configured local host by changing to the backend directory.
+    - Change the directory: `cd backend` if our current directory is root directory of our project, otherwise `cd ../frontend`
+    - Host the back-end system: `npm run dev`
+### Production Scope
+Currently, we hosted our project on the production system through versal.
+<!-- [TODO] Need to add more details. -->
 
 ## Testing
 <!-- [TODO] Define test commands -->
-
-## Project Structure
-
-```
-FinArth/
-├── frontend/
-│   ├── public/
-│   │   └── index.html
-│   ├── src/
-│   │   ├── index.tsx        # React app entry point
-│   │   └── page.tsx         # Main landing page component
-│   └── package.json
-├── backend/
-│   ├── src/
-│   │   └── app.ts           # Express server setup
-│   └── package.json
-├── ai-services/
-│   ├── requirements.txt     # Python dependencies
-│   └── main.py             # FastAPI application
-├── .gitignore
-├── CHANGELOG.md
-└── package.json            # Workspace configuration
-```
 
 ## Configuration
 

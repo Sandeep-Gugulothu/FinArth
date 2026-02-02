@@ -209,7 +209,7 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
               What should we call you
             </h2>
             <p className="text-stone-600">
-              Mr. Handsome or Miss. Beautiful
+              Mr. Handsome or Miss. Beautiful or Mrs. Beautiful?
             </p>
           </div>
           
@@ -570,7 +570,7 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
               };
               
               try {
-                const response = await fetch('http://localhost:5000/api/users/onboarding', {
+                const response = await fetch('http://localhost:8000/api/users/onboarding', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify(userData)
