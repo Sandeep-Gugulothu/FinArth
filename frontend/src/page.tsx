@@ -50,7 +50,7 @@ const Login = ({ onLogin }: {
     setIsLoading(true);
     
     try {
-      const response = await fetch('http://localhost:5000/api/users/login', {
+      const response = await fetch('http://localhost:8000/api/users/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -59,6 +59,7 @@ const Login = ({ onLogin }: {
       const data = await response.json();
       
       if (response.ok) {
+        localStorage.setItem('userId', data.user.id.toString());
         localStorage.setItem('userData', JSON.stringify(data.user));
         localStorage.setItem('onboardingCompleted', data.needsOnboarding ? 'false' : 'true');
         onLogin();
@@ -75,6 +76,22 @@ const Login = ({ onLogin }: {
 
   const handleQuickLogin = () => {
     setIsLoading(true);
+    
+    // Create sample guest user data
+    const guestUserId = 999; // Special ID for guest users
+    const guestUserData = {
+      id: guestUserId,
+      email: 'guest@finarth.demo',
+      name: 'Demo User',
+      emailVerified: true
+    };
+    
+    // Set localStorage similar to signup
+    localStorage.setItem('userId', guestUserId.toString());
+    localStorage.setItem('userEmail', 'guest@finarth.demo');
+    localStorage.setItem('userData', JSON.stringify(guestUserData));
+    localStorage.setItem('onboardingCompleted', 'false');
+    
     setTimeout(() => {
       setIsLoading(false);
       onLogin();
@@ -263,7 +280,7 @@ const Signup = ({ onSignup }: {
     setIsLoading(true);
     
     try {
-      const response = await fetch('http://localhost:5000/api/users/register', {
+      const response = await fetch('http://localhost:8000/api/users/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -413,6 +430,8 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('overview');
+  const [userName, setUserName] = useState('User');
+  
   type Message = {
     id: number;
     type: 'bot' | 'user';
@@ -420,18 +439,47 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
     timestamp: Date;
   };
 
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      type: 'bot' as const,
-      content: "Hello! I'm your AI financial advisor. I can help you with investment planning, goal setting, and portfolio optimization. What would you like to discuss today?",
-      timestamp: new Date(Date.now() - 300000)
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
+    // Load user name from localStorage
+    const userData = localStorage.getItem('userData');
+    const userId = localStorage.getItem('userId');
+    let currentUserName = 'User';
+    
+    if (userData) {
+      const user = JSON.parse(userData);
+      // Check if it's demo user (ID 999) or regular user
+      if (user.id === 999) {
+        currentUserName = 'Demo User';
+      } else {
+        currentUserName = user.name || user.email?.split('@')[0] || 'User';
+      }
+      setUserName(currentUserName);
+    } else if (userId && userId !== '999') {
+      // Try to fetch user data if we have userId but no userData
+      fetch(`http://localhost:8000/api/users/${userId}`)
+        .then(res => res.json())
+        .then(user => {
+          if (user.name) {
+            setUserName(user.name);
+            localStorage.setItem('userData', JSON.stringify(user));
+          }
+        })
+        .catch(() => setUserName('User'));
+    }
+    
+    // Initialize welcome message with user name
+    const welcomeMessage = {
+      id: 1,
+      type: 'bot' as const,
+      content: `Hello${currentUserName !== 'User' ? ` ${currentUserName}` : ''}! I'm your AI financial advisor. I can help you with investment planning, goal setting, and portfolio optimization. What would you like to discuss today?`,
+      timestamp: new Date(Date.now() - 300000)
+    };
+    setMessages([welcomeMessage]);
+    
     const path = location.pathname;
     if (path.startsWith('/dashboard/')) {
       const tab = path.split('/dashboard/')[1] || 'overview';
@@ -495,13 +543,20 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
     setIsTyping(true);
 
     try {
+      // Get userId from localStorage
+      const userId = localStorage.getItem('userId');
+      const userIdNum = userId ? parseInt(userId) : null;
+      
       // Call ReAct agent API
       const response = await fetch('http://localhost:8000/api/agent/generate-insight', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ query: currentInput })
+        body: JSON.stringify({ 
+          query: currentInput,
+          userId: userIdNum
+        })
       });
 
       const data = await response.json();
@@ -767,7 +822,7 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
               <User size={16} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-stone-900 truncate">John Doe</p>
+              <p className="text-sm font-medium text-stone-900 truncate">{userName}</p>
               <p className="text-xs text-stone-500">Premium Plan</p>
             </div>
           </div>

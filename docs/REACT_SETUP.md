@@ -1,5 +1,11 @@
 # ReAct Agent Setup Instructions
 
+## Pre-requisites
+Set environment variable manually.
+```
+export OPIK_API_KEY="Your OPIK API key"
+```
+
 ## Backend Setup
 
 1. Install OpenAI dependency:

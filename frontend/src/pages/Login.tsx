@@ -31,7 +31,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     
     try {
       const endpoint = isSignup ? '/api/users/register' : '/api/users/login';
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
       const response = await fetch(`${apiUrl}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -45,6 +45,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           localStorage.setItem('userId', data.userId.toString());
           localStorage.setItem('userEmail', email);
         } else {
+          localStorage.setItem('userId', data.user.id.toString());
           localStorage.setItem('userData', JSON.stringify(data.user));
           localStorage.setItem('onboardingCompleted', data.needsOnboarding ? 'false' : 'true');
         }
