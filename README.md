@@ -32,7 +32,10 @@ The three main components of the three-tier architecture:
             - Goals
             - Financial AI agent
 2. Backend system
-    - Technology: TypeScipt, JavaScript, Python
+    - Technology:
+        - TypeScipt
+        - JavaScript
+        - Python
 3. Storage system
     - Technology: Sqlite
 

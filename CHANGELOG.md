@@ -139,3 +139,13 @@
 - Expected return estimates, Age, and Financial objectives are not being considered along with users' prompt.
 - Recreation of the database tables and update with existing db details if we have any latest changes with respect to create query, specifically new table introduction scenarios.
 - LLM agent classification for considering financial preferences separately along with user's prompt.
+
+## [0.3.3] - 2026-02-03
+### Backend Changes
+- Removed typescript backend logic and replaced it with Python
+- pytest draft
+  - configuration setup
+  - authentication test definition
+  - github workflow draft to trigger auto-test on github operations
+- requirement package update
+- package json config update with python script execution

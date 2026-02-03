@@ -1,11 +1,21 @@
-import express from 'express';
-import db from '../database';
+"""
+File Name: db.py
+Description: This file contains the code for database related operations.
+Author Name: The FinArth Team
+Creation Date: 02-Feb-2026
 
-const router = express.Router();
+Instructions to run: [TODO]
 
-// Database viewer endpoint
-router.get('/', (req, res) => {
-  const html = `
+File Execution State: Validation is in progress
+"""
+from flask import Blueprint, jsonify
+from database import db
+
+db_blue_print = Blueprint('db', __name__)
+
+@db_blue_print.route('/', methods=['GET'])
+def database_viewer():
+    html = """
     <!DOCTYPE html>
     <html>
     <head>
@@ -64,74 +74,74 @@ router.get('/', (req, res) => {
                     ]);
 
                     // Render users table
-                    const usersHtml = users.length ? \`
+                    const usersHtml = users.length ? `
                         <table>
                             <tr>
                                 <th>ID</th><th>Email</th><th>Name</th><th>Country</th><th>Age</th>
                                 <th>Risk Preference</th><th>Return Estimate</th><th>Verified</th><th>Created</th>
                             </tr>
-                            \${users.map(user => \`
+                            ${users.map(user => `
                                 <tr>
-                                    <td>\${user.id}</td>
-                                    <td>\${user.email}</td>
-                                    <td>\${user.name || '<span class="empty">Not set</span>'}</td>
-                                    <td>\${user.country || '<span class="empty">Not set</span>'}</td>
-                                    <td>\${user.age || '<span class="empty">Not set</span>'}</td>
-                                    <td>\${user.risk_preference || '<span class="empty">Not set</span>'}</td>
-                                    <td>\${user.return_estimate || '<span class="empty">Not set</span>'}</td>
-                                    <td><span class="badge \${user.email_verified ? 'verified' : ''}">\${user.email_verified ? 'Yes' : 'No'}</span></td>
-                                    <td>\${new Date(user.created_at).toLocaleString()}</td>
+                                    <td>${user.id}</td>
+                                    <td>${user.email}</td>
+                                    <td>${user.name || '<span class="empty">Not set</span>'}</td>
+                                    <td>${user.country || '<span class="empty">Not set</span>'}</td>
+                                    <td>${user.age || '<span class="empty">Not set</span>'}</td>
+                                    <td>${user.risk_preference || '<span class="empty">Not set</span>'}</td>
+                                    <td>${user.return_estimate || '<span class="empty">Not set</span>'}</td>
+                                    <td><span class="badge ${user.email_verified ? 'verified' : ''}">${user.email_verified ? 'Yes' : 'No'}</span></td>
+                                    <td>${new Date(user.created_at).toLocaleString()}</td>
                                 </tr>
-                            \`).join('')}
+                            `).join('')}
                         </table>
-                    \` : '<p class="empty">No users found</p>';
+                    ` : '<p class="empty">No users found</p>';
 
                     // Render investments table
-                    const investmentsHtml = investments.length ? \`
+                    const investmentsHtml = investments.length ? `
                         <table>
                             <tr><th>ID</th><th>User ID</th><th>Investment Type</th></tr>
-                            \${investments.map(inv => \`
+                            ${investments.map(inv => `
                                 <tr>
-                                    <td>\${inv.id}</td>
-                                    <td>\${inv.user_id}</td>
-                                    <td>\${inv.investment_type}</td>
+                                    <td>${inv.id}</td>
+                                    <td>${inv.user_id}</td>
+                                    <td>${inv.investment_type}</td>
                                 </tr>
-                            \`).join('')}
+                            `).join('')}
                         </table>
-                    \` : '<p class="empty">No investments found</p>';
+                    ` : '<p class="empty">No investments found</p>';
 
                     // Render objectives table
-                    const objectivesHtml = objectives.length ? \`
+                    const objectivesHtml = objectives.length ? `
                         <table>
                             <tr><th>ID</th><th>User ID</th><th>Objective</th></tr>
-                            \${objectives.map(obj => \`
+                            ${objectives.map(obj => `
                                 <tr>
-                                    <td>\${obj.id}</td>
-                                    <td>\${obj.user_id}</td>
-                                    <td>\${obj.objective}</td>
+                                    <td>${obj.id}</td>
+                                    <td>${obj.user_id}</td>
+                                    <td>${obj.objective}</td>
                                 </tr>
-                            \`).join('')}
+                            `).join('')}
                         </table>
-                    \` : '<p class="empty">No objectives found</p>';
+                    ` : '<p class="empty">No objectives found</p>';
 
                     // Render portfolio table
-                    const portfolioHtml = portfolio.length ? \`
+                    const portfolioHtml = portfolio.length ? `
                         <table>
                             <tr><th>ID</th><th>User</th><th>Name</th><th>Category</th><th>Amount</th><th>Date</th><th>Symbol</th><th>Created</th></tr>
-                            \${portfolio.map(holding => \`
+                            ${portfolio.map(holding => `
                                 <tr>
-                                    <td>\${holding.id}</td>
-                                    <td>\${holding.user_id}</td>
-                                    <td>\${holding.name}</td>
-                                    <td><span class="badge">\${holding.category}</span></td>
-                                    <td>₹\${holding.amount.toLocaleString()}</td>
-                                    <td>\${holding.date}</td>
-                                    <td>\${holding.symbol || '<span class="empty">None</span>'}</td>
-                                    <td>\${new Date(holding.created_at).toLocaleString()}</td>
+                                    <td>${holding.id}</td>
+                                    <td>${holding.user_id}</td>
+                                    <td>${holding.name}</td>
+                                    <td><span class="badge">${holding.category}</span></td>
+                                    <td>₹${holding.amount.toLocaleString()}</td>
+                                    <td>${holding.date}</td>
+                                    <td>${holding.symbol || '<span class="empty">None</span>'}</td>
+                                    <td>${new Date(holding.created_at).toLocaleString()}</td>
                                 </tr>
-                            \`).join('')}
+                            `).join('')}
                         </table>
-                    \` : '<p class="empty">No portfolio holdings found</p>';
+                    ` : '<p class="empty">No portfolio holdings found</p>';
 
                     document.getElementById('users-table').innerHTML = usersHtml;
                     document.getElementById('investments-table').innerHTML = investmentsHtml;
@@ -147,38 +157,45 @@ router.get('/', (req, res) => {
         </script>
     </body>
     </html>
-  `;
-  
-  res.send(html);
-});
+    """
+    return html
 
-// API endpoints for the viewer
-router.get('/users', (req, res) => {
-  db.all("SELECT * FROM users ORDER BY created_at DESC", (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
-});
+@db_blue_print.route('/users', methods=['GET'])
+def get_users():
+    try:
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM users ORDER BY created_at DESC")
+        users = cursor.fetchall()
+        return jsonify([dict(user) for user in users])
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
-router.get('/investments', (req, res) => {
-  db.all("SELECT * FROM user_investments", (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
-});
+@db_blue_print.route('/investments', methods=['GET'])
+def get_investments():
+    try:
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM user_investments")
+        investments = cursor.fetchall()
+        return jsonify([dict(investment) for investment in investments])
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
-router.get('/objectives', (req, res) => {
-  db.all("SELECT * FROM user_objectives", (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
-});
+@db_blue_print.route('/objectives', methods=['GET'])
+def get_objectives():
+    try:
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM user_objectives")
+        objectives = cursor.fetchall()
+        return jsonify([dict(objective) for objective in objectives])
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
-router.get('/portfolio', (req, res) => {
-  db.all("SELECT * FROM portfolio_holdings ORDER BY created_at DESC", (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
-});
-
-export default router;
+@db_blue_print.route('/portfolio', methods=['GET'])
+def get_portfolio():
+    try:
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM portfolio_holdings ORDER BY created_at DESC")
+        portfolio = cursor.fetchall()
+        return jsonify([dict(holding) for holding in portfolio])
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

@@ -14,7 +14,7 @@ db.all("SELECT * FROM users", (err, users) => {
     return;
   }
   
-  console.log('👥 USERS TABLE:');
+  console.log('USERS TABLE:');
   console.log('================');
   if (users.length === 0) {
     console.log('No users found.\n');
@@ -40,7 +40,7 @@ db.all("SELECT * FROM users", (err, users) => {
       return;
     }
     
-    console.log('\n💰 USER INVESTMENTS:');
+    console.log('\nUSER INVESTMENTS:');
     console.log('====================');
     if (investments.length === 0) {
       console.log('No investments found.\n');
@@ -57,7 +57,7 @@ db.all("SELECT * FROM users", (err, users) => {
         return;
       }
       
-      console.log('\n🎯 USER OBJECTIVES:');
+      console.log('\n USER OBJECTIVES:');
       console.log('===================');
       if (objectives.length === 0) {
         console.log('No objectives found.\n');
@@ -67,7 +67,7 @@ db.all("SELECT * FROM users", (err, users) => {
         });
       }
       
-      console.log('\n✅ Database view complete!');
+      console.log('\n Database view complete!');
       db.close();
     });
   });
