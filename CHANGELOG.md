@@ -171,3 +171,15 @@
 - requirements.txt
   - version removal in ai-services
   - pytest llm support package
+
+## [0.3.6] - 2026-02-05
+### Frontend Changes
+- Chat UI update
+  - Chat history panel addition
+  - Chat history panel design update
+  - Chat history panel functionality update
+### Backend Changes
+- Chat history panel update
+  - Chat history panel design update
+  - Chat history panel functionality update
+
