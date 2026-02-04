@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import OnboardingPage from './pages/onboarding.tsx';
 import Portfolio from './pages/Portfolio.tsx';
+import AiAgent from './pages/AiAgent.tsx';
+import Sidebar from './components/Sidebar.tsx';
+import { PanelLeftOpen } from './components/Icons.tsx';
 
 // Login Component
-const Login = ({ onLogin }: { 
+const Login = ({ onLogin }: {
   onLogin: () => void;
 }) => {
   const navigate = useNavigate();
@@ -48,16 +51,16 @@ const Login = ({ onLogin }: {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     try {
-      const response = await fetch('http://localhost:8000/api/users/login', {
+      const response = await fetch('http://localhost:5000/api/users/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
-      
+
       const data = await response.json();
-      
+
       if (response.ok) {
         localStorage.setItem('userId', data.user.id.toString());
         localStorage.setItem('userData', JSON.stringify(data.user));
@@ -70,13 +73,13 @@ const Login = ({ onLogin }: {
       console.error('Login error:', error);
       alert('Login failed. Please try again.');
     }
-    
+
     setIsLoading(false);
   };
 
   const handleQuickLogin = () => {
     setIsLoading(true);
-    
+
     // Create sample guest user data
     const guestUserId = 999; // Special ID for guest users
     const guestUserData = {
@@ -85,13 +88,13 @@ const Login = ({ onLogin }: {
       name: 'Demo User',
       emailVerified: true
     };
-    
+
     // Set localStorage similar to signup
     localStorage.setItem('userId', guestUserId.toString());
     localStorage.setItem('userEmail', 'guest@finarth.demo');
     localStorage.setItem('userData', JSON.stringify(guestUserData));
     localStorage.setItem('onboardingCompleted', 'false');
-    
+
     setTimeout(() => {
       setIsLoading(false);
       onLogin();
@@ -206,7 +209,7 @@ const Login = ({ onLogin }: {
 
           <p className="mt-6 text-center text-sm text-stone-600">
             Don't have an account?{' '}
-            <button 
+            <button
               onClick={() => navigate('/signup')}
               className="text-stone-700 hover:text-stone-900 font-medium transition-colors"
             >
@@ -220,7 +223,7 @@ const Login = ({ onLogin }: {
 };
 
 // Signup Component
-const Signup = ({ onSignup }: { 
+const Signup = ({ onSignup }: {
   onSignup: () => void;
 }) => {
   const navigate = useNavigate();
@@ -266,28 +269,28 @@ const Signup = ({ onSignup }: {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
+
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
-    
+
     if (password.length < 6) {
       setError('Password must be at least 6 characters long');
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     try {
-      const response = await fetch('http://localhost:8000/api/users/register', {
+      const response = await fetch('http://localhost:5000/api/users/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
-      
+
       const data = await response.json();
-      
+
       if (response.ok) {
         localStorage.setItem('userId', data.userId.toString());
         localStorage.setItem('userEmail', email);
@@ -299,7 +302,7 @@ const Signup = ({ onSignup }: {
       console.error('Signup error:', error);
       setError('Registration failed. Please try again.');
     }
-    
+
     setIsLoading(false);
   };
 
@@ -321,7 +324,7 @@ const Signup = ({ onSignup }: {
               {error}
             </div>
           )}
-          
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-stone-700 mb-2">
@@ -412,7 +415,7 @@ const Signup = ({ onSignup }: {
 
           <p className="mt-6 text-center text-sm text-stone-600">
             Already have an account?{' '}
-            <button 
+            <button
               onClick={() => navigate('/login')}
               className="text-stone-700 hover:text-stone-900 font-medium transition-colors"
             >
@@ -431,24 +434,16 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('overview');
   const [userName, setUserName] = useState('User');
-  
-  type Message = {
-    id: number;
-    type: 'bot' | 'user';
-    content: string;
-    timestamp: Date;
-  };
+  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
 
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [inputMessage, setInputMessage] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
+  // State removed
 
   useEffect(() => {
     // Load user name from localStorage
     const userData = localStorage.getItem('userData');
     const userId = localStorage.getItem('userId');
     let currentUserName = 'User';
-    
+
     if (userData) {
       const user = JSON.parse(userData);
       // Check if it's demo user (ID 999) or regular user
@@ -460,7 +455,7 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
       setUserName(currentUserName);
     } else if (userId && userId !== '999') {
       // Try to fetch user data if we have userId but no userData
-      fetch(`http://localhost:8000/api/users/${userId}`)
+      fetch(`http://localhost:5000/api/users/${userId}`)
         .then(res => res.json())
         .then(user => {
           if (user.name) {
@@ -470,16 +465,7 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
         })
         .catch(() => setUserName('User'));
     }
-    
-    // Initialize welcome message with user name
-    const welcomeMessage = {
-      id: 1,
-      type: 'bot' as const,
-      content: `Hello${currentUserName !== 'User' ? ` ${currentUserName}` : ''}! I'm your AI financial advisor. I can help you with investment planning, goal setting, and portfolio optimization. What would you like to discuss today?`,
-      timestamp: new Date(Date.now() - 300000)
-    };
-    setMessages([welcomeMessage]);
-    
+
     const path = location.pathname;
     if (path.startsWith('/dashboard/')) {
       const tab = path.split('/dashboard/')[1] || 'overview';
@@ -489,120 +475,17 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
     }
   }, [location]);
 
-  const handleTabChange = (tabId: string) => {
-    setActiveTab(tabId);
-    navigate(`/dashboard/${tabId}`);
-  };
 
 
 
-  const Home = ({ size = 20 }) => (
-    <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-    </svg>
-  );
 
-  const TrendingUp = ({ size = 20 }) => (
-    <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-    </svg>
-  );
+  // Local icons removed
 
-  const User = ({ size = 20 }) => (
-    <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-    </svg>
-  );
 
-  const Send = ({ size = 20 }) => (
-    <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-    </svg>
-  );
+  // menuItems removed
 
-  const menuItems = [
-    { id: 'overview', label: 'Overview', icon: Home },
-    { id: 'portfolio', label: 'Portfolio', icon: TrendingUp },
-    { id: 'goals', label: 'Goals', icon: Target },
-    { id: 'agent', label: 'AI Agent', icon: Bot },
-  ];
+  // sendMessage removed
 
-  const sendMessage = async () => {
-    if (!inputMessage.trim()) return;
-
-    const userMessage: Message = {
-      id: messages.length + 1,
-      type: 'user' as const,
-      content: inputMessage,
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    const currentInput = inputMessage;
-    setInputMessage('');
-    setIsTyping(true);
-
-    try {
-      // Get userId from localStorage
-      const userId = localStorage.getItem('userId');
-      const userIdNum = userId ? parseInt(userId) : null;
-      
-      // Call ReAct agent API
-      const response = await fetch('http://localhost:8000/api/agent/generate-insight', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          query: currentInput,
-          userId: userIdNum
-        })
-      });
-
-      const data = await response.json();
-      
-      if (data.success) {
-        // Add reasoning steps as separate messages
-        const stepMessages: Message[] = data.data.steps.map((step: any, index: number) => ({
-          id: messages.length + 2 + index,
-          type: 'bot' as const,
-          content: `**Step ${index + 1}**\n\n**Thought:** ${step.thought}${step.action ? `\n\n**Action:** ${step.action}` : ''}${step.observation ? `\n\n**Observation:** ${step.observation}` : ''}`,
-          timestamp: new Date()
-        }));
-
-        // Add final answer
-        const finalMessage: Message = {
-          id: messages.length + 2 + data.data.steps.length,
-          type: 'bot' as const,
-          content: `**Final Answer:**\n\n${data.data.finalAnswer}`,
-          timestamp: new Date()
-        };
-
-        setMessages(prev => [...prev, ...stepMessages, finalMessage]);
-      } else {
-        throw new Error(data.error || 'Failed to get response');
-      }
-    } catch (error) {
-      console.error('Error calling ReAct agent:', error);
-      const errorMessage: Message = {
-        id: messages.length + 2,
-        type: 'bot' as const,
-        content: "I apologize, but I'm having trouble processing your request right now. Please try again later.",
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, errorMessage]);
-    }
-    
-    setIsTyping(false);
-  };
-
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: true 
-    });
-  };
 
   const renderOverview = () => {
     const stats = [
@@ -614,14 +497,17 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
 
     return (
       <div className="space-y-6">
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-stone-900 mb-2">Welcome Back</h2>
+          <p className="text-stone-600">Monitor your financial progress and portfolio performance</p>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, i) => (
             <div key={i} className="bg-white p-6 border-l-4 border-stone-600 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-sm font-medium text-stone-600 uppercase tracking-wide">{stat.label}</p>
-                <span className={`text-xs px-2 py-1 font-mono ${
-                  stat.positive ? 'bg-stone-100 text-stone-700' : 'bg-stone-100 text-stone-700'
-                }`}>
+                <span className={`text-xs px-2 py-1 font-mono ${stat.positive ? 'bg-stone-100 text-stone-700' : 'bg-stone-100 text-stone-700'
+                  }`}>
                   {stat.change}
                 </span>
               </div>
@@ -667,7 +553,7 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
                     <span className="text-sm text-stone-600 font-mono">₹{goal.current}L / ₹{goal.target}L</span>
                   </div>
                   <div className="w-full bg-stone-200 h-2">
-                    <div 
+                    <div
                       className="bg-stone-700 h-2 transition-all duration-500"
                       style={{ width: `${goal.progress}%` }}
                     />
@@ -682,95 +568,7 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
     );
   };
 
-  const renderAgent = () => (
-    <div className="bg-white border border-stone-200 shadow-sm h-[600px] flex flex-col">
-      <div className="p-6 border-b border-stone-200 bg-stone-50">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 bg-stone-800 flex items-center justify-center">
-              <Bot size={20} />
-            </div>
-            <div>
-              <h3 className="font-semibold text-stone-900">FinArth AI Agent</h3>
-              <p className="text-sm text-stone-600 flex items-center gap-1">
-                <span className="h-2 w-2 bg-stone-600 rounded-full"></span>
-                Online
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={() => {
-              const query = "What are key risks in this project plan?";
-              setInputMessage(query);
-              setTimeout(() => sendMessage(), 100);
-            }}
-            className="px-4 py-2 bg-stone-800 text-stone-50 text-sm rounded-lg hover:bg-stone-900 transition-colors"
-          >
-            Analyze Risks
-          </button>
-        </div>
-      </div>
-
-      <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-stone-25">
-        {messages.map((message) => (
-          <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-[80%] border ${
-              message.type === 'user' 
-                ? 'bg-stone-800 text-stone-50 border-stone-700' 
-                : 'bg-white text-stone-900 border-stone-200'
-            } px-4 py-3`}>
-              <div className="text-sm whitespace-pre-wrap">
-                {message.content.split('**').map((part, index) => 
-                  index % 2 === 1 ? <strong key={index}>{part}</strong> : part
-                )}
-              </div>
-              <p className={`text-xs mt-1 font-mono ${
-                message.type === 'user' ? 'text-stone-300' : 'text-stone-500'
-              }`}>
-                {formatTime(message.timestamp)}
-              </p>
-            </div>
-          </div>
-        ))}
-        
-        {isTyping && (
-          <div className="flex justify-start">
-            <div className="bg-white border border-stone-200 px-4 py-3">
-              <div className="flex space-x-1">
-                <div className="h-2 w-2 bg-stone-400 animate-bounce"></div>
-                <div className="h-2 w-2 bg-stone-400 animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                <div className="h-2 w-2 bg-stone-400 animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className="p-6 border-t border-stone-200 bg-stone-50">
-        <div className="flex gap-3">
-          <input
-            type="text"
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && !isTyping && sendMessage()}
-            placeholder="Ask me about your investments, goals, or financial planning..."
-            className="flex-1 px-4 py-3 border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-500 focus:border-stone-500"
-            disabled={isTyping}
-          />
-          <button
-            onClick={sendMessage}
-            disabled={!inputMessage.trim() || isTyping}
-            className="px-4 py-3 bg-stone-800 text-stone-50 hover:bg-stone-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            <Send size={20} />
-          </button>
-        </div>
-        <p className="text-xs text-stone-500 mt-2 font-mono">
-          AI responses are for educational purposes only. Always consult with qualified financial advisors.
-        </p>
-      </div>
-    </div>
-  );
+  // renderAgent removed
 
   const renderContent = () => {
     switch (activeTab) {
@@ -778,8 +576,19 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
         return renderOverview();
       case 'portfolio':
         return <Portfolio />;
-      case 'agent':
-        return renderAgent();
+      case 'goals':
+        return (
+          <div className="space-y-6">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-stone-900 mb-2">Life Goals</h2>
+              <p className="text-stone-600">Track and plan your financial goals</p>
+            </div>
+            <div className="bg-white p-8 border border-stone-200 shadow-sm">
+              <h3 className="text-xl font-semibold text-stone-900 border-b border-stone-200 pb-2 mb-4">Goal Progress</h3>
+              <p className="text-stone-600">You have 3 active goals. You're on track to reach your House Purchase goal by 2026.</p>
+            </div>
+          </div>
+        );
       default:
         return <div className="bg-white p-8 border border-stone-200 shadow-sm"><h2 className="text-xl font-semibold text-stone-900 border-b border-stone-200 pb-2 mb-4">Coming Soon</h2><p className="text-stone-600">This feature is under development.</p></div>;
     }
@@ -787,75 +596,32 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
 
   return (
     <>
-      <div className="min-h-screen bg-stone-100 flex">
-      <div className="w-64 bg-white border-r border-stone-200 flex flex-col">
-        <div className="p-6 border-b border-stone-200">
-          <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="FinArth" className="h-8 w-8" />
-            <span className="text-xl font-bold text-stone-900">FinArth</span>
-          </div>
-        </div>
-        
-        <nav className="flex-1 p-4">
-          <ul className="space-y-2">
-            {menuItems.map((item) => (
-              <li key={item.id}>
-                <button
-                  onClick={() => handleTabChange(item.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all ${
-                    activeTab === item.id
-                      ? 'bg-stone-100 text-stone-900 border border-stone-200'
-                      : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'
-                  }`}
-                >
-                  <item.icon size={20} />
-                  <span className="font-medium">{item.label}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        
-        <div className="p-4 border-t border-stone-200">
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-stone-50 mb-3">
-            <div className="h-8 w-8 bg-stone-300 rounded-full flex items-center justify-center">
-              <User size={16} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-stone-900 truncate">{userName}</p>
-              <p className="text-xs text-stone-500">Premium Plan</p>
+      <div className="min-h-screen bg-stone-50 flex overflow-hidden">
+        <Sidebar
+          isSidebarVisible={isSidebarVisible}
+          setIsSidebarVisible={setIsSidebarVisible}
+          userName={userName}
+          onLogout={onLogout}
+        />
+
+        <main className="flex-1 p-8 overflow-y-auto relative min-h-screen">
+          {!isSidebarVisible && (
+            <button
+              onClick={() => setIsSidebarVisible(true)}
+              className="fixed top-8 left-8 p-2 hover:bg-stone-200 rounded-lg transition-colors border border-stone-200 bg-white z-30 shadow-sm"
+              title="Show Sidebar"
+            >
+              <PanelLeftOpen size={20} />
+            </button>
+          )}
+
+          <div className="flex-1 overflow-y-auto p-8">
+            <div className="max-w-7xl mx-auto">
+              {renderContent()}
             </div>
           </div>
-          <button
-            onClick={onLogout}
-            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-50 rounded-lg transition-colors"
-          >
-            <LogOut size={16} />
-            <span>Logout</span>
-          </button>
-        </div>
+        </main>
       </div>
-      
-      <main className="flex-1 p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-stone-900 mb-2">
-              {activeTab === 'overview' && 'Dashboard Overview'}
-              {activeTab === 'portfolio' && 'Portfolio Management'}
-              {activeTab === 'goals' && 'Financial Goals'}
-              {activeTab === 'agent' && 'AI Financial Agent'}
-            </h1>
-            <p className="text-stone-600">
-              {activeTab === 'overview' && 'Monitor your financial progress and portfolio performance'}
-              {activeTab === 'portfolio' && 'Manage your investment portfolio and asset allocation'}
-              {activeTab === 'goals' && 'Track and plan your financial goals'}
-              {activeTab === 'agent' && 'Chat with your AI financial advisor for personalized guidance'}
-            </p>
-          </div>
-          {renderContent()}
-        </div>
-      </main>
-    </div>
     </>
   );
 };
@@ -899,11 +665,7 @@ const Bot = ({ size = 24 }) => (
 
 
 
-const LogOut = ({ size = 16 }) => (
-  <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-  </svg>
-);
+
 
 const CheckCircle = ({ size = 24 }) => (
   <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -916,19 +678,19 @@ const Navbar = ({ onGetStarted, isConnecting }: { onGetStarted: () => void; isCo
     {/* Navbar design elements */}
     <div className="absolute top-2 right-20 w-4 h-4 border border-stone-400/20 rotate-45 animate-pulse" />
     <div className="absolute top-3 left-32 w-2 h-2 bg-blue-400/30 rounded-full animate-ping" style={{ animationDelay: '1s' }} />
-    
+
     <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between relative z-10">
       <div className="flex items-center gap-2">
         <img src="/logo.png" alt="FinArth" className="h-8 w-8" />
         <span className="text-xl font-bold text-stone-900">FinArth</span>
       </div>
-      
+
       <div className="hidden md:flex items-center gap-8 text-sm font-medium text-stone-700">
         <a href="#features" className="hover:text-stone-900 transition-colors">Features</a>
         <a href="#how-it-works" className="hover:text-stone-900 transition-colors">How it Works</a>
       </div>
 
-      <button 
+      <button
         onClick={onGetStarted}
         disabled={isConnecting}
         className="flex items-center gap-2 px-4 py-2 rounded-lg bg-stone-800 hover:bg-stone-900 shadow-sm transition-all text-sm font-medium text-stone-50 disabled:opacity-50"
@@ -941,7 +703,7 @@ const Navbar = ({ onGetStarted, isConnecting }: { onGetStarted: () => void; isCo
 
 const Hero = ({ onGetStarted, isConnecting }: { onGetStarted: () => void; isConnecting: boolean }) => {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  
+
 
 
   useEffect(() => {
@@ -953,65 +715,65 @@ const Hero = ({ onGetStarted, isConnecting }: { onGetStarted: () => void; isConn
   }, []);
 
   return (
-  <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden perspective-1000">
-    <div 
-      className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-stone-200/30 rounded-full blur-[120px] -z-10 transition-transform duration-1000 ease-out"
-      style={{
-        transform: `translate(-50%, ${mousePos.y * 0.02}px) rotateX(${mousePos.y * 0.01}deg) rotateY(${mousePos.x * 0.01}deg)`
-      }}
-    />
-    
-    {/* Hero design elements */}
-    <div className="absolute top-40 left-16 w-20 h-20 border-2 border-purple-400/20 rounded-full animate-spin" style={{ animationDuration: '15s' }} />
-    <div className="absolute top-60 right-20 w-16 h-16 bg-gradient-to-br from-blue-400/20 to-green-400/20 rotate-45 animate-pulse" />
-    <div className="absolute bottom-32 left-1/4 w-12 h-12 border border-dashed border-orange-400/30 animate-bounce" />
-    <div className="absolute top-1/3 right-1/3 w-6 h-6 bg-pink-400/40 rounded-full animate-ping" style={{ animationDelay: '2s' }} />
+    <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden perspective-1000">
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-stone-200/30 rounded-full blur-[120px] -z-10 transition-transform duration-1000 ease-out"
+        style={{
+          transform: `translate(-50%, ${mousePos.y * 0.02}px) rotateX(${mousePos.y * 0.01}deg) rotateY(${mousePos.x * 0.01}deg)`
+        }}
+      />
 
-    <div className="max-w-7xl mx-auto px-6 text-center">
-      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-stone-200/50 border border-stone-300/30 text-stone-700 text-sm font-medium mb-8 scroll-animate">
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-stone-600 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-stone-700"></span>
-        </span>
-        AI-Powered Financial Planning
+      {/* Hero design elements */}
+      <div className="absolute top-40 left-16 w-20 h-20 border-2 border-purple-400/20 rounded-full animate-spin" style={{ animationDuration: '15s' }} />
+      <div className="absolute top-60 right-20 w-16 h-16 bg-gradient-to-br from-blue-400/20 to-green-400/20 rotate-45 animate-pulse" />
+      <div className="absolute bottom-32 left-1/4 w-12 h-12 border border-dashed border-orange-400/30 animate-bounce" />
+      <div className="absolute top-1/3 right-1/3 w-6 h-6 bg-pink-400/40 rounded-full animate-ping" style={{ animationDelay: '2s' }} />
+
+      <div className="max-w-7xl mx-auto px-6 text-center">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-stone-200/50 border border-stone-300/30 text-stone-700 text-sm font-medium mb-8 scroll-animate">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-stone-600 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-stone-700"></span>
+          </span>
+          AI-Powered Financial Planning
+        </div>
+
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-stone-900 mb-6 scroll-animate">
+          Financial Confidence <br />
+          <span className="text-stone-700">
+            Engine
+          </span>
+        </h1>
+
+        <p className="text-lg md:text-xl text-stone-600 max-w-2xl mx-auto mb-10 leading-relaxed scroll-animate">
+          Convert your life goals into safe, automated, and understandable financial action.
+          No fear, no confusion, just confident progress toward what matters to you.
+        </p>
+
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4 scroll-animate">
+          <button
+            onClick={onGetStarted}
+            disabled={isConnecting}
+            className="w-full md:w-auto px-8 py-4 rounded-lg bg-stone-900 text-stone-50 font-bold hover:bg-stone-800 transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-sm"
+          >
+            {isConnecting ? 'Loading...' : 'Start Planning'} <ArrowRight size={18} />
+          </button>
+          <button
+            className="w-full md:w-auto px-8 py-4 rounded-lg bg-stone-100 text-stone-900 font-medium hover:bg-stone-200 border border-stone-300 transition-all flex items-center justify-center gap-2"
+            onClick={() => {
+              document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+          >
+            See Example Plan
+          </button>
+        </div>
+
+        {/* Trust indicators */}
+        <div className="mt-12 flex flex-col items-center gap-4 scroll-animate">
+          <p className="text-sm text-stone-500">Trusted by 10,000+ investors</p>
+        </div>
       </div>
-
-      <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-stone-900 mb-6 scroll-animate">
-        Financial Confidence <br />
-        <span className="text-stone-700">
-          Engine
-        </span>
-      </h1>
-
-      <p className="text-lg md:text-xl text-stone-600 max-w-2xl mx-auto mb-10 leading-relaxed scroll-animate">
-        Convert your life goals into safe, automated, and understandable financial action. 
-        No fear, no confusion, just confident progress toward what matters to you.
-      </p>
-
-      <div className="flex flex-col md:flex-row items-center justify-center gap-4 scroll-animate">
-        <button 
-          onClick={onGetStarted}
-          disabled={isConnecting}
-          className="w-full md:w-auto px-8 py-4 rounded-lg bg-stone-900 text-stone-50 font-bold hover:bg-stone-800 transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-sm"
-        >
-          {isConnecting ? 'Loading...' : 'Start Planning'} <ArrowRight size={18} />
-        </button>
-        <button 
-          className="w-full md:w-auto px-8 py-4 rounded-lg bg-stone-100 text-stone-900 font-medium hover:bg-stone-200 border border-stone-300 transition-all flex items-center justify-center gap-2"
-          onClick={() => {
-            document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
-          }}
-        >
-           See Example Plan
-        </button>
-      </div>
-
-      {/* Trust indicators */}
-      <div className="mt-12 flex flex-col items-center gap-4 scroll-animate">
-        <p className="text-sm text-stone-500">Trusted by 10,000+ investors</p>
-      </div>
-    </div>
-  </section>
+    </section>
   );
 };
 
@@ -1019,111 +781,111 @@ const FeatureBento = () => {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
   return (
-  <section id="features" className="py-24 bg-stone-50 relative overflow-hidden">
-    <div className="absolute inset-0 bg-gradient-to-b from-stone-50 via-stone-100/50 to-stone-50" />
-    
-    {/* FeatureBento design elements */}
-    <div className="absolute top-16 left-20 w-32 h-32 border-2 border-indigo-400/25 rotate-12 animate-spin" style={{ animationDuration: '18s' }} />
-    <div className="absolute top-40 right-24 w-24 h-24 bg-gradient-to-br from-teal-400/30 to-cyan-400/30 rounded-full animate-pulse" />
-    <div className="absolute bottom-28 left-1/5 w-16 h-16 border border-dashed border-rose-400/40 rotate-45 animate-bounce" />
-    <div className="absolute top-1/4 right-1/3 w-18 h-18 bg-amber-400/25 animate-ping" style={{ animationDelay: '2s', clipPath: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)' }} />
-    
-    <div className="max-w-7xl mx-auto px-6 relative z-10">
-      <div className="text-center mb-16 scroll-animate">
-        <h2 className="text-3xl md:text-4xl font-bold text-stone-900 mb-4 transform-gpu hover:scale-105 transition-all duration-300">Why Choose FinArth?</h2>
-        <p className="text-stone-600">Our Financial Confidence Engine solves real problems with four core components.</p>
-      </div>
+    <section id="features" className="py-24 bg-stone-50 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-stone-50 via-stone-100/50 to-stone-50" />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div 
-          className="md:col-span-2 p-8 rounded-3xl bg-white border border-stone-200 hover:border-blue-400/50 transition-all group relative overflow-hidden transform-gpu hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-400/10 scroll-animate"
-          onMouseEnter={() => setHoveredCard(0)}
-          onMouseLeave={() => setHoveredCard(null)}
-          style={{
-            transform: hoveredCard === 0 ? 'rotateX(2deg) rotateY(-2deg) scale(1.02)' : 'rotateX(0deg) rotateY(0deg) scale(1)',
-            transformStyle: 'preserve-3d'
-          }}
-        >
-          <div className="relative z-10">
-            <div className="h-12 w-12 bg-stone-100 rounded-xl flex items-center justify-center text-stone-600 mb-6 transform-gpu group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
-              <Bot size={24} />
-            </div>
-            <h3 className="text-2xl font-bold text-stone-900 mb-2">The Conversational Guide</h3>
-            <p className="text-stone-600 max-w-md">
-              Explains finance in plain language, answers "Should I?" questions, and understands your unique situation.
-            </p>
-          </div>
-          <div className="absolute right-0 bottom-0 w-64 h-64 bg-gradient-to-tl from-blue-100/30 to-transparent opacity-50 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110 group-hover:rotate-12" />
+      {/* FeatureBento design elements */}
+      <div className="absolute top-16 left-20 w-32 h-32 border-2 border-indigo-400/25 rotate-12 animate-spin" style={{ animationDuration: '18s' }} />
+      <div className="absolute top-40 right-24 w-24 h-24 bg-gradient-to-br from-teal-400/30 to-cyan-400/30 rounded-full animate-pulse" />
+      <div className="absolute bottom-28 left-1/5 w-16 h-16 border border-dashed border-rose-400/40 rotate-45 animate-bounce" />
+      <div className="absolute top-1/4 right-1/3 w-18 h-18 bg-amber-400/25 animate-ping" style={{ animationDelay: '2s', clipPath: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)' }} />
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="text-center mb-16 scroll-animate">
+          <h2 className="text-3xl md:text-4xl font-bold text-stone-900 mb-4 transform-gpu hover:scale-105 transition-all duration-300">Why Choose FinArth?</h2>
+          <p className="text-stone-600">Our Financial Confidence Engine solves real problems with four core components.</p>
         </div>
 
-        <div 
-          className="md:row-span-2 p-8 rounded-3xl bg-white border border-stone-200 hover:border-purple-400/50 transition-all group transform-gpu hover:scale-[1.02] hover:shadow-xl hover:shadow-purple-400/10 scroll-animate"
-          onMouseEnter={() => setHoveredCard(1)}
-          onMouseLeave={() => setHoveredCard(null)}
-          style={{
-            transform: hoveredCard === 1 ? 'rotateX(-2deg) rotateY(2deg) scale(1.02)' : 'rotateX(0deg) rotateY(0deg) scale(1)',
-            transformStyle: 'preserve-3d'
-          }}
-        >
-          <div className="h-12 w-12 bg-stone-100 rounded-xl flex items-center justify-center text-stone-700 mb-6 transform-gpu group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
-            <Target size={24} />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div
+            className="md:col-span-2 p-8 rounded-3xl bg-white border border-stone-200 hover:border-blue-400/50 transition-all group relative overflow-hidden transform-gpu hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-400/10 scroll-animate"
+            onMouseEnter={() => setHoveredCard(0)}
+            onMouseLeave={() => setHoveredCard(null)}
+            style={{
+              transform: hoveredCard === 0 ? 'rotateX(2deg) rotateY(-2deg) scale(1.02)' : 'rotateX(0deg) rotateY(0deg) scale(1)',
+              transformStyle: 'preserve-3d'
+            }}
+          >
+            <div className="relative z-10">
+              <div className="h-12 w-12 bg-stone-100 rounded-xl flex items-center justify-center text-stone-600 mb-6 transform-gpu group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
+                <Bot size={24} />
+              </div>
+              <h3 className="text-2xl font-bold text-stone-900 mb-2">The Conversational Guide</h3>
+              <p className="text-stone-600 max-w-md">
+                Explains finance in plain language, answers "Should I?" questions, and understands your unique situation.
+              </p>
+            </div>
+            <div className="absolute right-0 bottom-0 w-64 h-64 bg-gradient-to-tl from-blue-100/30 to-transparent opacity-50 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110 group-hover:rotate-12" />
           </div>
-          <h3 className="text-2xl font-bold text-stone-900 mb-2">The Goal Architect</h3>
-          <p className="text-stone-600 mb-6">
-            Converts dreams into executable plans with risk-tailored strategies and multiple achievement pathways.
-          </p>
-          <div className="bg-stone-50 p-4 rounded-xl border border-stone-200 transform-gpu group-hover:scale-105 transition-all duration-300">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-stone-400 to-stone-600 animate-pulse" />
-              <div>
-                <div className="text-sm font-bold text-stone-900">House Goal</div>
-                <div className="text-xs text-stone-500">₹50L • 7 Years • Frontier</div>
+
+          <div
+            className="md:row-span-2 p-8 rounded-3xl bg-white border border-stone-200 hover:border-purple-400/50 transition-all group transform-gpu hover:scale-[1.02] hover:shadow-xl hover:shadow-purple-400/10 scroll-animate"
+            onMouseEnter={() => setHoveredCard(1)}
+            onMouseLeave={() => setHoveredCard(null)}
+            style={{
+              transform: hoveredCard === 1 ? 'rotateX(-2deg) rotateY(2deg) scale(1.02)' : 'rotateX(0deg) rotateY(0deg) scale(1)',
+              transformStyle: 'preserve-3d'
+            }}
+          >
+            <div className="h-12 w-12 bg-stone-100 rounded-xl flex items-center justify-center text-stone-700 mb-6 transform-gpu group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
+              <Target size={24} />
+            </div>
+            <h3 className="text-2xl font-bold text-stone-900 mb-2">The Goal Architect</h3>
+            <p className="text-stone-600 mb-6">
+              Converts dreams into executable plans with risk-tailored strategies and multiple achievement pathways.
+            </p>
+            <div className="bg-stone-50 p-4 rounded-xl border border-stone-200 transform-gpu group-hover:scale-105 transition-all duration-300">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-stone-400 to-stone-600 animate-pulse" />
+                <div>
+                  <div className="text-sm font-bold text-stone-900">House Goal</div>
+                  <div className="text-xs text-stone-500">₹50L • 7 Years • Frontier</div>
+                </div>
+              </div>
+              <div className="h-2 w-full bg-stone-200 rounded-full overflow-hidden">
+                <div className="h-full w-3/4 bg-stone-600 animate-pulse" />
               </div>
             </div>
-            <div className="h-2 w-full bg-stone-200 rounded-full overflow-hidden">
-              <div className="h-full w-3/4 bg-stone-600 animate-pulse" />
+          </div>
+
+          <div
+            className="p-8 rounded-3xl bg-white border border-stone-200 hover:border-green-400/50 transition-all transform-gpu hover:scale-[1.02] hover:shadow-xl hover:shadow-green-400/10 scroll-animate"
+            onMouseEnter={() => setHoveredCard(2)}
+            onMouseLeave={() => setHoveredCard(null)}
+            style={{
+              transform: hoveredCard === 2 ? 'rotateX(2deg) rotateY(2deg) scale(1.02)' : 'rotateX(0deg) rotateY(0deg) scale(1)',
+              transformStyle: 'preserve-3d'
+            }}
+          >
+            <div className="h-12 w-12 bg-stone-100 rounded-xl flex items-center justify-center text-stone-700 mb-6 transform-gpu hover:scale-110 hover:rotate-12 transition-all duration-300">
+              <CheckCircle size={24} />
             </div>
+            <h3 className="text-xl font-bold text-stone-900 mb-2">The Automated Partner</h3>
+            <p className="text-stone-600 text-sm">
+              Handles complex calculations, monitors progress continuously, and automates execution.
+            </p>
           </div>
-        </div>
 
-        <div 
-          className="p-8 rounded-3xl bg-white border border-stone-200 hover:border-green-400/50 transition-all transform-gpu hover:scale-[1.02] hover:shadow-xl hover:shadow-green-400/10 scroll-animate"
-          onMouseEnter={() => setHoveredCard(2)}
-          onMouseLeave={() => setHoveredCard(null)}
-          style={{
-            transform: hoveredCard === 2 ? 'rotateX(2deg) rotateY(2deg) scale(1.02)' : 'rotateX(0deg) rotateY(0deg) scale(1)',
-            transformStyle: 'preserve-3d'
-          }}
-        >
-          <div className="h-12 w-12 bg-stone-100 rounded-xl flex items-center justify-center text-stone-700 mb-6 transform-gpu hover:scale-110 hover:rotate-12 transition-all duration-300">
-            <CheckCircle size={24} />
+          <div
+            className="p-8 rounded-3xl bg-white border border-stone-200 hover:border-orange-400/50 transition-all transform-gpu hover:scale-[1.02] hover:shadow-xl hover:shadow-orange-400/10 scroll-animate"
+            onMouseEnter={() => setHoveredCard(3)}
+            onMouseLeave={() => setHoveredCard(null)}
+            style={{
+              transform: hoveredCard === 3 ? 'rotateX(-2deg) rotateY(-2deg) scale(1.02)' : 'rotateX(0deg) rotateY(0deg) scale(1)',
+              transformStyle: 'preserve-3d'
+            }}
+          >
+            <div className="h-12 w-12 bg-stone-100 rounded-xl flex items-center justify-center text-stone-800 mb-6 transform-gpu hover:scale-110 hover:rotate-12 transition-all duration-300">
+              <Shield size={24} />
+            </div>
+            <h3 className="text-xl font-bold text-stone-900 mb-2">The Trust Builder</h3>
+            <p className="text-stone-600 text-sm">
+              No black-box recommendations. Every calculation cross-checked and explained.
+            </p>
           </div>
-          <h3 className="text-xl font-bold text-stone-900 mb-2">The Automated Partner</h3>
-          <p className="text-stone-600 text-sm">
-            Handles complex calculations, monitors progress continuously, and automates execution.
-          </p>
-        </div>
-
-        <div 
-          className="p-8 rounded-3xl bg-white border border-stone-200 hover:border-orange-400/50 transition-all transform-gpu hover:scale-[1.02] hover:shadow-xl hover:shadow-orange-400/10 scroll-animate"
-          onMouseEnter={() => setHoveredCard(3)}
-          onMouseLeave={() => setHoveredCard(null)}
-          style={{
-            transform: hoveredCard === 3 ? 'rotateX(-2deg) rotateY(-2deg) scale(1.02)' : 'rotateX(0deg) rotateY(0deg) scale(1)',
-            transformStyle: 'preserve-3d'
-          }}
-        >
-          <div className="h-12 w-12 bg-stone-100 rounded-xl flex items-center justify-center text-stone-800 mb-6 transform-gpu hover:scale-110 hover:rotate-12 transition-all duration-300">
-            <Shield size={24} />
-          </div>
-          <h3 className="text-xl font-bold text-stone-900 mb-2">The Trust Builder</h3>
-          <p className="text-stone-600 text-sm">
-            No black-box recommendations. Every calculation cross-checked and explained.
-          </p>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
   );
 };
 
@@ -1137,82 +899,82 @@ const UseCases = () => {
   }, []);
 
   return (
-  <section className="py-24 bg-stone-100 relative">
-    <div className="max-w-7xl mx-auto px-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-        {/* Left Half - Scroll-Responsive Confusion Geometry */}
-        <div className="space-y-8">
-          <div className="relative h-96 flex items-center justify-center">
-            {/* Confusion spiral - rotates with scroll */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div 
-                className="w-64 h-64 border-4 border-dashed border-stone-400/40 rounded-full" 
-                style={{ transform: `rotate(${scrollY * 0.3}deg)` }} 
-              />
-              <div 
-                className="absolute w-48 h-48 border-2 border-stone-500/30 rounded-full" 
-                style={{ transform: `rotate(${-scrollY * 0.2}deg)` }} 
-              />
-              <div 
-                className="absolute w-32 h-32 border border-stone-600/30 rounded-full" 
-                style={{ transform: `rotate(${scrollY * 0.4}deg)` }} 
-              />
-            </div>
-            
-            {/* Question marks - move with scroll */}
-            <div 
-              className="absolute top-8 left-8 text-6xl text-stone-400/60" 
-              style={{ transform: `translateY(${Math.sin(scrollY * 0.01) * 10}px)` }}
-            >?</div>
-            <div 
-              className="absolute top-16 right-12 text-5xl text-stone-500/60" 
-              style={{ transform: `translateY(${Math.cos(scrollY * 0.015) * 15}px)` }}
-            >?</div>
-            <div 
-              className="absolute bottom-12 left-16 text-4xl text-stone-600/60" 
-              style={{ transform: `translateY(${Math.sin(scrollY * 0.02) * 8}px)` }}
-            >?</div>
-            <div 
-              className="absolute bottom-8 right-8 text-3xl text-stone-500/60" 
-              style={{ transform: `translateY(${Math.cos(scrollY * 0.012) * 12}px)` }}
-            >?</div>
-            
-            {/* Central confusion symbol */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div 
-                className="text-8xl text-stone-400/30" 
-                style={{ transform: `rotate(${scrollY * 0.1}deg) scale(${1 + Math.sin(scrollY * 0.005) * 0.1})` }}
+    <section className="py-24 bg-stone-100 relative">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+          {/* Left Half - Scroll-Responsive Confusion Geometry */}
+          <div className="space-y-8">
+            <div className="relative h-96 flex items-center justify-center">
+              {/* Confusion spiral - rotates with scroll */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div
+                  className="w-64 h-64 border-4 border-dashed border-stone-400/40 rounded-full"
+                  style={{ transform: `rotate(${scrollY * 0.3}deg)` }}
+                />
+                <div
+                  className="absolute w-48 h-48 border-2 border-stone-500/30 rounded-full"
+                  style={{ transform: `rotate(${-scrollY * 0.2}deg)` }}
+                />
+                <div
+                  className="absolute w-32 h-32 border border-stone-600/30 rounded-full"
+                  style={{ transform: `rotate(${scrollY * 0.4}deg)` }}
+                />
+              </div>
+
+              {/* Question marks - move with scroll */}
+              <div
+                className="absolute top-8 left-8 text-6xl text-stone-400/60"
+                style={{ transform: `translateY(${Math.sin(scrollY * 0.01) * 10}px)` }}
               >?</div>
+              <div
+                className="absolute top-16 right-12 text-5xl text-stone-500/60"
+                style={{ transform: `translateY(${Math.cos(scrollY * 0.015) * 15}px)` }}
+              >?</div>
+              <div
+                className="absolute bottom-12 left-16 text-4xl text-stone-600/60"
+                style={{ transform: `translateY(${Math.sin(scrollY * 0.02) * 8}px)` }}
+              >?</div>
+              <div
+                className="absolute bottom-8 right-8 text-3xl text-stone-500/60"
+                style={{ transform: `translateY(${Math.cos(scrollY * 0.012) * 12}px)` }}
+              >?</div>
+
+              {/* Central confusion symbol */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div
+                  className="text-8xl text-stone-400/30"
+                  style={{ transform: `rotate(${scrollY * 0.1}deg) scale(${1 + Math.sin(scrollY * 0.005) * 0.1})` }}
+                >?</div>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Right Half - Enhanced Problem Section */}
-        <div className="space-y-8">
-          <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-stone-900 mb-4">The Problem We Solve</h2>
-            <p className="text-stone-600 text-lg leading-relaxed">
-              People want to grow their money safely toward real-life goals, but they are unable to translate intent into confident action.
-            </p>
-          </div>
-
-          <div className="space-y-6">
-            <h3 className="text-xl font-bold text-stone-900 border-b-2 border-stone-800 pb-2 inline-block">Core Problems</h3>
-            
-            <div className="border-l-4 border-stone-600 pl-6 py-2">
-              <h4 className="text-stone-900 font-bold mb-2">What You Want:</h4>
-              <p className="text-stone-700">"I want to buy a house, need money to grow reliably, don't want to gamble my future."</p>
+          {/* Right Half - Enhanced Problem Section */}
+          <div className="space-y-8">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold text-stone-900 mb-4">The Problem We Solve</h2>
+              <p className="text-stone-600 text-lg leading-relaxed">
+                People want to grow their money safely toward real-life goals, but they are unable to translate intent into confident action.
+              </p>
             </div>
-            
-            <div className="border-l-4 border-stone-700 pl-6 py-2">
-              <h4 className="text-stone-900 font-bold mb-2">The Reality:</h4>
-              <p className="text-stone-700">"Terrified of losing money, confused by options, need automation, don't trust advice."</p>
+
+            <div className="space-y-6">
+              <h3 className="text-xl font-bold text-stone-900 border-b-2 border-stone-800 pb-2 inline-block">Core Problems</h3>
+
+              <div className="border-l-4 border-stone-600 pl-6 py-2">
+                <h4 className="text-stone-900 font-bold mb-2">What You Want:</h4>
+                <p className="text-stone-700">"I want to buy a house, need money to grow reliably, don't want to gamble my future."</p>
+              </div>
+
+              <div className="border-l-4 border-stone-700 pl-6 py-2">
+                <h4 className="text-stone-900 font-bold mb-2">The Reality:</h4>
+                <p className="text-stone-700">"Terrified of losing money, confused by options, need automation, don't trust advice."</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
   );
 };
 
@@ -1227,141 +989,141 @@ const HowItWorks = () => {
   }, []);
 
   return (
-  <section id="how-it-works" className="py-24 bg-stone-100 relative overflow-hidden">
-    <div className="absolute inset-0 bg-gradient-to-b from-stone-100 via-stone-50/30 to-stone-100" />
-    
-    {/* HowItWorks design elements */}
-    <div className="absolute top-20 left-16 w-28 h-28 border-2 border-stone-400/25 rotate-45 animate-spin" style={{ animationDuration: '25s' }} />
-    <div className="absolute top-48 right-20 w-20 h-20 bg-gradient-to-br from-stone-400/30 to-stone-500/30 rounded-full animate-pulse" />
-    <div className="absolute bottom-32 left-1/3 w-10 h-10 border border-dashed border-stone-500/40 animate-bounce" />
-    <div className="absolute top-1/3 right-1/5 w-14 h-14 bg-stone-400/20 animate-ping" style={{ animationDelay: '1.5s', clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)' }} />
-    
-    <div className="max-w-7xl mx-auto px-6 relative z-10">
-      <div className="mb-16 scroll-animate">
-        <h2 className="text-3xl md:text-4xl font-bold text-stone-900 mb-4 transform-gpu hover:scale-105 transition-all duration-300">How FinArth Works</h2>
-        <p className="text-stone-600">Simple steps to financial confidence</p>
-      </div>
+    <section id="how-it-works" className="py-24 bg-stone-100 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-stone-100 via-stone-50/30 to-stone-100" />
 
-      <div className="relative">
-        <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-stone-600 to-stone-300 hidden md:block" />
-        
-        {/* Crazy design element on the right - Scroll responsive */}
-        <div className="absolute right-0 top-0 w-80 h-96 hidden lg:block overflow-hidden" 
-             style={{ transform: `rotate(${scrollY * 0.05}deg) scale(${1 + scrollY * 0.0001})` }}>
-          {/* Morphing blob */}
-          <div className="absolute top-16 right-16 w-32 h-32 bg-gradient-to-br from-stone-400/20 to-stone-600/20 rounded-full animate-pulse transform rotate-45" 
-               style={{ 
-                 clipPath: 'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)',
-                 transform: `rotate(${45 + scrollY * 0.1}deg) scale(${1 + Math.sin(scrollY * 0.01) * 0.1})`
-               }} />
-          
-          {/* Floating geometric shapes */}
-          <div className="absolute top-8 right-32 w-16 h-16 border-2 border-stone-500/30 rotate-12 animate-spin" 
-               style={{ 
-                 animationDuration: '8s',
-                 transform: `rotate(${12 + scrollY * 0.2}deg)`
-               }} />
-          <div className="absolute top-32 right-8 w-12 h-12 bg-gradient-to-r from-stone-500/40 to-stone-600/40 transform rotate-45 animate-bounce" 
-               style={{ 
-                 animationDelay: '1s',
-                 transform: `rotate(${45 + scrollY * 0.15}deg) translateY(${Math.sin(scrollY * 0.02) * 10}px)`
-               }} />
-          
-          {/* Connecting lines */}
-          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 320 384" 
-               style={{ transform: `rotate(${scrollY * 0.03}deg)` }}>
-            <path d="M50 50 Q150 100 250 50 T350 150" stroke="url(#gradient1)" strokeWidth="2" fill="none" className="animate-pulse" />
-            <path d="M100 200 Q200 150 300 200 T400 300" stroke="url(#gradient2)" strokeWidth="1.5" fill="none" className="animate-pulse" style={{ animationDelay: '0.5s' }} />
-            <defs>
-              <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#78716c" stopOpacity="0.6" />
-                <stop offset="100%" stopColor="#57534e" stopOpacity="0.3" />
-              </linearGradient>
-              <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#6b7280" stopOpacity="0.5" />
-                <stop offset="100%" stopColor="#4b5563" stopOpacity="0.3" />
-              </linearGradient>
-            </defs>
-          </svg>
-          
-          {/* Orbiting particles */}
-          <div className="absolute top-24 right-24 w-4 h-4 bg-blue-500/60 rounded-full animate-ping" 
-               style={{ transform: `translate(${Math.cos(scrollY * 0.01) * 10}px, ${Math.sin(scrollY * 0.01) * 10}px)` }} />
-          <div className="absolute top-40 right-40 w-3 h-3 bg-purple-500/60 rounded-full animate-ping" 
-               style={{ 
-                 animationDelay: '1s',
-                 transform: `translate(${Math.cos(scrollY * 0.015 + 1) * 15}px, ${Math.sin(scrollY * 0.015 + 1) * 15}px)`
-               }} />
-          <div className="absolute top-56 right-20 w-2 h-2 bg-green-500/60 rounded-full animate-ping" 
-               style={{ 
-                 animationDelay: '2s',
-                 transform: `translate(${Math.cos(scrollY * 0.02 + 2) * 8}px, ${Math.sin(scrollY * 0.02 + 2) * 8}px)`
-               }} />
-          
-          {/* Abstract mesh pattern */}
-          <div className="absolute bottom-16 right-12 w-24 h-24 opacity-30">
-            <div className="grid grid-cols-4 gap-1 h-full">
-              {Array.from({ length: 16 }).map((_, i) => (
-                <div key={i} className={`bg-gradient-to-br from-stone-400 to-stone-600 animate-pulse`} 
-                     style={{ animationDelay: `${i * 0.1}s` }} />
-              ))}
+      {/* HowItWorks design elements */}
+      <div className="absolute top-20 left-16 w-28 h-28 border-2 border-stone-400/25 rotate-45 animate-spin" style={{ animationDuration: '25s' }} />
+      <div className="absolute top-48 right-20 w-20 h-20 bg-gradient-to-br from-stone-400/30 to-stone-500/30 rounded-full animate-pulse" />
+      <div className="absolute bottom-32 left-1/3 w-10 h-10 border border-dashed border-stone-500/40 animate-bounce" />
+      <div className="absolute top-1/3 right-1/5 w-14 h-14 bg-stone-400/20 animate-ping" style={{ animationDelay: '1.5s', clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)' }} />
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="mb-16 scroll-animate">
+          <h2 className="text-3xl md:text-4xl font-bold text-stone-900 mb-4 transform-gpu hover:scale-105 transition-all duration-300">How FinArth Works</h2>
+          <p className="text-stone-600">Simple steps to financial confidence</p>
+        </div>
+
+        <div className="relative">
+          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-stone-600 to-stone-300 hidden md:block" />
+
+          {/* Crazy design element on the right - Scroll responsive */}
+          <div className="absolute right-0 top-0 w-80 h-96 hidden lg:block overflow-hidden"
+            style={{ transform: `rotate(${scrollY * 0.05}deg) scale(${1 + scrollY * 0.0001})` }}>
+            {/* Morphing blob */}
+            <div className="absolute top-16 right-16 w-32 h-32 bg-gradient-to-br from-stone-400/20 to-stone-600/20 rounded-full animate-pulse transform rotate-45"
+              style={{
+                clipPath: 'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)',
+                transform: `rotate(${45 + scrollY * 0.1}deg) scale(${1 + Math.sin(scrollY * 0.01) * 0.1})`
+              }} />
+
+            {/* Floating geometric shapes */}
+            <div className="absolute top-8 right-32 w-16 h-16 border-2 border-stone-500/30 rotate-12 animate-spin"
+              style={{
+                animationDuration: '8s',
+                transform: `rotate(${12 + scrollY * 0.2}deg)`
+              }} />
+            <div className="absolute top-32 right-8 w-12 h-12 bg-gradient-to-r from-stone-500/40 to-stone-600/40 transform rotate-45 animate-bounce"
+              style={{
+                animationDelay: '1s',
+                transform: `rotate(${45 + scrollY * 0.15}deg) translateY(${Math.sin(scrollY * 0.02) * 10}px)`
+              }} />
+
+            {/* Connecting lines */}
+            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 320 384"
+              style={{ transform: `rotate(${scrollY * 0.03}deg)` }}>
+              <path d="M50 50 Q150 100 250 50 T350 150" stroke="url(#gradient1)" strokeWidth="2" fill="none" className="animate-pulse" />
+              <path d="M100 200 Q200 150 300 200 T400 300" stroke="url(#gradient2)" strokeWidth="1.5" fill="none" className="animate-pulse" style={{ animationDelay: '0.5s' }} />
+              <defs>
+                <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#78716c" stopOpacity="0.6" />
+                  <stop offset="100%" stopColor="#57534e" stopOpacity="0.3" />
+                </linearGradient>
+                <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#6b7280" stopOpacity="0.5" />
+                  <stop offset="100%" stopColor="#4b5563" stopOpacity="0.3" />
+                </linearGradient>
+              </defs>
+            </svg>
+
+            {/* Orbiting particles */}
+            <div className="absolute top-24 right-24 w-4 h-4 bg-blue-500/60 rounded-full animate-ping"
+              style={{ transform: `translate(${Math.cos(scrollY * 0.01) * 10}px, ${Math.sin(scrollY * 0.01) * 10}px)` }} />
+            <div className="absolute top-40 right-40 w-3 h-3 bg-purple-500/60 rounded-full animate-ping"
+              style={{
+                animationDelay: '1s',
+                transform: `translate(${Math.cos(scrollY * 0.015 + 1) * 15}px, ${Math.sin(scrollY * 0.015 + 1) * 15}px)`
+              }} />
+            <div className="absolute top-56 right-20 w-2 h-2 bg-green-500/60 rounded-full animate-ping"
+              style={{
+                animationDelay: '2s',
+                transform: `translate(${Math.cos(scrollY * 0.02 + 2) * 8}px, ${Math.sin(scrollY * 0.02 + 2) * 8}px)`
+              }} />
+
+            {/* Abstract mesh pattern */}
+            <div className="absolute bottom-16 right-12 w-24 h-24 opacity-30">
+              <div className="grid grid-cols-4 gap-1 h-full">
+                {Array.from({ length: 16 }).map((_, i) => (
+                  <div key={i} className={`bg-gradient-to-br from-stone-400 to-stone-600 animate-pulse`}
+                    style={{ animationDelay: `${i * 0.1}s` }} />
+                ))}
+              </div>
             </div>
+
+            {/* Floating rings */}
+            <div className="absolute top-12 right-56 w-20 h-20 border border-dashed border-indigo-400/40 rounded-full animate-spin" style={{ animationDuration: '12s' }} />
+            <div className="absolute bottom-20 right-48 w-14 h-14 border-2 border-pink-400/30 rounded-full animate-spin" style={{ animationDuration: '6s', animationDirection: 'reverse' }} />
           </div>
-          
-          {/* Floating rings */}
-          <div className="absolute top-12 right-56 w-20 h-20 border border-dashed border-indigo-400/40 rounded-full animate-spin" style={{ animationDuration: '12s' }} />
-          <div className="absolute bottom-20 right-48 w-14 h-14 border-2 border-pink-400/30 rounded-full animate-spin" style={{ animationDuration: '6s', animationDirection: 'reverse' }} />
-        </div>
 
-        <div className="space-y-12">
-          {[
-            {
-              title: "Share Your Goal",
-              desc: "Tell us your current savings, target amount, and timeline in plain English.",
-              icon: <Target size={20} />,
-              color: "text-stone-600"
-            },
-            {
-              title: "AI Analysis",
-              desc: "Our AI calculates required returns, assigns your personality, and validates for safety.",
-              icon: <Calculator size={20} />,
-              color: "text-stone-700"
-            },
-            {
-              title: "Get Your Plan",
-              desc: "Receive specific investment allocations with clear explanations and next steps.",
-              icon: <CheckCircle size={20} />,
-              color: "text-stone-800"
-            }
-          ].map((step, i) => (
-            <div 
-              key={i} 
-              className="relative flex gap-8 items-start scroll-animate transform-gpu hover:scale-105 transition-all duration-300 cursor-pointer"
-              onMouseEnter={() => setActiveStep(i)}
-              onMouseLeave={() => setActiveStep(null)}
-            >
-              <div 
-                className="hidden md:flex h-16 w-16 bg-white border border-stone-300 rounded-2xl items-center justify-center z-10 shrink-0 transform-gpu hover:scale-110 hover:rotate-12 transition-all duration-500"
-                style={{
-                  transform: activeStep === i ? 'scale(1.2) rotate(12deg)' : 'scale(1) rotate(0deg)',
-                  boxShadow: activeStep === i ? '0 20px 40px rgba(0, 0, 0, 0.1)' : 'none'
-                }}
+          <div className="space-y-12">
+            {[
+              {
+                title: "Share Your Goal",
+                desc: "Tell us your current savings, target amount, and timeline in plain English.",
+                icon: <Target size={20} />,
+                color: "text-stone-600"
+              },
+              {
+                title: "AI Analysis",
+                desc: "Our AI calculates required returns, assigns your personality, and validates for safety.",
+                icon: <Calculator size={20} />,
+                color: "text-stone-700"
+              },
+              {
+                title: "Get Your Plan",
+                desc: "Receive specific investment allocations with clear explanations and next steps.",
+                icon: <CheckCircle size={20} />,
+                color: "text-stone-800"
+              }
+            ].map((step, i) => (
+              <div
+                key={i}
+                className="relative flex gap-8 items-start scroll-animate transform-gpu hover:scale-105 transition-all duration-300 cursor-pointer"
+                onMouseEnter={() => setActiveStep(i)}
+                onMouseLeave={() => setActiveStep(null)}
               >
-                <div className={`${step.color}`}>{step.icon}</div>
+                <div
+                  className="hidden md:flex h-16 w-16 bg-white border border-stone-300 rounded-2xl items-center justify-center z-10 shrink-0 transform-gpu hover:scale-110 hover:rotate-12 transition-all duration-500"
+                  style={{
+                    transform: activeStep === i ? 'scale(1.2) rotate(12deg)' : 'scale(1) rotate(0deg)',
+                    boxShadow: activeStep === i ? '0 20px 40px rgba(0, 0, 0, 0.1)' : 'none'
+                  }}
+                >
+                  <div className={`${step.color}`}>{step.icon}</div>
+                </div>
+                <div className="pt-2">
+                  <h3 className="text-xl font-bold text-stone-900 mb-2 flex items-center gap-3 transform-gpu hover:translate-x-2 transition-all duration-300">
+                    <span className="md:hidden p-2 bg-white rounded-lg border border-stone-300">{step.icon}</span>
+                    {step.title}
+                  </h3>
+                  <p className="text-stone-600 max-w-xl">{step.desc}</p>
+                </div>
               </div>
-              <div className="pt-2">
-                <h3 className="text-xl font-bold text-stone-900 mb-2 flex items-center gap-3 transform-gpu hover:translate-x-2 transition-all duration-300">
-                  <span className="md:hidden p-2 bg-white rounded-lg border border-stone-300">{step.icon}</span>
-                  {step.title}
-                </h3>
-                <p className="text-stone-600 max-w-xl">{step.desc}</p>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
   );
 };
 
@@ -1382,7 +1144,7 @@ const Footer = () => (
           Financial Confidence Engine for the modern investor.
         </p>
       </div>
-      
+
       <div>
         <h4 className="text-stone-900 font-bold mb-4">Product</h4>
         <ul className="space-y-2 text-sm text-stone-600">
@@ -1417,7 +1179,7 @@ export default function Page() {
       elements.forEach((element) => {
         const elementTop = element.getBoundingClientRect().top;
         const elementVisible = 150;
-        
+
         if (elementTop < window.innerHeight - elementVisible) {
           element.classList.add('animate-fade-in-up');
         }
@@ -1426,7 +1188,7 @@ export default function Page() {
 
     window.addEventListener('scroll', handleScroll);
     handleScroll();
-    
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -1438,7 +1200,7 @@ export default function Page() {
     const userData = localStorage.getItem('userData');
     const hasCompletedOnboarding = localStorage.getItem('onboardingCompleted') === 'true';
     const userId = localStorage.getItem('userId');
-    
+
     if (userData && hasCompletedOnboarding) {
       navigate('/dashboard');
     } else if (userId) {
@@ -1486,7 +1248,7 @@ export default function Page() {
       <div className="glitter" style={{ left: '75%', animationDelay: '0.4s' }} />
       <div className="glitter" style={{ left: '85%', animationDelay: '0.9s' }} />
       <div className="glitter" style={{ left: '95%', animationDelay: '1.4s' }} />
-      
+
       {/* Global floating elements - Enhanced */}
       <div className="fixed top-1/4 right-8 w-6 h-6 border-2 border-blue-400/30 rounded-full animate-float" style={{ animationDelay: '0s' }} />
       <div className="fixed top-1/2 left-8 w-8 h-8 border border-purple-400/30 rotate-45 animate-float" style={{ animationDelay: '2s' }} />
@@ -1592,6 +1354,7 @@ export default function Page() {
       <Route path="/onboarding" element={<OnboardingPage onComplete={handleOnboardingComplete} />} />
       <Route path="/dashboard" element={<Dashboard onLogout={handleLogout} />} />
       <Route path="/dashboard/:tab" element={<Dashboard onLogout={handleLogout} />} />
+      <Route path="/pgas/ai-agent" element={<AiAgent />} />
     </Routes>
   );
 }

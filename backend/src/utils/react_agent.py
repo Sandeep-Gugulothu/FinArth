@@ -35,7 +35,7 @@ except ImportError:
 from utils.logger import Logger
 
 logger = Logger.get_instance()
-MODEL_NAME = 'nvidia/nemotron-3-nano-30b-a3b:free'
+MODEL_NAME = 'google/gemini-2.0-flash-exp:free'
 
 @dataclass
 class ReActStep:
@@ -55,7 +55,7 @@ class MockTools:
         return "Project data: Budget ₹50L, Timeline: 7 years, Risk tolerance: Moderate, Current savings: ₹12L"
 
     @staticmethod
-    async def calculate_risk(data: str) -> str:
+    async def calculate_risk(data: Optional[str] = None) -> str:
         return "Risk analysis: Market volatility 15%, Inflation risk 6%, Liquidity risk 3%"
 
     @staticmethod
@@ -136,7 +136,8 @@ class ReactAgent:
         if user_id:
             try:
                 logger.info('Fetching user preferences for LLM context', user_id)
-                response = requests.get(f'http://localhost:8000/api/users/{user_id}/preferences')
+                backend_port = os.getenv('PORT', '5000')
+                response = requests.get(f'http://localhost:{backend_port}/api/users/{user_id}/preferences')
                 if response.status_code == 200:
                     data = response.json()
                     prefs = data['preferences']
@@ -215,7 +216,7 @@ class ReactAgent:
         final_prompt = f"""{context}
     Based on your analysis above, provide a comprehensive final answer to the user's query: "{query}"
 
-    Focus on actionable insights and specific recommendations."""
+    IMPORTANT: Do NOT include any of the 'Step X', 'Thought:', 'Action:', or 'Observation:' text in your final answer. Start directly with your insights and recommendations. Format your response using clean Markdown with headers and tables where appropriate."""
         logger.log_llm_call(MODEL_NAME, final_prompt, user_id, {'type': 'final_answer'})
         final_response = self.opik_client.chat.completions.create(
             model=MODEL_NAME,

@@ -50,7 +50,6 @@ const Sidebar = ({ activeTab, setActiveTab }: { activeTab: string; setActiveTab:
     { id: 'overview', label: 'Overview', icon: Home },
     { id: 'portfolio', label: 'Portfolio', icon: TrendingUp },
     { id: 'goals', label: 'Goals', icon: Target },
-    { id: 'agent', label: 'AI Agent', icon: Bot },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
@@ -62,18 +61,17 @@ const Sidebar = ({ activeTab, setActiveTab }: { activeTab: string; setActiveTab:
           <span className="text-xl font-bold text-slate-900">FinArth</span>
         </div>
       </div>
-      
+
       <nav className="flex-1 p-4">
         <ul className="space-y-2">
           {menuItems.map((item) => (
             <li key={item.id}>
               <button
                 onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${
-                  activeTab === item.id
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${activeTab === item.id
                     ? 'bg-blue-50 text-blue-700 border border-blue-200'
                     : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                }`}
+                  }`}
               >
                 <item.icon size={20} />
                 <span className="font-medium">{item.label}</span>
@@ -82,7 +80,7 @@ const Sidebar = ({ activeTab, setActiveTab }: { activeTab: string; setActiveTab:
           ))}
         </ul>
       </nav>
-      
+
       <div className="p-4 border-t border-slate-200">
         <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
           <div className="h-8 w-8 bg-slate-300 rounded-full flex items-center justify-center">
@@ -113,9 +111,8 @@ const OverviewTab = () => {
           <div key={i} className="bg-white p-6 rounded-2xl border border-slate-200 hover:shadow-lg transition-shadow">
             <div className="flex items-center justify-between mb-2">
               <p className="text-sm font-medium text-slate-600">{stat.label}</p>
-              <span className={`text-xs px-2 py-1 rounded-full ${
-                stat.positive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-              }`}>
+              <span className={`text-xs px-2 py-1 rounded-full ${stat.positive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                }`}>
                 {stat.change}
               </span>
             </div>
@@ -161,7 +158,7 @@ const OverviewTab = () => {
                   <span className="text-sm text-slate-600">₹{goal.current}L / ₹{goal.target}L</span>
                 </div>
                 <div className="w-full bg-slate-200 rounded-full h-2">
-                  <div 
+                  <div
                     className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-500"
                     style={{ width: `${goal.progress}%` }}
                   />
@@ -195,7 +192,7 @@ const PortfolioTab = () => {
     <div className="space-y-6">
       {/* Portfolio Heatmap */}
       <PortfolioHeatmap />
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-2xl border border-slate-200">
           <h3 className="text-lg font-semibold text-slate-900 mb-6">Asset Allocation</h3>
@@ -210,7 +207,7 @@ const PortfolioTab = () => {
                   </div>
                 </div>
                 <div className="w-full bg-slate-200 rounded-full h-2">
-                  <div 
+                  <div
                     className={`${item.color} h-2 rounded-full transition-all duration-500`}
                     style={{ width: `${item.value}%` }}
                   />
@@ -274,9 +271,8 @@ const PortfolioTab = () => {
                   </td>
                   <td className="px-6 py-4 font-medium text-slate-900">{holding.amount}</td>
                   <td className="px-6 py-4">
-                    <span className={`font-medium ${
-                      holding.positive ? 'text-green-600' : 'text-red-600'
-                    }`}>
+                    <span className={`font-medium ${holding.positive ? 'text-green-600' : 'text-red-600'
+                      }`}>
                       {holding.returns}
                     </span>
                   </td>
@@ -359,13 +355,12 @@ const GoalsTab = () => {
           <div key={goal.id} className="bg-white p-6 rounded-2xl border border-slate-200 hover:shadow-lg transition-shadow">
             <div className="flex justify-between items-start mb-4">
               <h3 className="font-semibold text-slate-900">{goal.name}</h3>
-              <span className={`px-2 py-1 text-xs font-medium rounded-full capitalize ${
-                getStatusColor(goal.status)
-              }`}>
+              <span className={`px-2 py-1 text-xs font-medium rounded-full capitalize ${getStatusColor(goal.status)
+                }`}>
                 {goal.status.replace('-', ' ')}
               </span>
             </div>
-            
+
             <div className="space-y-3 mb-4">
               <div className="flex justify-between text-sm">
                 <span className="text-slate-600">Target</span>
@@ -387,7 +382,7 @@ const GoalsTab = () => {
                 <span className="font-medium text-slate-900">{goal.progress}%</span>
               </div>
               <div className="w-full bg-slate-200 rounded-full h-2">
-                <div 
+                <div
                   className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-500"
                   style={{ width: `${goal.progress}%` }}
                 />
@@ -429,126 +424,7 @@ const GoalsTab = () => {
   );
 };
 
-const AgentTab = () => {
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      type: 'bot',
-      content: "Hello! I'm your AI financial advisor. I can help you with investment planning, goal setting, and portfolio optimization. What would you like to discuss today?",
-      timestamp: new Date(Date.now() - 300000)
-    }
-  ]);
-  const [inputMessage, setInputMessage] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-
-  const sendMessage = async () => {
-    if (!inputMessage.trim()) return;
-
-    const userMessage = {
-      id: messages.length + 1,
-      type: 'user' as const,
-      content: inputMessage,
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setInputMessage('');
-    setIsTyping(true);
-
-    // Simulate AI response
-    setTimeout(() => {
-      const botResponse = {
-        id: messages.length + 2,
-        type: 'bot' as const,
-        content: "I understand you're looking for investment advice. Based on your current portfolio and goals, I'd recommend reviewing your asset allocation. Would you like me to analyze your risk profile and suggest some adjustments?",
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, botResponse]);
-      setIsTyping(false);
-    }, 2000);
-  };
-
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: true 
-    });
-  };
-
-  return (
-    <div className="bg-white rounded-2xl border border-slate-200 h-[600px] flex flex-col">
-      <div className="p-6 border-b border-slate-200">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-            <Bot size={20} className="text-white" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-slate-900">FinArth AI Agent</h3>
-            <p className="text-sm text-green-600 flex items-center gap-1">
-              <span className="h-2 w-2 bg-green-500 rounded-full"></span>
-              Online
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
-        {messages.map((message) => (
-          <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-[80%] ${
-              message.type === 'user' 
-                ? 'bg-blue-600 text-white' 
-                : 'bg-slate-100 text-slate-900'
-            } rounded-2xl px-4 py-3`}>
-              <p className="text-sm">{message.content}</p>
-              <p className={`text-xs mt-1 ${
-                message.type === 'user' ? 'text-blue-200' : 'text-slate-500'
-              }`}>
-                {formatTime(message.timestamp)}
-              </p>
-            </div>
-          </div>
-        ))}
-        
-        {isTyping && (
-          <div className="flex justify-start">
-            <div className="bg-slate-100 rounded-2xl px-4 py-3">
-              <div className="flex space-x-1">
-                <div className="h-2 w-2 bg-slate-400 rounded-full animate-bounce"></div>
-                <div className="h-2 w-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                <div className="h-2 w-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className="p-6 border-t border-slate-200">
-        <div className="flex gap-3">
-          <input
-            type="text"
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-            placeholder="Ask me about your investments, goals, or financial planning..."
-            className="flex-1 px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <button
-            onClick={sendMessage}
-            disabled={!inputMessage.trim() || isTyping}
-            className="px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            <Send size={20} />
-          </button>
-        </div>
-        <p className="text-xs text-slate-500 mt-2">
-          AI responses are for educational purposes only. Always consult with qualified financial advisors.
-        </p>
-      </div>
-    </div>
-  );
-};
+// AgentTab removed
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -561,8 +437,6 @@ const Dashboard = () => {
         return <PortfolioTab />;
       case 'goals':
         return <GoalsTab />;
-      case 'agent':
-        return <AgentTab />;
       case 'settings':
         return <div className="bg-white p-8 rounded-2xl border border-slate-200"><h2 className="text-xl font-semibold">Settings</h2><p className="text-slate-600 mt-2">Coming soon...</p></div>;
       default:
@@ -580,14 +454,12 @@ const Dashboard = () => {
               {activeTab === 'overview' && 'Dashboard Overview'}
               {activeTab === 'portfolio' && 'Portfolio Management'}
               {activeTab === 'goals' && 'Financial Goals'}
-              {activeTab === 'agent' && 'AI Financial Agent'}
               {activeTab === 'settings' && 'Settings'}
             </h1>
             <p className="text-slate-600">
               {activeTab === 'overview' && 'Monitor your financial progress and portfolio performance'}
               {activeTab === 'portfolio' && 'Manage your investment portfolio and asset allocation'}
               {activeTab === 'goals' && 'Track and plan your financial goals'}
-              {activeTab === 'agent' && 'Chat with your AI financial advisor for personalized guidance'}
               {activeTab === 'settings' && 'Manage your account and preferences'}
             </p>
           </div>
