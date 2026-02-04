@@ -149,3 +149,7 @@
   - github workflow draft to trigger auto-test on github operations
 - requirement package update
 - package json config update with python script execution
+
+## [0.3.4] - 2026-02-04
+### Backend Changes
+- Requirement package version removal as a probable fix for dependency conflict.
