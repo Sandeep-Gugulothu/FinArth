@@ -16,7 +16,7 @@ File Execution State: Validation is in progress
 
 import asyncio
 from flask import Blueprint, jsonify, request
-from utils.react_agent import generate_insight_with_reason_act
+from utils.react_agent import ReactAgent
 from utils.logger import Logger
 
 agent_blue_print = Blueprint('agent', __name__)
@@ -28,7 +28,15 @@ def generate_insight():
         data = request.get_json()
         query = data.get('query')
         user_id = data.get('userId')
-        logger.info('ReAct agent insight request received', user_id, {'query': query, 'has_user_id': bool(user_id)})
+
+        logger.info(
+            'ReAct agent insight request received',
+            user_id,
+            {
+                'query': query,
+                'has_user_id': bool(user_id)
+            }
+        )
         # validate input
         if not query:
             logger.error('ReAct agent request missing query', user_id)
@@ -36,7 +44,10 @@ def generate_insight():
         # Run async function in sync context
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        result = loop.run_until_complete(generate_insight_with_reason_act(query, user_id))
+        result = loop.run_until_complete(ReactAgent().get_multi_llm_response(
+            query,
+            user_id
+        ))
         loop.close()
         # log the successful generation
         logger.info('ReAct agent insight generated successfully', user_id, {

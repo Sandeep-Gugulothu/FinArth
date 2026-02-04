@@ -9,3 +9,4 @@ pydantic-ai
 logfire
 opik
 pytest
+pytest-tornasync

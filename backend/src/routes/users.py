@@ -36,8 +36,8 @@ def register():
     if not email or not password:
         logger.error('Registration failed: Missing email or password')
         return jsonify({'error': 'Email and password are required'}), 400
-    hashed_password = Authentication.hash_password(password)
-    verification_token = Authentication.generate_token()
+    hashed_password = Authentication().hash_password(password)
+    verification_token = Authentication().generate_token()
     logger.log_db_operation('INSERT', 'users', data={'email': email})
     # Insert new user into the database
     try:
@@ -90,7 +90,7 @@ def login():
                 'needsSignup': True
             }), 404
         
-        if not Authentication.verify_password(password, user['password']):
+        if not Authentication().verify_password(password, user['password']):
             logger.error('Login failed: Invalid password', user['id'], {'email': email})
             return jsonify({'error': 'Invalid password'}), 401
         
