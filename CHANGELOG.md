@@ -153,3 +153,21 @@
 ## [0.3.4] - 2026-02-04
 ### Backend Changes
 - Requirement package version removal as a probable fix for dependency conflict.
+
+## [0.3.5] - 2026-02-04
+### Backend Changes
+- Sample application to validate single llm response.
+- React Agent class update
+  - class consideration
+  - naming convention updates
+  - code segregation update
+- Authentication issue fix
+- test update
+  - llm test case addition
+### Configuration Changes
+- package-lock.json
+- package.json
+- pytest.ini
+- requirements.txt
+  - version removal in ai-services
+  - pytest llm support package

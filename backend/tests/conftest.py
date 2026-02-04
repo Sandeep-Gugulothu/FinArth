@@ -27,3 +27,8 @@ def sample_prompt():
 def user_authentication():
     from backend.src.utils.auth import Authentication
     return Authentication()
+
+@pytest.fixture
+def react_agent_instance():
+    from backend.src.utils.react_agent import ReactAgent
+    return ReactAgent()
