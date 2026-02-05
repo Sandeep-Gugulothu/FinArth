@@ -15,10 +15,10 @@ File Execution State: Validation is in progress
 """
 
 import asyncio
-from flask import Blueprint, jsonify, request
-from utils.react_agent import ReactAgent
+from flask import Blueprint, request, jsonify
 from utils.logger import Logger
-from utils.chat_manager import ChatManager
+from ai_agent.chat_manager import ChatManager
+from ai_agent.core import AgentOrchestrator
 
 agent_blue_print = Blueprint('agent', __name__)
 logger = Logger.get_instance()
@@ -87,7 +87,15 @@ def generate_insight():
         # Run async function in sync context
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        result = loop.run_until_complete(ReactAgent().get_multi_llm_response(
+        
+        # New Agent Orchestrator Call
+        orchestrator = AgentOrchestrator()
+        
+        # We need to fetch history if we want to pass it
+        # history = ChatManager.get_messages(session_id) if session_id else []
+        # For now, let's keep it simple and just pass the query
+        
+        result = loop.run_until_complete(orchestrator.process(
             query,
             user_id
         ))
@@ -95,19 +103,47 @@ def generate_insight():
 
         bot_msg_id = None
         if session_id:
-            bot_msg_id = ChatManager.add_message(session_id, 'bot', result.final_answer)
+            bot_msg_id = ChatManager.add_message(session_id, 'bot', result.content)
 
         # log the successful generation
-        logger.info('ReAct agent insight generated successfully', user_id, {
-            'steps_generated': len(result.steps),
-            'final_answer_length': len(result.final_answer)
+        logger.info('AI Agent insight generated successfully', user_id, {
+            'intent': result.intent,
+            'response_length': len(result.content)
         })
-        # return the result
+        
+        # Format response for frontend compatibility
+        # The new agent doesn't expose 'steps' in the same way, so we return a simplified step
+        # or we could expose the router reasoning as a step.
+        steps = []
+        if result.metadata:
+             # 1. Router Step
+             steps.append({
+                 "thought": f"Analyzing user intent for query: '{query}'",
+                 "action": "IntentRouter.classify",
+                 "observation": f"Classified as {result.intent}. Confidence: {result.metadata.get('intent_confidence', 'N/A')}. Reasoning: {result.metadata.get('intent_reasoning', 'N/A')}"
+             })
+
+             # 2. Handler Step (Dynamic based on intent)
+             handler_name = result.metadata.get('handler', 'Unknown Handler')
+             steps.append({
+                 "thought": f"Routing to specialist: {handler_name}",
+                 "action": f"{handler_name}.process",
+                 "observation": "fetching user data and market context..."
+             })
+             
+             # 3. Model Step
+             model_used = result.metadata.get('model', 'Unknown Model')
+             steps.append({
+                 "thought": f"Generating response using {model_used}",
+                 "action": "LLM Generation",
+                 "observation": "Insight generated successfully."
+             })
+
         return jsonify({
             'success': True,
             'data': {
-                'steps': [{'thought': step.thought, 'action': step.action, 'observation': step.observation} for step in result.steps],
-                'finalAnswer': result.final_answer,
+                'steps': steps,
+                'finalAnswer': result.content,
                 'sessionId': session_id,
                 'messageId': bot_msg_id
             }

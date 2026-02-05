@@ -596,7 +596,7 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
 
   return (
     <>
-      <div className="min-h-screen bg-stone-50 flex overflow-hidden">
+      <div className="h-screen bg-stone-50 flex overflow-hidden">
         <Sidebar
           isSidebarVisible={isSidebarVisible}
           setIsSidebarVisible={setIsSidebarVisible}
@@ -604,7 +604,7 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
           onLogout={onLogout}
         />
 
-        <main className="flex-1 p-8 overflow-y-auto relative min-h-screen">
+        <main className="flex-1 overflow-hidden relative flex flex-col">
           {!isSidebarVisible && (
             <button
               onClick={() => setIsSidebarVisible(true)}
@@ -615,7 +615,7 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
             </button>
           )}
 
-          <div className="flex-1 overflow-y-auto p-8">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar">
             <div className="max-w-7xl mx-auto">
               {renderContent()}
             </div>

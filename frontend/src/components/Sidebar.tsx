@@ -34,7 +34,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     return (
         <div
             className={`${isSidebarVisible ? 'w-64' : 'w-0'
-                } bg-white border-r border-stone-200 flex flex-col transition-all duration-300 ease-in-out relative overflow-hidden flex-shrink-0 z-20`}
+                } bg-white border-r border-stone-200 flex flex-col h-full transition-all duration-300 ease-in-out relative overflow-hidden flex-shrink-0 z-20`}
         >
             <div className="p-6 border-b border-stone-200 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -49,7 +49,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 </button>
             </div>
 
-            <nav className="flex-1 p-4">
+            <nav className="flex-1 p-4 overflow-y-auto custom-scrollbar">
                 <ul className="space-y-2">
                     {menuItems.map((item) => (
                         <li key={item.id}>

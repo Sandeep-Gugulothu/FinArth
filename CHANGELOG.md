@@ -183,3 +183,21 @@
   - Chat history panel design update
   - Chat history panel functionality update
 
+## [0.4.0] - 2026-02-05
+### AI Agent & Backend Evolution
+- **Hybrid AI Architecture**: Implemented a specialized "Intent Router" with domain-specific handlers (Portfolio, Market, Risk, Planning) for faster and more accurate responses.
+- **Deterministic Math Engines**: Added `PortfolioAnalyzer` to perform hard calculations (total value, risk score, allocation %) *before* LLM processing, eliminating hallucinations in numerical data.
+- **Personalization & Localization**: 
+  - Integrated onboarding data (name, country, risk profile) into all AI responses.
+  - Added specific intelligence for Indian users, including NSE/BSE focus and 30% crypto tax awareness.
+- **Observability (Opik Integration)**: 
+  - Implementation of `OpikConfig.flush()` for reliable tracing.
+  - Added structured reasoning steps (`<thought>` tags) for transparency.
+  - Integrated `@llm_unit` automated evaluation tests.
+- **Back-end Reorganization**: 
+  - Cleaned up root directory by removing legacy scripts (`start.sh`, `start_python.py`).
+  - Decoupled AI logic into `src/ai_agent/`, separating it from core system utilities.
+  - Organized project scripts into `backend/scripts/`.
+- **UI/UX Polishing**:
+  - Implemented static sidebars and panels to prevent full-page scrolling.
+  - Added custom scrollbars to content areas for a cleaner, premium feel.

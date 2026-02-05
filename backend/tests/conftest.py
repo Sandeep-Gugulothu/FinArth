@@ -30,5 +30,10 @@ def user_authentication():
 
 @pytest.fixture
 def react_agent_instance():
-    from backend.src.utils.react_agent import ReactAgent
+    from ai_agent.react_agent import ReactAgent
     return ReactAgent()
+
+@pytest.fixture
+def orchestrator_instance():
+    from ai_agent.core import AgentOrchestrator
+    return AgentOrchestrator()

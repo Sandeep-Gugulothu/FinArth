@@ -20,7 +20,7 @@ from flask import Blueprint, jsonify, request
 import sqlite3
 from database import db, sync_to_backup
 from utils.auth import Authentication
-from utils.session_cache import session_cache
+from ai_agent.session_cache import session_cache
 from utils.logger import Logger
 
 users_blue_print = Blueprint('users', __name__)
