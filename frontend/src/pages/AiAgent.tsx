@@ -231,7 +231,7 @@ const AiAgent: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-stone-50 flex overflow-hidden font-sans">
+        <div className="h-screen bg-stone-50 flex overflow-hidden font-sans">
             <Sidebar
                 isSidebarVisible={isSidebarVisible}
                 setIsSidebarVisible={setIsSidebarVisible}
@@ -305,8 +305,8 @@ const AiAgent: React.FC = () => {
                                         <div className="space-y-1.5 flex-1 min-w-0">
                                             <div className="group relative">
                                                 <div className={`px-5 py-3.5 rounded-2xl ${message.type === 'user'
-                                                        ? 'bg-stone-100 text-stone-800 rounded-tr-none'
-                                                        : 'bg-white border border-stone-50 text-stone-900 rounded-tl-none shadow-sm'
+                                                    ? 'bg-stone-100 text-stone-800 rounded-tr-none'
+                                                    : 'bg-white border border-stone-50 text-stone-900 rounded-tl-none shadow-sm'
                                                     }`}>
                                                     <div className={`prose prose-stone max-w-none prose-sm leading-relaxed ${message.type === 'user' ? 'text-stone-800' : 'text-stone-800'
                                                         }`}>
@@ -426,8 +426,8 @@ const AiAgent: React.FC = () => {
                                     key={s.id}
                                     onClick={() => loadSessionMessages(s.id)}
                                     className={`group relative p-3 rounded-xl cursor-pointer transition-all border ${currentSessionId === s.id
-                                            ? 'bg-white border-stone-200 shadow-sm ring-1 ring-stone-900/5'
-                                            : 'hover:bg-stone-200/50 border-transparent'
+                                        ? 'bg-white border-stone-200 shadow-sm ring-1 ring-stone-900/5'
+                                        : 'hover:bg-stone-200/50 border-transparent'
                                         }`}
                                 >
                                     <div className="flex items-start gap-3">

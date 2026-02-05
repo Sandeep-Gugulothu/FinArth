@@ -54,7 +54,7 @@ const Sidebar = ({ activeTab, setActiveTab }: { activeTab: string; setActiveTab:
   ];
 
   return (
-    <div className="w-64 bg-white border-r border-slate-200 flex flex-col">
+    <div className="w-64 bg-white border-r border-slate-200 flex flex-col h-full flex-shrink-0">
       <div className="p-6 border-b border-slate-200">
         <div className="flex items-center gap-3">
           <img src="/logo.png" alt="FinArth" className="h-8 w-8" />
@@ -62,15 +62,15 @@ const Sidebar = ({ activeTab, setActiveTab }: { activeTab: string; setActiveTab:
         </div>
       </div>
 
-      <nav className="flex-1 p-4">
+      <nav className="flex-1 p-4 overflow-y-auto custom-scrollbar">
         <ul className="space-y-2">
           {menuItems.map((item) => (
             <li key={item.id}>
               <button
                 onClick={() => setActiveTab(item.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${activeTab === item.id
-                    ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                   }`}
               >
                 <item.icon size={20} />
@@ -445,9 +445,9 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="h-screen bg-slate-50 flex overflow-hidden">
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-      <main className="flex-1 p-8">
+      <main className="flex-1 p-8 overflow-y-auto custom-scrollbar">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-slate-900 mb-2">

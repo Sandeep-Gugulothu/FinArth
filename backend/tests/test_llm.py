@@ -18,8 +18,12 @@ async def test_single_llm_response(react_agent_instance):
     response = await react_agent_instance.get_single_llm_response(user_question)
     assert response is not None
     assert isinstance(response, str)
-    assert True == (
-        ('Paris' in response) or
-        ('paris' in response) or
-        ('PARIS' in response)
-        )
+    assert any(p in response.lower() for p in ['paris'])
+
+@llm_unit()
+async def test_orchestrator_generic_intent(orchestrator_instance):
+    query = "Hello, who are you and what can you do?"
+    result = await orchestrator_instance.process(query)
+    assert result is not None
+    assert result.content != ""
+    assert "FinArth" in result.content or "assistant" in result.content.lower()
