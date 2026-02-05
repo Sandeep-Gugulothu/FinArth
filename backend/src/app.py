@@ -20,7 +20,7 @@ CORS(app, origins=[
     "http://localhost:3000",
     "http://localhost:3001", 
     "https://*.vercel.app",
-    "https://your-frontend-domain.vercel.app"  # Replace with your actual frontend URL
+    "https://fin-arth-frontend.vercel.app"  # Your actual frontend URL
 ])
 
 # Routes
