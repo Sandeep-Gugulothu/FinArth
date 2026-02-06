@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Globe,
-  Activity,
-  TrendingDown
+  Globe
 } from 'lucide-react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { apiCall } from '../utils/api.ts';
+import { Activity, TrendingDown, Target } from '../components/Icons.tsx';
 import Sidebar from '../components/Sidebar.tsx';
 import Portfolio from './Portfolio.tsx';
 
@@ -274,176 +273,6 @@ const OverviewTab = ({ marketData, loading, error, userName, goals, holdings }: 
   );
 };
 
-// Portfolio functionality moved back to its dedicated component Portfolio.tsx
-
-const GoalsTab = ({ goals, onRefresh }: { goals: any[], onRefresh: () => void }) => {
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [newGoal, setNewGoal] = useState({ name: '', target_amount: 0, current_amount: 0, timeline_years: 5, monthly_required: 0 });
-
-  const handleAddGoal = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await apiCall('/api/plans/goals', {
-        method: 'POST',
-        body: JSON.stringify(newGoal)
-      });
-      setShowAddForm(false);
-      setNewGoal({ name: '', target_amount: 0, current_amount: 0, timeline_years: 5, monthly_required: 0 });
-      onRefresh();
-    } catch (err) {
-      alert('Failed to add goal');
-    }
-  };
-
-  const handleDeleteGoal = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this goal?')) return;
-    try {
-      await apiCall(`/api/plans/goals/${id}`, { method: 'DELETE' });
-      onRefresh();
-    } catch (err) {
-      alert('Failed to delete goal');
-    }
-  };
-
-  return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-3xl font-bold text-stone-900 mb-2">Life Goals</h2>
-          <p className="text-stone-600">Track and plan your financial objectives</p>
-        </div>
-        <button
-          onClick={() => setShowAddForm(true)}
-          className="px-6 py-2 bg-stone-800 text-white font-bold rounded hover:bg-stone-900 transition-colors"
-        >
-          Add New Goal
-        </button>
-      </div>
-
-      {showAddForm && (
-        <div className="bg-white p-6 border border-stone-200 shadow-sm rounded-lg">
-          <h3 className="text-lg font-bold text-stone-900 mb-4">Initialize New Financial Goal</h3>
-          <form onSubmit={handleAddGoal} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-stone-500 uppercase">Goal Name</label>
-              <input
-                type="text" required
-                value={newGoal.name}
-                onChange={e => setNewGoal({ ...newGoal, name: e.target.value })}
-                className="w-full p-2 border border-stone-200 rounded"
-                placeholder="e.g. Dream House"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-stone-500 uppercase">Target Amount (₹)</label>
-              <input
-                type="number" required
-                value={newGoal.target_amount || ''}
-                onChange={e => setNewGoal({ ...newGoal, target_amount: parseInt(e.target.value) })}
-                className="w-full p-2 border border-stone-200 rounded"
-                placeholder="5000000"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-stone-500 uppercase">Current Savings (₹)</label>
-              <input
-                type="number"
-                value={newGoal.current_amount || ''}
-                onChange={e => setNewGoal({ ...newGoal, current_amount: parseInt(e.target.value) })}
-                className="w-full p-2 border border-stone-200 rounded"
-                placeholder="500000"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-stone-500 uppercase">Timeline (Years)</label>
-              <input
-                type="number" required
-                value={newGoal.timeline_years || ''}
-                onChange={e => setNewGoal({ ...newGoal, timeline_years: parseInt(e.target.value) })}
-                className="w-full p-2 border border-stone-200 rounded"
-                placeholder="10"
-              />
-            </div>
-            <div className="md:col-span-2 flex justify-end gap-3 mt-4">
-              <button
-                type="button"
-                onClick={() => setShowAddForm(false)}
-                className="px-6 py-2 border border-stone-200 rounded text-stone-600 font-bold"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-6 py-2 bg-stone-800 text-white rounded font-bold"
-              >
-                Create Goal
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {goals.map((goal) => (
-          <div key={goal.id} className="bg-white p-6 border border-stone-200 shadow-sm hover:shadow-md transition-all group">
-            <div className="flex justify-between items-start mb-6">
-              <h3 className="font-bold text-stone-900 tracking-tight">{goal.name}</h3>
-              <div className="flex items-center gap-2">
-                <span className={`px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest rounded border bg-stone-50 text-stone-600 border-stone-100`}>
-                  {goal.status}
-                </span>
-                <button
-                  onClick={() => handleDeleteGoal(goal.id)}
-                  className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 transition-opacity"
-                >
-                  <TrendingDown size={14} />
-                </button>
-              </div>
-            </div>
-            <div className="w-full bg-stone-100 rounded-sm h-3 mb-4 border border-stone-200/50">
-              <div
-                className="bg-stone-800 h-full transition-all duration-1000"
-                style={{ width: `${goal.progress}%` }}
-              />
-            </div>
-            <div className="flex justify-between text-[11px] font-bold font-mono mb-6">
-              <span className="text-stone-900">₹{goal.current_amount.toLocaleString()}</span>
-              <span className="text-stone-400">Target ₹{goal.target_amount.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between items-center pt-4 border-t border-stone-50">
-              <span className="text-[10px] font-bold text-stone-500 uppercase tracking-widest">{goal.timeline} Horizon</span>
-              <div className="text-[10px] font-bold text-stone-900">
-                {goal.progress}% complete
-              </div>
-            </div>
-          </div>
-        ))}
-
-        {goals.length === 0 && !showAddForm && (
-          <div className="md:col-span-2 lg:col-span-3 py-12 text-center bg-stone-50 border border-dashed border-stone-300 rounded-xl">
-            <p className="text-stone-500 font-medium">No financial goals set yet. Start planning your future today.</p>
-            <button
-              onClick={() => setShowAddForm(true)}
-              className="mt-4 text-stone-900 font-bold hover:underline"
-            >
-              + Create your first goal
-            </button>
-          </div>
-        )}
-      </div>
-
-      {goals.length > 0 && (
-        <div className="bg-stone-50 p-8 border border-stone-200">
-          <h3 className="text-lg font-bold text-stone-900 mb-2">Portfolio Insights</h3>
-          <p className="text-sm text-stone-600 leading-relaxed font-medium">
-            Based on your active goals, you need to save approximately <strong className="text-stone-900">₹{goals.reduce((acc, curr) => acc + (curr.monthly_required || 0), 0).toLocaleString()}</strong> per month to stay on track.
-          </p>
-        </div>
-      )}
-    </div>
-  );
-};
-
 interface DashboardProps {
   onLogout: () => void;
 }
@@ -537,7 +366,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     switch (activeTab) {
       case 'overview': return <OverviewTab marketData={marketDataWithAnalysis} loading={loading} error={error} userName={userName} goals={goals} holdings={holdings} />;
       case 'portfolio': return <Portfolio holdings={holdings} onRefresh={fetchHoldings} marketData={marketData} cryptoAnalysisProp={cryptoAnalysis} />;
-      case 'goals': return <GoalsTab goals={goals} onRefresh={fetchGoals} />;
       default: return <OverviewTab marketData={marketDataWithAnalysis} loading={loading} error={error} userName={userName} goals={goals} holdings={holdings} />;
     }
   };
