@@ -4,6 +4,7 @@ import OnboardingPage from './pages/onboarding.tsx';
 import Portfolio from './pages/Portfolio.tsx';
 import AiAgent from './pages/AiAgent.tsx';
 import Dashboard from './pages/Dashboard.tsx';
+import GoalPage from './pages/GoalPage.tsx';
 import Sidebar from './components/Sidebar.tsx';
 import { PanelLeftOpen } from './components/Icons.tsx';
 import API_BASE_URL from './utils/api.ts';
@@ -542,7 +543,7 @@ const Hero = ({ onGetStarted, isConnecting }: { onGetStarted: () => void; isConn
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-stone-600 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-stone-700"></span>
           </span>
-          AI-Powered Financial Planning
+          Autonomous Financial Planning
         </div>
 
         <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-stone-900 mb-6 scroll-animate">
@@ -1160,6 +1161,7 @@ export default function Page() {
       <Route path="/signup" element={<Signup onSignup={handleSignup} />} />
       <Route path="/onboarding" element={<OnboardingPage onComplete={handleOnboardingComplete} />} />
       <Route path="/dashboard" element={<Dashboard onLogout={handleLogout} />} />
+      <Route path="/dashboard/goals" element={<GoalPage />} />
       <Route path="/dashboard/:tab" element={<Dashboard onLogout={handleLogout} />} />
       <Route path="/pgas/ai-agent" element={<AiAgent />} />
     </Routes>

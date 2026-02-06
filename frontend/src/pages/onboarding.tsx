@@ -61,7 +61,7 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
     { id: 'recommendations', text: 'Receive tailored recommendations', icon: Target },
     { id: 'optimization', text: 'Minimize taxes and fees', icon: Calculator },
     { id: 'tracking', text: 'Monitor my net worth', icon: TrendingUp },
-    { id: 'insights', text: 'Access AI investment insights', icon: Bot },
+    { id: 'insights', text: 'Access advanced investment insights', icon: Bot },
     { id: 'other', text: 'Explore other options', icon: ArrowRight }
   ];
 
@@ -159,8 +159,8 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
             </div>
 
             <div className="border-l-4 border-stone-600 pl-4">
-              <h3 className="font-bold text-stone-900 mb-2 text-sm">Artificial Intelligence System Limitations</h3>
-              <p className="text-xs leading-none">The artificial intelligence algorithms, machine learning models, automated systems, algorithmic trading systems, robo-advisory services, and computational tools employed by the Company are designed to provide general guidance and educational information based on mathematical models, statistical analysis, historical data analysis, pattern recognition, and algorithmic processing. These systems have inherent limitations, biases, and constraints and may not account for all market conditions, economic factors, personal circumstances, individual risk factors, behavioral considerations, emotional factors, or external variables that could materially affect investment outcomes and financial decisions. The AI systems, algorithms, and automated tools are not a substitute for professional financial planning, personalized investment advice, human judgment, professional expertise, or individualized analysis. Users acknowledge and understand that algorithmic recommendations, AI-generated content, automated suggestions, and system outputs may contain errors, inaccuracies, biases, limitations, technical glitches, or computational mistakes and should not be relied upon as the sole basis for investment decisions or financial planning. The Company disclaims all liability for any losses, damages, or adverse outcomes resulting from reliance on AI-generated recommendations or automated system outputs. Users further acknowledge that AI systems may not perform as expected under all market conditions and that the Company makes no guarantees regarding the accuracy or reliability of AI-generated content or recommendations.</p>
+              <h3 className="font-bold text-stone-900 mb-2 text-sm">Advanced Analytical System Limitations</h3>
+              <p className="text-xs leading-none">The analytical algorithms, machine learning models, automated systems, algorithmic trading systems, robo-advisory services, and computational tools employed by the Company are designed to provide general guidance and educational information based on mathematical models, statistical analysis, historical data analysis, pattern recognition, and algorithmic processing. These systems have inherent limitations, biases, and constraints and may not account for all market conditions, economic factors, personal circumstances, individual risk factors, behavioral considerations, emotional factors, or external variables that could materially affect investment outcomes and financial decisions. The analytical systems, algorithms, and automated tools are not a substitute for professional financial planning, personalized investment advice, human judgment, professional expertise, or individualized analysis. Users acknowledge and understand that algorithmic recommendations, system-generated content, automated suggestions, and system outputs may contain errors, inaccuracies, biases, limitations, technical glitches, or computational mistakes and should not be relied upon as the sole basis for investment decisions or financial planning. The Company disclaims all liability for any losses, damages, or adverse outcomes resulting from reliance on system-generated recommendations or automated system outputs. Users further acknowledge that analytical systems may not perform as expected under all market conditions and that the Company makes no guarantees regarding the accuracy or reliability of system-generated content or recommendations.</p>
             </div>
 
             <div className="border-l-4 border-stone-600 pl-4">
@@ -368,8 +368,8 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
                   key={option.id}
                   onClick={() => setRiskPreference(option.id)}
                   className={`w-full p-4 border text-left transition-all hover:bg-stone-50 ${riskPreference === option.id
-                      ? 'border-stone-600 bg-stone-50 shadow-sm'
-                      : 'border-stone-200'
+                    ? 'border-stone-600 bg-stone-50 shadow-sm'
+                    : 'border-stone-200'
                     }`}
                 >
                   <div className="font-medium text-stone-900">{option.label}</div>
@@ -387,8 +387,8 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
                   key={investment}
                   onClick={() => toggleInvestment(investment)}
                   className={`p-3 border text-center transition-all hover:bg-stone-50 ${familiarInvestments.includes(investment)
-                      ? 'border-stone-600 bg-stone-50 shadow-sm'
-                      : 'border-stone-200'
+                    ? 'border-stone-600 bg-stone-50 shadow-sm'
+                    : 'border-stone-200'
                     }`}
                 >
                   <span className="text-stone-900 font-medium">{investment}</span>
@@ -425,14 +425,14 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
     const returnOptions = [
       {
         id: 'ai',
-        label: 'PortfolioPilot AI forecasts',
-        desc: 'We use our own tested AI models based on economic data to estimate returns',
+        label: 'FinArth Intelligence forecasts',
+        desc: 'We use our own tested analytical models based on economic data to estimate returns',
         badge: 'Recommended'
       },
       {
         id: 'blend',
-        label: 'Blend of AI and market forecasts',
-        desc: 'A mix of our AI forecasts and standard market return estimates',
+        label: 'Blend of Intelligence and market forecasts',
+        desc: 'A mix of our intelligence forecasts and standard market return estimates',
         badge: null
       },
       {
@@ -461,8 +461,8 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
                   key={option.id}
                   onClick={() => setReturnEstimate(option.id)}
                   className={`w-full p-4 border text-left transition-all hover:bg-stone-50 relative ${returnEstimate === option.id
-                      ? 'border-stone-600 bg-stone-50 shadow-sm'
-                      : 'border-stone-200'
+                    ? 'border-stone-600 bg-stone-50 shadow-sm'
+                    : 'border-stone-200'
                     }`}
                 >
                   <div className="flex items-start justify-between">
@@ -518,13 +518,13 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
               key={option.id}
               onClick={() => toggleOption(option.id)}
               className={`flex items-center gap-4 p-6 border text-left transition-all hover:bg-stone-50 ${selectedOptions.includes(option.id)
-                  ? 'border-stone-600 bg-stone-50 shadow-sm'
-                  : 'border-stone-200'
+                ? 'border-stone-600 bg-stone-50 shadow-sm'
+                : 'border-stone-200'
                 }`}
             >
               <div className={`p-2 rounded-lg ${selectedOptions.includes(option.id)
-                  ? 'bg-stone-800 text-stone-50'
-                  : 'bg-stone-100 text-stone-600'
+                ? 'bg-stone-800 text-stone-50'
+                : 'bg-stone-100 text-stone-600'
                 }`}>
                 <option.icon size={20} />
               </div>
