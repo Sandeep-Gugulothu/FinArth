@@ -17,12 +17,17 @@ load_dotenv()
 app = Flask(__name__)
 
 # Enhanced CORS configuration for production
-CORS(app, origins=[
-    "http://localhost:3000",
-    "http://localhost:3001", 
-    "https://*.vercel.app",
-    "https://fin-arth-frontend.vercel.app"  # Your actual frontend URL
-])
+CORS(app, 
+     origins=[
+         "http://localhost:3000",
+         "http://localhost:3001", 
+         "https://fin-arth-frontend.vercel.app",
+         "https://fin-arth-frontend-gugulothu-sandeeps-projects.vercel.app"
+     ],
+     supports_credentials=True,
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+)
 
 # Routes
 app.register_blueprint(plans_blue_print, url_prefix='/api/plans')

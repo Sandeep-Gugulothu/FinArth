@@ -202,7 +202,7 @@
   - Implemented static sidebars and panels to prevent full-page scrolling.
   - Added custom scrollbars to content areas for a cleaner, premium feel.
 
-## [0.5.0] - 2026-02-07
+## [0.5.0] - 2026-02-06
 ### Frontend Changes
 - **Dashboard Page**:
   - Added the visuals of the data fetched from the coinGecko and Weexs API.
@@ -223,6 +223,14 @@
  - We are using the **Weexs(CEX) API** for calulating the ROI and Total Value.
 
 ## [0.5.1] - 2026-02-06
+### Goal Architect & Strategic Planning
+  - Implemented an advanced "Multi-Factor Feasibility" engine that weights SIP stress, timeline horizons, initial wealth headstarts, and risk volatility for realistic success probabilities.
+  - Added a consolidated "Global Commitment" summary displaying total monthly SIP requirements across all active targets.
+- **High-Fidelity Data Infrastructure**:
+  - Performed a zero-data-loss migration of the `financial_goals` schema to include critical advisory context: `risk_profile`, `adjust_inflation`, and `return_rate`.
+  - Updated backend API routes to capture this mathematical context, enabling future "Wealth Intel" personalized insights.
+
+## [0.5.2] - 2026-02-06
 ### Backend Changes
 - Dead code removal
 - Error opik import handling
