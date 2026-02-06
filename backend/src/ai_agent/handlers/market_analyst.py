@@ -7,7 +7,7 @@ from ai_agent.handlers.base import BaseHandler
 from ai_agent.tools import MarketDataService
 from utils.opik_client import OpikConfig, trace
 
-MODEL_NAME = 'meta-llama/llama-3.1-8b-instruct:free'
+MODEL_NAME = 'google/gemini-2.0-flash-exp:free'
 
 from ai_agent.engine.user_service import UserService
 

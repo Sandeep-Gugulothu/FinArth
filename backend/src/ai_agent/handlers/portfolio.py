@@ -10,7 +10,7 @@ from utils.opik_client import OpikConfig, trace
 from database import db_path  # Import db_path to connect
 from ai_agent.engine.portfolio_analyzer import PortfolioAnalyzer
 
-MODEL_NAME = 'meta-llama/llama-3.1-8b-instruct:free'
+MODEL_NAME = 'google/gemini-2.0-flash-exp:free'
 
 from ai_agent.engine.user_service import UserService
 

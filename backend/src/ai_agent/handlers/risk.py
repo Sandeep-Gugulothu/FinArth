@@ -9,7 +9,7 @@ from ai_agent.tools import MarketDataService
 from utils.opik_client import OpikConfig, trace
 from database import db_path
 
-MODEL_NAME = 'meta-llama/llama-3.1-8b-instruct:free'
+MODEL_NAME = 'google/gemini-2.0-flash-exp:free'
 
 class RiskHandler(BaseHandler):
     def __init__(self):
