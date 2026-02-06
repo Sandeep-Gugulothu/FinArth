@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import {
   Globe
 } from 'lucide-react';
-import { useLocation, useParams, useNavigate } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { apiCall } from '../utils/api.ts';
-import { Activity, TrendingDown, Target } from '../components/Icons.tsx';
+import { Activity } from '../components/Icons.tsx';
 import Sidebar from '../components/Sidebar.tsx';
 import Portfolio from './Portfolio.tsx';
 
@@ -59,7 +59,7 @@ const OverviewTab = ({ marketData, loading, error, userName, goals, holdings }: 
   const completedGoals = goals.filter(g => g.progress >= 100).length;
 
   // Calculate true current value including ROI
-  const totalInvested = holdings.reduce((sum, h) => sum + (h.amount || 0), 0);
+
   const totalPortfolioValue = holdings.reduce((sum, h) => {
     let growth = 0;
     if (h.category === 'Crypto') {

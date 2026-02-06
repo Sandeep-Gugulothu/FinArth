@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import OnboardingPage from './pages/onboarding.tsx';
-import Portfolio from './pages/Portfolio.tsx';
 import AiAgent from './pages/AiAgent.tsx';
 import Dashboard from './pages/Dashboard.tsx';
 import GoalPage from './pages/GoalPage.tsx';
-import Sidebar from './components/Sidebar.tsx';
-import { PanelLeftOpen } from './components/Icons.tsx';
 import API_BASE_URL from './utils/api.ts';
 
 // Login Component
