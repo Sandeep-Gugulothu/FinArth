@@ -9,7 +9,7 @@ from ai_agent.tools import MarketDataService
 from utils.opik_client import OpikConfig, trace
 from database import db_path
 
-MODEL_NAME = 'liquid/lfm-2.5-1.2b-instruct:free'
+MODEL_NAME = 'meta-llama/llama-3.1-8b-instruct:free'
 
 class RiskHandler(BaseHandler):
     def __init__(self):
@@ -72,32 +72,39 @@ class RiskHandler(BaseHandler):
         for h in holdings:
             allocation_summary[h['category']] = allocation_summary.get(h['category'], 0) + h['amount']
 
-        prompt = f"""You are a Risk Manager named FinArth.
-        
-        User Query: "{query}"
+        system_message = f"""You are FinArth, a Risk Management Specialist focused on portfolio alignment and risk assessment.
 
-        User Profile:
-        - Age: {profile.get('age', 'Unknown')}
-        - Risk Preference: {profile.get('risk_preference', 'Unknown')}
-        - Country: {profile.get('country', 'Unknown')}
+User Profile:
+- Age: {profile.get('age', 'Unknown')}
+- Risk Preference: {profile.get('risk_preference', 'Unknown')}
+- Country: {profile.get('country', 'Unknown')}
+
+Current Portfolio Allocation:
+{json.dumps(allocation_summary, indent=2)}
+
+Guidelines:
+1. Perform Gap Analysis: Does portfolio match stated risk preference?
+2. Warn if Low Risk user holds high-volatility assets (>50% crypto/stocks)
+3. Suggest growth assets if High Risk user is too conservative
+4. Reference specific market risks from current conditions
+5. Provide actionable rebalancing recommendations
+
+Market Context:
+{market_context}"""
+
+        messages = [{"role": "system", "content": system_message}]
         
-        Current Portfolio Allocation:
-        {json.dumps(allocation_summary, indent=2)}
+        if context.get('conversation_history'):
+            messages.extend(context['conversation_history'][-6:])
         
-        Market Context:
-        {market_context}
-        
-        Task:
-        Perform a Gap Analysis. Does the user's actual portfolio align with their stated risk preference?
-        For example, if they are "Low Risk" but hold 90% Crypto, warn them.
-        If they are "High Risk" but hold only Cash, suggest growth assets.
-        Reference specific market risks from the context.
-        """
+        messages.append({"role": "user", "content": query})
 
         try:
             response = self.client.chat.completions.create(
                 model=MODEL_NAME,
-                messages=[{"role": "user", "content": prompt}]
+                messages=messages,
+                temperature=0.7,
+                max_tokens=800
             )
             content = response.choices[0].message.content
             

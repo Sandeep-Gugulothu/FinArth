@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import API_BASE_URL from '../utils/api.ts';
 
 const Shield = ({ size = 24 }) => (
   <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,7 +53,7 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
   const [riskPreference, setRiskPreference] = useState('');
   const [familiarInvestments, setFamiliarInvestments] = useState<string[]>([]);
   const [returnEstimate, setReturnEstimate] = useState('');
-  
+
   const options = [
     { id: 'strategy', text: 'Strengthen my financial strategy', icon: Shield },
     { id: 'returns', text: 'Maximize risk-adjusted returns', icon: TrendingUp },
@@ -65,16 +66,16 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
   ];
 
   const toggleInvestment = (investmentId: string) => {
-    setFamiliarInvestments(prev => 
-      prev.includes(investmentId) 
+    setFamiliarInvestments(prev =>
+      prev.includes(investmentId)
         ? prev.filter(id => id !== investmentId)
         : [...prev, investmentId]
     );
   };
 
   const toggleOption = (optionId: string) => {
-    setSelectedOptions(prev => 
-      prev.includes(optionId) 
+    setSelectedOptions(prev =>
+      prev.includes(optionId)
         ? prev.filter(id => id !== optionId)
         : [...prev, optionId]
     );
@@ -94,13 +95,13 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
                   <polygon points="45,25 70,20 75,45 50,50 45,25" fill="#6b7280" stroke="#4b5563" strokeWidth="0.5" />
                   <polygon points="30,40 50,50 45,70 20,65 30,40" fill="#78716c" stroke="#57534e" strokeWidth="0.5" />
                   <polygon points="8,35 30,40 20,65 5,60 8,35" fill="#6b7280" stroke="#4b5563" strokeWidth="0.5" />
-                  
+
                   {/* Settlement points */}
                   <circle cx="22" cy="20" r="1.5" fill="#f5f5f4" />
                   <circle cx="58" cy="32" r="1.5" fill="#f5f5f4" />
                   <circle cx="38" cy="55" r="1.5" fill="#f5f5f4" />
                   <circle cx="15" cy="50" r="1" fill="#e7e5e4" />
-                  
+
                   {/* Trade routes */}
                   <path d="M22,20 Q40,15 58,32" stroke="#f5f5f4" strokeWidth="0.8" fill="none" />
                   <path d="M58,32 Q48,43 38,55" stroke="#f5f5f4" strokeWidth="0.8" fill="none" />
@@ -108,7 +109,7 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
                   <path d="M15,50 Q18,35 22,20" stroke="#e7e5e4" strokeWidth="0.6" fill="none" strokeDasharray="1,1" />
                 </svg>
               </div>
-              
+
               {/* Main navigation overlay */}
               <svg className="w-12 h-12 relative z-10" viewBox="0 0 48 48" fill="none">
                 <circle cx="12" cy="12" r="2" fill="#f5f5f4" />
@@ -128,7 +129,7 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
               No hidden fees. No biased salespeople. Just simple, powerful tools and personalized investment guidance.
             </p>
           </div>
-          
+
           <button
             onClick={() => setStep(2)}
             className="w-full px-8 py-4 bg-stone-800 text-stone-50 font-semibold hover:bg-stone-900 transition-colors text-lg"
@@ -145,29 +146,29 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
       <div className="min-h-screen bg-stone-50 flex items-center justify-center p-4">
         <div className="bg-white border border-stone-200 shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto p-8">
           <h2 className="text-2xl font-bold text-stone-900 mb-6">Important Disclosures & Terms</h2>
-          
+
           <div className="space-y-6 text-xs text-stone-700 mb-8 leading-tight">
             <div className="border-l-4 border-stone-600 pl-4">
               <h3 className="font-bold text-stone-900 mb-2 text-sm">Risk Disclosure Statement</h3>
               <p className="text-xs leading-none">The Company hereby provides notice that all investment products and services offered through this platform involve inherent market risks, including but not limited to market volatility, economic downturns, interest rate fluctuations, currency exchange variations, inflation risks, deflation risks, credit risks, liquidity risks, operational risks, regulatory risks, political risks, geopolitical risks, systemic risks, counterparty risks, settlement risks, technology risks, cybersecurity risks, and other systematic and unsystematic risks that may result in partial or total loss of invested capital. Past performance data, historical returns, backtested results, simulated performance, hypothetical scenarios, and projected outcomes do not constitute a guarantee of future performance and should not be construed as an indication of future results. The value of investments may fluctuate significantly and investors may receive back less than their original investment amount. Market conditions can change rapidly and unpredictably, and there can be no assurance that any investment strategy will be successful in achieving its objectives. Diversification does not guarantee against loss. All investments carry risk of loss, including the potential for total loss of principal. Economic factors, market sentiment, regulatory changes, and unforeseen events may adversely impact investment performance. Furthermore, the Company disclaims any responsibility for losses arising from market conditions, economic factors, or external events beyond its control, and users acknowledge that investment decisions are made at their own risk and discretion.</p>
             </div>
-            
+
             <div className="border-l-4 border-stone-600 pl-4">
               <h3 className="font-bold text-stone-900 mb-2 text-sm">Educational Services Disclaimer</h3>
               <p className="text-xs leading-none">FinArth Technologies Private Limited ("Company") provides educational content, analytical tools, informational resources, research materials, market commentary, and general financial information for general educational purposes only. The information, analysis, recommendations, opinions, research, data, content, materials, and services provided through this platform do not constitute investment advice, financial planning advice, tax advice, legal advice, accounting advice, insurance advice, estate planning advice, or any other form of professional advice. Users acknowledge and agree that the Company does not provide personalized investment recommendations, individualized financial planning services, or customized investment strategies, and that all content is of a general nature and not tailored to any specific individual's financial situation, investment objectives, risk tolerance, or personal circumstances. Users are strongly advised and encouraged to consult with qualified financial advisors, registered investment advisors, certified financial planners, tax professionals, attorneys, accountants, and other licensed professionals before making any investment decisions, financial commitments, or implementing any financial strategies. The Company makes no representations or warranties regarding the accuracy, completeness, timeliness, or reliability of any information provided. Users further acknowledge that the Company shall not be held liable for any investment decisions made based on the information provided through this platform, and that all investment decisions are made solely at the user's own risk and discretion.</p>
             </div>
-            
+
             <div className="border-l-4 border-stone-600 pl-4">
               <h3 className="font-bold text-stone-900 mb-2 text-sm">Artificial Intelligence System Limitations</h3>
               <p className="text-xs leading-none">The artificial intelligence algorithms, machine learning models, automated systems, algorithmic trading systems, robo-advisory services, and computational tools employed by the Company are designed to provide general guidance and educational information based on mathematical models, statistical analysis, historical data analysis, pattern recognition, and algorithmic processing. These systems have inherent limitations, biases, and constraints and may not account for all market conditions, economic factors, personal circumstances, individual risk factors, behavioral considerations, emotional factors, or external variables that could materially affect investment outcomes and financial decisions. The AI systems, algorithms, and automated tools are not a substitute for professional financial planning, personalized investment advice, human judgment, professional expertise, or individualized analysis. Users acknowledge and understand that algorithmic recommendations, AI-generated content, automated suggestions, and system outputs may contain errors, inaccuracies, biases, limitations, technical glitches, or computational mistakes and should not be relied upon as the sole basis for investment decisions or financial planning. The Company disclaims all liability for any losses, damages, or adverse outcomes resulting from reliance on AI-generated recommendations or automated system outputs. Users further acknowledge that AI systems may not perform as expected under all market conditions and that the Company makes no guarantees regarding the accuracy or reliability of AI-generated content or recommendations.</p>
             </div>
-            
+
             <div className="border-l-4 border-stone-600 pl-4">
               <h3 className="font-bold text-stone-900 mb-2 text-sm">Terms of Service and Privacy Agreement</h3>
               <p className="text-xs leading-none">By accessing, using, or registering for this platform, users hereby agree to be bound by the Company's Terms of Service, Privacy Policy, User Agreement, Acceptable Use Policy, Cookie Policy, Data Processing Agreement, and all applicable terms, conditions, rules, policies, and guidelines as may be amended, modified, updated, or supplemented from time to time at the Company's sole discretion. Users acknowledge that they have read, understood, reviewed, and agree to comply with all terms, conditions, and policies governing the use of this platform, including but not limited to user conduct, prohibited activities, intellectual property rights, data usage, privacy practices, and dispute resolution procedures. Users consent to the collection, processing, storage, use, sharing, and transfer of their personal data, financial information, usage data, and other information in accordance with the Company's Privacy Policy and applicable data protection laws. The Company reserves the right to modify, update, change, suspend, or terminate these terms, conditions, services, or access to the platform at any time without prior notice, and continued use of the platform constitutes acceptance of such modifications. Users acknowledge all risks, limitations, disclaimers, and liability exclusions described herein and agree to hold the Company, its affiliates, subsidiaries, officers, directors, employees, agents, and representatives harmless from any and all losses, damages, claims, liabilities, costs, expenses, or adverse outcomes arising from or related to the use of this platform, services, or information provided. Users further agree to indemnify and hold harmless the Company from any claims, damages, or losses arising from their use of the platform or violation of these terms and conditions.</p>
             </div>
           </div>
-          
+
           <label className="flex items-start gap-3 mb-6">
             <input
               type="checkbox"
@@ -179,7 +180,7 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
               I acknowledge that I have read and understood the risks, limitations, and terms described above.
             </span>
           </label>
-          
+
           <div className="flex gap-3">
             <button
               onClick={() => setStep(1)}
@@ -212,7 +213,7 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
               Mr. Handsome or Miss. Beautiful or Mrs. Beautiful?
             </p>
           </div>
-          
+
           <div className="mb-8">
             <input
               type="text"
@@ -223,7 +224,7 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
               autoFocus
             />
           </div>
-          
+
           <div className="flex gap-4">
             <button
               onClick={() => setStep(2)}
@@ -257,7 +258,7 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
               This helps us provide relevant financial guidance
             </p>
           </div>
-          
+
           <div className="mb-8">
             <input
               type="text"
@@ -268,7 +269,7 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
               autoFocus
             />
           </div>
-          
+
           <div className="flex gap-4">
             <button
               onClick={() => setStep(3)}
@@ -284,7 +285,7 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
               Continue
             </button>
           </div>
-          
+
           <p className="text-xs text-stone-500 text-center mt-4 pt-4 border-t border-stone-200">
             Your choice affects how we run simulations, score your portfolio, and give recommendations.
           </p>
@@ -305,7 +306,7 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
               This helps us tailor investment strategies for your life stage
             </p>
           </div>
-          
+
           <div className="mb-8">
             <input
               type="number"
@@ -316,7 +317,7 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
               autoFocus
             />
           </div>
-          
+
           <div className="flex gap-4">
             <button
               onClick={() => setStep(4)}
@@ -332,7 +333,7 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
               Continue
             </button>
           </div>
-          
+
           <p className="text-xs text-stone-500 text-center mt-4 pt-4 border-t border-stone-200">
             Your choice affects how we run simulations, score your portfolio, and give recommendations.
           </p>
@@ -358,7 +359,7 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-stone-900 mb-2">Investment Profile</h2>
           </div>
-          
+
           <div className="mb-8">
             <h3 className="text-lg font-semibold text-stone-900 mb-4">What's your risk preference?</h3>
             <div className="space-y-3">
@@ -366,11 +367,10 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
                 <button
                   key={option.id}
                   onClick={() => setRiskPreference(option.id)}
-                  className={`w-full p-4 border text-left transition-all hover:bg-stone-50 ${
-                    riskPreference === option.id
+                  className={`w-full p-4 border text-left transition-all hover:bg-stone-50 ${riskPreference === option.id
                       ? 'border-stone-600 bg-stone-50 shadow-sm'
                       : 'border-stone-200'
-                  }`}
+                    }`}
                 >
                   <div className="font-medium text-stone-900">{option.label}</div>
                   <div className="text-sm text-stone-600">{option.desc}</div>
@@ -386,18 +386,17 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
                 <button
                   key={investment}
                   onClick={() => toggleInvestment(investment)}
-                  className={`p-3 border text-center transition-all hover:bg-stone-50 ${
-                    familiarInvestments.includes(investment)
+                  className={`p-3 border text-center transition-all hover:bg-stone-50 ${familiarInvestments.includes(investment)
                       ? 'border-stone-600 bg-stone-50 shadow-sm'
                       : 'border-stone-200'
-                  }`}
+                    }`}
                 >
                   <span className="text-stone-900 font-medium">{investment}</span>
                 </button>
               ))}
             </div>
           </div>
-          
+
           <div className="flex gap-4">
             <button
               onClick={() => setStep(5)}
@@ -413,7 +412,7 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
               Continue
             </button>
           </div>
-          
+
           <p className="text-xs text-stone-500 text-center mt-4 pt-4 border-t border-stone-200">
             Your choice affects how we run simulations, score your portfolio, and give recommendations.
           </p>
@@ -424,21 +423,21 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
 
   if (step === 7) {
     const returnOptions = [
-      { 
-        id: 'ai', 
-        label: 'PortfolioPilot AI forecasts', 
+      {
+        id: 'ai',
+        label: 'PortfolioPilot AI forecasts',
         desc: 'We use our own tested AI models based on economic data to estimate returns',
         badge: 'Recommended'
       },
-      { 
-        id: 'blend', 
-        label: 'Blend of AI and market forecasts', 
+      {
+        id: 'blend',
+        label: 'Blend of AI and market forecasts',
         desc: 'A mix of our AI forecasts and standard market return estimates',
         badge: null
       },
-      { 
-        id: 'market', 
-        label: 'Market expected returns', 
+      {
+        id: 'market',
+        label: 'Market expected returns',
         desc: 'Use standard market assumptions',
         badge: null
       }
@@ -454,18 +453,17 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
               Your choice affects how we run simulations, score your portfolio, and give recommendations.
             </p>
           </div>
-          
+
           <div className="mb-8">
             <div className="space-y-3">
               {returnOptions.map((option) => (
                 <button
                   key={option.id}
                   onClick={() => setReturnEstimate(option.id)}
-                  className={`w-full p-4 border text-left transition-all hover:bg-stone-50 relative ${
-                    returnEstimate === option.id
+                  className={`w-full p-4 border text-left transition-all hover:bg-stone-50 relative ${returnEstimate === option.id
                       ? 'border-stone-600 bg-stone-50 shadow-sm'
                       : 'border-stone-200'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -482,7 +480,7 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
               ))}
             </div>
           </div>
-          
+
           <div className="flex gap-4">
             <button
               onClick={() => setStep(6)}
@@ -513,23 +511,21 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
             Your choice affects how we run simulations, score your portfolio, and give recommendations.
           </p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           {options.map((option) => (
             <button
               key={option.id}
               onClick={() => toggleOption(option.id)}
-              className={`flex items-center gap-4 p-6 border text-left transition-all hover:bg-stone-50 ${
-                selectedOptions.includes(option.id)
+              className={`flex items-center gap-4 p-6 border text-left transition-all hover:bg-stone-50 ${selectedOptions.includes(option.id)
                   ? 'border-stone-600 bg-stone-50 shadow-sm'
                   : 'border-stone-200'
-              }`}
+                }`}
             >
-              <div className={`p-2 rounded-lg ${
-                selectedOptions.includes(option.id) 
-                  ? 'bg-stone-800 text-stone-50' 
+              <div className={`p-2 rounded-lg ${selectedOptions.includes(option.id)
+                  ? 'bg-stone-800 text-stone-50'
                   : 'bg-stone-100 text-stone-600'
-              }`}>
+                }`}>
                 <option.icon size={20} />
               </div>
               <div className="flex-1">
@@ -541,13 +537,13 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
             </button>
           ))}
         </div>
-        
+
         <div className="text-center mb-6">
           <p className="text-sm text-stone-500">
             Selected {selectedOptions.length} of {options.length} objectives
           </p>
         </div>
-        
+
         <div className="flex gap-3">
           <button
             onClick={() => setStep(7)}
@@ -568,14 +564,14 @@ const OnboardingPage = ({ onComplete }: { onComplete: () => void }) => {
                 returnEstimate,
                 selectedOptions
               };
-              
+
               try {
-                const response = await fetch('http://localhost:8000/api/users/onboarding', {
+                const response = await fetch(`${API_BASE_URL}/api/users/onboarding`, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify(userData)
                 });
-                
+
                 if (response.ok) {
                   const result = await response.json();
                   console.log('Onboarding success:', result);

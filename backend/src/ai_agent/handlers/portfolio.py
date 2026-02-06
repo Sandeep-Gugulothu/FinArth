@@ -10,7 +10,7 @@ from utils.opik_client import OpikConfig, trace
 from database import db_path  # Import db_path to connect
 from ai_agent.engine.portfolio_analyzer import PortfolioAnalyzer
 
-MODEL_NAME = 'liquid/lfm-2.5-1.2b-instruct:free'
+MODEL_NAME = 'meta-llama/llama-3.1-8b-instruct:free'
 
 from ai_agent.engine.user_service import UserService
 
@@ -67,38 +67,41 @@ class PortfolioHandler(BaseHandler):
 
         market_context = await MarketDataService.get_market_context()
 
-        prompt = f"""You are a portfolio analyst named FinArth.
-        
-        User Information:
-        - Name: {user_name}
-        - Location: {user_country}
+        system_message = f"""You are FinArth, an expert Portfolio Analyst specializing in asset allocation and risk management.
 
-        User Query: "{query}"
+User Profile:
+- Name: {user_name}
+- Location: {user_country}
 
-        User Portfolio Data:
-        - Total Value: ${analysis['total_value']:.2f}
-        - Risk Score: {analysis['risk_metric']}/10
-        - Allocation: {json.dumps(analysis['allocation'], indent=2)}
-        - Top Assets: {json.dumps(analysis['top_3_assets'], indent=2)}
+Portfolio Summary:
+- Total Value: ${analysis['total_value']:.2f}
+- Risk Score: {analysis['risk_metric']}/10
+- Allocation: {json.dumps(analysis['allocation'], indent=2)}
+- Top Assets: {json.dumps(analysis['top_3_assets'], indent=2)}
+
+Guidelines:
+1. Provide specific insights on allocation, performance, and risk
+2. For India: Consider Indian tax implications and market specifics
+3. Warn if Risk Score > 7 about volatility
+4. Suggest rebalancing if needed
+5. Address user by name
+
+Market Context:
+{market_context}"""
+
+        messages = [{"role": "system", "content": system_message}]
         
-        Current Market Context:
-        {market_context}
+        if context.get('conversation_history'):
+            messages.extend(context['conversation_history'][-6:])
         
-        Task:
-        Analyze the portfolio for {user_name} based on the query and market conditions.
-        Provide specific insights on allocation, performance, and risk.
-        Address the user by name.
-        If the user is in India, consider Indian tax implications and market specifics.
-        If the Risk Score is high (>7), warn the user about volatility.
-        """
+        messages.append({"role": "user", "content": query})
 
         try:
-            # We add a reasoning step requirement to the prompt to mirror ReAct benefits
-            prompt += "\n\nProvide your response in two parts: <thought>Your internal reasoning</thought> followed by your <answer>Final Insight</answer>."
-            
             response = self.client.chat.completions.create(
                 model=MODEL_NAME,
-                messages=[{"role": "user", "content": prompt}],
+                messages=messages,
+                temperature=0.7,
+                max_tokens=800,
                 extra_body={
                     "metadata": {
                         "handler": "PortfolioHandler",

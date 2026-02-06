@@ -128,9 +128,15 @@ def login():
                 })
                 logger.info('User preferences loaded to cache', user['id'])
         
+        # Generate session token
+        session_token = Authentication().generate_token()
+        cursor.execute('UPDATE users SET session_token = ? WHERE id = ?', (session_token, user['id']))
+        db.commit()
+        
         logger.info('User login successful', user['id'], {'email': email})
         return jsonify({
             'success': True,
+            'token': session_token,
             'user': {
                 'id': user['id'],
                 'email': user['email'],

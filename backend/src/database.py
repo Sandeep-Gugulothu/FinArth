@@ -101,6 +101,7 @@ def initialize_tables():
             amount INTEGER NOT NULL,
             date TEXT NOT NULL,
             symbol TEXT,
+            entry_price REAL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users (id)
@@ -127,6 +128,22 @@ def initialize_tables():
             feedback TEXT,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (session_id) REFERENCES chat_sessions (id)
+        )
+    """)
+    # Financial goals table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS financial_goals (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            name TEXT NOT NULL,
+            target_amount INTEGER NOT NULL,
+            current_amount INTEGER DEFAULT 0,
+            timeline_years INTEGER NOT NULL,
+            monthly_required INTEGER NOT NULL,
+            status TEXT DEFAULT 'on-track',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users (id)
         )
     """)
     db.commit()
@@ -180,6 +197,7 @@ def initialize_backup_tables():
             amount INTEGER NOT NULL,
             date TEXT NOT NULL,
             symbol TEXT,
+            entry_price REAL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users (id)
@@ -206,6 +224,22 @@ def initialize_backup_tables():
             feedback TEXT,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (session_id) REFERENCES chat_sessions (id)
+        )
+    """)
+    # Financial goals table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS financial_goals (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            name TEXT NOT NULL,
+            target_amount INTEGER NOT NULL,
+            current_amount INTEGER DEFAULT 0,
+            timeline_years INTEGER NOT NULL,
+            monthly_required INTEGER NOT NULL,
+            status TEXT DEFAULT 'on-track',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users (id)
         )
     """)
     backup_db.commit()

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import API_BASE_URL from '../utils/api.ts';
 
 interface LoginProps {
   onLogin: () => void;
@@ -16,30 +17,29 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
-    
+
     if (!email || !password) {
       setError('Email and password are required');
       setIsLoading(false);
       return;
     }
-    
+
     if (isSignup && password !== confirmPassword) {
       setError('Passwords do not match');
       setIsLoading(false);
       return;
     }
-    
+
     try {
       const endpoint = isSignup ? '/api/users/register' : '/api/users/login';
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-      const response = await fetch(`${apiUrl}${endpoint}`, {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
-      
+
       const data = await response.json();
-      
+
       if (response.ok) {
         if (isSignup) {
           localStorage.setItem('userId', data.userId.toString());
@@ -56,7 +56,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     } catch (error) {
       setError('Network error. Please try again.');
     }
-    
+
     setIsLoading(false);
   };
 
@@ -94,7 +94,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               {error}
             </div>
           )}
-          
+
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#44403c', marginBottom: '8px' }}>

@@ -1,7 +1,7 @@
 // API Configuration
 const API_CONFIG = {
   development: 'http://localhost:5000',
-  production: process.env.REACT_APP_API_URL || 'https://your-backend-url.vercel.app'
+  production: 'https://fin-arth-frontend-f4b8-n7r42uwlp-gugulothu-sandeeps-projects.vercel.app'
 };
 
 export const API_BASE_URL = API_CONFIG[process.env.NODE_ENV as keyof typeof API_CONFIG] || API_CONFIG.development;
@@ -9,10 +9,12 @@ export const API_BASE_URL = API_CONFIG[process.env.NODE_ENV as keyof typeof API_
 // API Helper functions
 export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
-  
+
+  const token = localStorage.getItem('authToken');
   const defaultOptions: RequestInit = {
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
       ...options.headers,
     },
     ...options,
@@ -20,11 +22,11 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
 
   try {
     const response = await fetch(url, defaultOptions);
-    
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error('API call failed:', error);

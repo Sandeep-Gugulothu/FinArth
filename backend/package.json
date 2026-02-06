@@ -4,8 +4,9 @@
   "description": "FinArth Backend API (Python)",
   "main": "src/server.py",
   "scripts": {
-    "dev": "python src/server.py",
-    "start": "python src/server.py",
+    "dev": "cd src && python server.py",
+    "start": "cd src && python server.py",
+    "install": "pip install -r requirements.txt",
     "test": "python -m pytest",
     "db:view": "node scripts/db-viewer.js"
   },

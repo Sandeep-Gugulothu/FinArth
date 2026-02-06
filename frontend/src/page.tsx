@@ -3,8 +3,10 @@ import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import OnboardingPage from './pages/onboarding.tsx';
 import Portfolio from './pages/Portfolio.tsx';
 import AiAgent from './pages/AiAgent.tsx';
+import Dashboard from './pages/Dashboard.tsx';
 import Sidebar from './components/Sidebar.tsx';
 import { PanelLeftOpen } from './components/Icons.tsx';
+import API_BASE_URL from './utils/api.ts';
 
 // Login Component
 const Login = ({ onLogin }: {
@@ -53,7 +55,7 @@ const Login = ({ onLogin }: {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/users/login', {
+      const response = await fetch(`${API_BASE_URL}/api/users/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -64,6 +66,7 @@ const Login = ({ onLogin }: {
       if (response.ok) {
         localStorage.setItem('userId', data.user.id.toString());
         localStorage.setItem('userData', JSON.stringify(data.user));
+        localStorage.setItem('authToken', data.token);
         localStorage.setItem('onboardingCompleted', data.needsOnboarding ? 'false' : 'true');
         onLogin();
       } else {
@@ -283,7 +286,7 @@ const Signup = ({ onSignup }: {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/users/register', {
+      const response = await fetch(`${API_BASE_URL}/api/users/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -428,203 +431,7 @@ const Signup = ({ onSignup }: {
   );
 };
 
-// Dashboard Component
-const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [activeTab, setActiveTab] = useState('overview');
-  const [userName, setUserName] = useState('User');
-  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
-
-  // State removed
-
-  useEffect(() => {
-    // Load user name from localStorage
-    const userData = localStorage.getItem('userData');
-    const userId = localStorage.getItem('userId');
-    let currentUserName = 'User';
-
-    if (userData) {
-      const user = JSON.parse(userData);
-      // Check if it's demo user (ID 999) or regular user
-      if (user.id === 999) {
-        currentUserName = 'Demo User';
-      } else {
-        currentUserName = user.name || user.email?.split('@')[0] || 'User';
-      }
-      setUserName(currentUserName);
-    } else if (userId && userId !== '999') {
-      // Try to fetch user data if we have userId but no userData
-      fetch(`http://localhost:5000/api/users/${userId}`)
-        .then(res => res.json())
-        .then(user => {
-          if (user.name) {
-            setUserName(user.name);
-            localStorage.setItem('userData', JSON.stringify(user));
-          }
-        })
-        .catch(() => setUserName('User'));
-    }
-
-    const path = location.pathname;
-    if (path.startsWith('/dashboard/')) {
-      const tab = path.split('/dashboard/')[1] || 'overview';
-      setActiveTab(tab);
-    } else if (path === '/dashboard') {
-      setActiveTab('overview');
-    }
-  }, [location]);
-
-
-
-
-
-  // Local icons removed
-
-
-  // menuItems removed
-
-  // sendMessage removed
-
-
-  const renderOverview = () => {
-    const stats = [
-      { label: 'Total Portfolio', value: '₹12,45,000', change: '+8.2%', positive: true },
-      { label: 'Monthly SIP', value: '₹25,000', change: 'Active', positive: true },
-      { label: 'Goals Progress', value: '3/5', change: 'On Track', positive: true },
-      { label: 'Expected Returns', value: '12.4%', change: '+0.8%', positive: true },
-    ];
-
-    return (
-      <div className="space-y-6">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-stone-900 mb-2">Welcome Back</h2>
-          <p className="text-stone-600">Monitor your financial progress and portfolio performance</p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, i) => (
-            <div key={i} className="bg-white p-6 border-l-4 border-stone-600 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-medium text-stone-600 uppercase tracking-wide">{stat.label}</p>
-                <span className={`text-xs px-2 py-1 font-mono ${stat.positive ? 'bg-stone-100 text-stone-700' : 'bg-stone-100 text-stone-700'
-                  }`}>
-                  {stat.change}
-                </span>
-              </div>
-              <p className="text-2xl font-bold text-stone-900 font-mono">{stat.value}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white p-6 border border-stone-200 shadow-sm">
-            <h3 className="text-lg font-semibold text-stone-900 mb-4 border-b border-stone-200 pb-2">Recent Activity</h3>
-            <div className="space-y-3">
-              {[
-                { action: 'SIP Investment', fund: 'HDFC Top 100', amount: '₹8,333', time: '2 hours ago' },
-                { action: 'Goal Updated', fund: 'House Purchase', amount: '₹50L target', time: '1 day ago' },
-                { action: 'Portfolio Rebalanced', fund: 'Auto-adjustment', amount: '+2.1%', time: '3 days ago' },
-              ].map((activity, i) => (
-                <div key={i} className="flex items-center justify-between py-3 border-b border-stone-100 last:border-b-0">
-                  <div>
-                    <p className="font-medium text-stone-900">{activity.action}</p>
-                    <p className="text-sm text-stone-600">{activity.fund}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-mono text-stone-900">{activity.amount}</p>
-                    <p className="text-xs text-stone-500">{activity.time}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-white p-6 border border-stone-200 shadow-sm">
-            <h3 className="text-lg font-semibold text-stone-900 mb-4 border-b border-stone-200 pb-2">Goal Progress</h3>
-            <div className="space-y-4">
-              {[
-                { goal: 'House Purchase', current: 12.5, target: 50, progress: 25 },
-                { goal: 'Emergency Fund', current: 3.2, target: 6, progress: 53 },
-                { goal: 'Retirement', current: 8.7, target: 100, progress: 9 },
-              ].map((goal, i) => (
-                <div key={i} className="space-y-2 pb-4 border-b border-stone-100 last:border-b-0">
-                  <div className="flex justify-between">
-                    <span className="font-medium text-stone-900">{goal.goal}</span>
-                    <span className="text-sm text-stone-600 font-mono">₹{goal.current}L / ₹{goal.target}L</span>
-                  </div>
-                  <div className="w-full bg-stone-200 h-2">
-                    <div
-                      className="bg-stone-700 h-2 transition-all duration-500"
-                      style={{ width: `${goal.progress}%` }}
-                    />
-                  </div>
-                  <p className="text-xs text-stone-500 font-mono">{goal.progress}% complete</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // renderAgent removed
-
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'overview':
-        return renderOverview();
-      case 'portfolio':
-        return <Portfolio />;
-      case 'goals':
-        return (
-          <div className="space-y-6">
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold text-stone-900 mb-2">Life Goals</h2>
-              <p className="text-stone-600">Track and plan your financial goals</p>
-            </div>
-            <div className="bg-white p-8 border border-stone-200 shadow-sm">
-              <h3 className="text-xl font-semibold text-stone-900 border-b border-stone-200 pb-2 mb-4">Goal Progress</h3>
-              <p className="text-stone-600">You have 3 active goals. You're on track to reach your House Purchase goal by 2026.</p>
-            </div>
-          </div>
-        );
-      default:
-        return <div className="bg-white p-8 border border-stone-200 shadow-sm"><h2 className="text-xl font-semibold text-stone-900 border-b border-stone-200 pb-2 mb-4">Coming Soon</h2><p className="text-stone-600">This feature is under development.</p></div>;
-    }
-  };
-
-  return (
-    <>
-      <div className="h-screen bg-stone-50 flex overflow-hidden">
-        <Sidebar
-          isSidebarVisible={isSidebarVisible}
-          setIsSidebarVisible={setIsSidebarVisible}
-          userName={userName}
-          onLogout={onLogout}
-        />
-
-        <main className="flex-1 overflow-hidden relative flex flex-col">
-          {!isSidebarVisible && (
-            <button
-              onClick={() => setIsSidebarVisible(true)}
-              className="fixed top-8 left-8 p-2 hover:bg-stone-200 rounded-lg transition-colors border border-stone-200 bg-white z-30 shadow-sm"
-              title="Show Sidebar"
-            >
-              <PanelLeftOpen size={20} />
-            </button>
-          )}
-
-          <div className="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar">
-            <div className="max-w-7xl mx-auto">
-              {renderContent()}
-            </div>
-          </div>
-        </main>
-      </div>
-    </>
-  );
-};
+// Dashboard component has been moved to src/pages/Dashboard.tsx
 
 
 

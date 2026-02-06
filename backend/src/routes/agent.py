@@ -91,13 +91,19 @@ def generate_insight():
         # New Agent Orchestrator Call
         orchestrator = AgentOrchestrator()
         
-        # We need to fetch history if we want to pass it
-        # history = ChatManager.get_messages(session_id) if session_id else []
-        # For now, let's keep it simple and just pass the query
+        # Fetch conversation history for context
+        history = []
+        if session_id:
+            messages = ChatManager.get_messages(session_id)
+            # Convert to OpenAI format: [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
+            for msg in messages:
+                role = "assistant" if msg.get('sender') == 'bot' else "user"
+                history.append({"role": role, "content": msg.get('content', '')})
         
         result = loop.run_until_complete(orchestrator.process(
             query,
-            user_id
+            user_id,
+            history  # Pass conversation history
         ))
         loop.close()
 

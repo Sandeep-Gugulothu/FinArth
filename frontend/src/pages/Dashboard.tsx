@@ -1,471 +1,587 @@
-import React, { useState } from 'react';
-import PortfolioHeatmap from '../components/PortfolioHeatmap.tsx';
+import React, { useState, useEffect } from 'react';
+import {
+  Globe,
+  Activity,
+  TrendingDown
+} from 'lucide-react';
+import { useLocation, useParams } from 'react-router-dom';
+import { apiCall } from '../utils/api.ts';
+import Sidebar from '../components/Sidebar.tsx';
+import Portfolio from './Portfolio.tsx';
 
-// Icons
-const Home = ({ size = 20 }) => (
-  <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-  </svg>
-);
+const Sparkline = ({ data, positive }: { data: number[]; positive: boolean }) => {
+  if (!data || data.length === 0) return <div className="h-[30px] w-20 flex items-center justify-center text-[10px] text-stone-300 italic">loading...</div>;
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  const range = max - min;
+  const points = data.map((d, i) => ({
+    x: (i / (data.length - 1)) * 100,
+    y: 100 - ((d - min) / (range || 1)) * 100
+  }));
 
-const TrendingUp = ({ size = 20 }) => (
-  <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-  </svg>
-);
-
-const Target = ({ size = 20 }) => (
-  <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-  </svg>
-);
-
-const Bot = ({ size = 20 }) => (
-  <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-  </svg>
-);
-
-const Settings = ({ size = 20 }) => (
-  <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-  </svg>
-);
-
-const User = ({ size = 20 }) => (
-  <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-  </svg>
-);
-
-const Send = ({ size = 20 }) => (
-  <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-  </svg>
-);
-
-const Sidebar = ({ activeTab, setActiveTab }: { activeTab: string; setActiveTab: (tab: string) => void }) => {
-  const menuItems = [
-    { id: 'overview', label: 'Overview', icon: Home },
-    { id: 'portfolio', label: 'Portfolio', icon: TrendingUp },
-    { id: 'goals', label: 'Goals', icon: Target },
-    { id: 'settings', label: 'Settings', icon: Settings },
-  ];
+  const pathContent = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
 
   return (
-    <div className="w-64 bg-white border-r border-slate-200 flex flex-col h-full flex-shrink-0">
-      <div className="p-6 border-b border-slate-200">
-        <div className="flex items-center gap-3">
-          <img src="/logo.png" alt="FinArth" className="h-8 w-8" />
-          <span className="text-xl font-bold text-slate-900">FinArth</span>
-        </div>
-      </div>
-
-      <nav className="flex-1 p-4 overflow-y-auto custom-scrollbar">
-        <ul className="space-y-2">
-          {menuItems.map((item) => (
-            <li key={item.id}>
-              <button
-                onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${activeTab === item.id
-                  ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                  }`}
-              >
-                <item.icon size={20} />
-                <span className="font-medium">{item.label}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      </nav>
-
-      <div className="p-4 border-t border-slate-200">
-        <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
-          <div className="h-8 w-8 bg-slate-300 rounded-full flex items-center justify-center">
-            <User size={16} />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-slate-900 truncate">John Doe</p>
-            <p className="text-xs text-slate-500">Premium Plan</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <svg width="80" height="30" viewBox="0 0 100 100" className="opacity-80">
+      <path
+        d={pathContent}
+        fill="none"
+        stroke={positive ? '#166534' : '#991b1b'}
+        strokeWidth="4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 };
 
-const OverviewTab = () => {
+const OverviewTab = ({ marketData, loading, error, userName, goals, holdings }: { marketData: any; loading: boolean; error: string | null; userName: string; goals: any[]; holdings: any[] }) => {
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 gap-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-stone-800"></div>
+        <p className="text-stone-500 font-medium">Loading financial dashboard...</p>
+      </div>
+    );
+  }
+
+  if (error || !marketData) {
+    return (
+      <div className="bg-white border border-stone-200 p-8 rounded-lg shadow-sm flex flex-col items-center text-center">
+        <h3 className="text-lg font-bold text-stone-900 mb-2">Connection Issue</h3>
+        <p className="text-stone-600 mb-4">{error || "Unable to reach the market service. Check your connection."}</p>
+        <button onClick={() => window.location.reload()} className="px-6 py-2 bg-stone-800 text-white rounded hover:bg-stone-900 transition-colors">Retry</button>
+      </div>
+    );
+  }
+
+  const global = marketData.global || {};
+
+  const completedGoals = goals.filter(g => g.progress >= 100).length;
+
+  // Calculate true current value including ROI
+  const totalInvested = holdings.reduce((sum, h) => sum + (h.amount || 0), 0);
+  const totalPortfolioValue = holdings.reduce((sum, h) => {
+    let growth = 0;
+    if (h.category === 'Crypto') {
+      const analysis = marketData.cryptoAnalysis?.[h.id];
+      growth = analysis ? (analysis.growth_percentage || 0) : 0;
+    } else {
+      growth = {
+        'Stocks': 0.8,
+        'Mutual Funds': 0.5,
+        'Real Estate': 0.1,
+        'Fixed Deposits': 0.02,
+        'Gold ETFs': marketData?.top_coins?.find((c: any) => c.symbol === 'xau' || c.id === 'pax-gold')?.price_change_percentage_24h || 0.3,
+        'Bonds': 0.01,
+        'Others': 0.1
+      }[h.category as string] || 0;
+    }
+    return sum + (h.amount * (1 + growth / 100));
+  }, 0);
+
+  const totalMonthlySIP = goals.reduce((sum, g) => sum + (g.monthly_required || 0), 0);
+
   const stats = [
-    { label: 'Total Portfolio', value: '₹12,45,000', change: '+8.2%', positive: true },
-    { label: 'Monthly SIP', value: '₹25,000', change: 'Active', positive: true },
-    { label: 'Goals Progress', value: '3/5', change: 'On Track', positive: true },
+    { label: 'Total Portfolio', value: `₹${totalPortfolioValue.toLocaleString()}`, change: holdings.length > 0 ? 'Verified' : 'Zero', positive: true },
+    { label: 'Monthly SIP', value: `₹${totalMonthlySIP.toLocaleString()}`, change: totalMonthlySIP > 0 ? 'Active' : 'Add Goals', positive: true },
+    { label: 'Goals Progress', value: `${completedGoals}/${goals.length}`, change: goals.length > 0 ? 'On Track' : 'No Goals', positive: true },
     { label: 'Expected Returns', value: '12.4%', change: '+0.8%', positive: true },
   ];
 
+  // Derive recent activity from goals and holdings
+  const combinedActivity = [
+    ...goals.map(g => ({ type: 'GOAL', name: g.name, sub: 'Financial Goal', date: new Date(g.updated_at || g.created_at) })),
+    ...holdings.map(h => ({ type: 'PORTFOLIO', name: h.name, sub: h.category, date: new Date(h.updated_at || h.created_at) }))
+  ].sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 3);
+
+  const recentActivity = combinedActivity.map(act => ({
+    action: act.type === 'GOAL' ? 'Goal Updated' : 'Investment Added',
+    fund: act.name,
+    amount: act.sub,
+    time: act.date.toLocaleDateString() === new Date().toLocaleDateString() ? 'Today' : act.date.toLocaleDateString()
+  }));
+
+  // Fallback if no activity
+  if (recentActivity.length === 0) {
+    recentActivity.push(
+      { action: 'Getting Started', fund: 'Add your first goal', amount: 'Finance', time: 'Now' },
+      { action: 'Portfolio Clean', fund: 'No holdings yet', amount: 'Assets', time: 'Welcome' }
+    );
+  }
+
+  const goalProgress = goals.map(g => ({
+    goal: g.name,
+    current: g.current_amount / 100000, // Convert to Lakhs for display
+    target: g.target_amount / 100000,
+    progress: g.progress
+  })).slice(0, 3);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {/* Header Section */}
+      <div className="mb-0">
+        <h2 className="text-3xl font-bold text-stone-900 mb-2">Welcome Back</h2>
+        <p className="text-stone-600">Monitor your financial progress and portfolio performance</p>
+      </div>
+
+      {/* Main Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
-          <div key={i} className="bg-white p-6 rounded-2xl border border-slate-200 hover:shadow-lg transition-shadow">
+          <div key={i} className="bg-white p-6 border-l-4 border-stone-800 shadow-sm hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-medium text-slate-600">{stat.label}</p>
-              <span className={`text-xs px-2 py-1 rounded-full ${stat.positive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                }`}>
+              <p className="text-xs font-bold text-stone-500 uppercase tracking-widest">{stat.label}</p>
+              <span className={`text-[10px] px-2 py-0.5 font-mono font-bold bg-stone-50 text-stone-600 border border-stone-100 rounded`}>
                 {stat.change}
               </span>
             </div>
-            <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
+            <p className="text-2xl font-bold text-stone-900 font-mono tracking-tight">{stat.value}</p>
           </div>
         ))}
       </div>
 
+      {/* Activity and Progress Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-slate-200">
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">Recent Activity</h3>
+        <div className="bg-white p-6 border border-stone-200 shadow-sm">
+          <h3 className="text-lg font-bold text-stone-900 mb-6 border-b border-stone-100 pb-2">Recent Activity</h3>
           <div className="space-y-4">
-            {[
-              { action: 'SIP Investment', fund: 'HDFC Top 100', amount: '₹8,333', time: '2 hours ago' },
-              { action: 'Goal Updated', fund: 'House Purchase', amount: '₹50L target', time: '1 day ago' },
-              { action: 'Portfolio Rebalanced', fund: 'Auto-adjustment', amount: '+2.1%', time: '3 days ago' },
-            ].map((activity, i) => (
-              <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-slate-50">
+            {recentActivity.map((activity, i) => (
+              <div key={i} className="flex items-center justify-between py-2 border-b border-stone-50 last:border-b-0">
                 <div>
-                  <p className="font-medium text-slate-900">{activity.action}</p>
-                  <p className="text-sm text-slate-600">{activity.fund}</p>
+                  <p className="font-bold text-stone-900 text-sm">{activity.action}</p>
+                  <p className="text-xs text-stone-500">{activity.fund}</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium text-slate-900">{activity.amount}</p>
-                  <p className="text-xs text-slate-500">{activity.time}</p>
+                  <p className="font-bold text-stone-900 text-sm font-mono">{activity.amount}</p>
+                  <p className="text-[10px] text-stone-400 font-medium">{activity.time}</p>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-slate-200">
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">Goal Progress</h3>
-          <div className="space-y-4">
-            {[
-              { goal: 'House Purchase', current: 12.5, target: 50, progress: 25 },
-              { goal: 'Emergency Fund', current: 3.2, target: 6, progress: 53 },
-              { goal: 'Retirement', current: 8.7, target: 100, progress: 9 },
-            ].map((goal, i) => (
+        <div className="bg-white p-6 border border-stone-200 shadow-sm">
+          <h3 className="text-lg font-bold text-stone-900 mb-6 border-b border-stone-100 pb-2">Goal Progress</h3>
+          <div className="space-y-6">
+            {goalProgress.map((goal, i) => (
               <div key={i} className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="font-medium text-slate-900">{goal.goal}</span>
-                  <span className="text-sm text-slate-600">₹{goal.current}L / ₹{goal.target}L</span>
+                <div className="flex justify-between items-end">
+                  <span className="font-bold text-stone-900 text-sm">{goal.goal}</span>
+                  <span className="text-[11px] text-stone-600 font-mono font-bold">₹{goal.current}L / ₹{goal.target}L</span>
                 </div>
-                <div className="w-full bg-slate-200 rounded-full h-2">
+                <div className="w-full bg-stone-100 h-2 rounded-sm overflow-hidden border border-stone-200/50">
                   <div
-                    className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-500"
+                    className="bg-stone-800 h-full transition-all duration-1000 ease-out"
                     style={{ width: `${goal.progress}%` }}
                   />
                 </div>
-                <p className="text-xs text-slate-500">{goal.progress}% complete</p>
+                <p className="text-[10px] text-stone-400 font-bold uppercase tracking-wider">{goal.progress}% complete</p>
               </div>
             ))}
           </div>
         </div>
       </div>
-    </div>
-  );
-};
 
-const PortfolioTab = () => {
-  const portfolioData = [
-    { name: 'Equity Funds', value: 65, amount: '₹8,09,250', color: 'bg-blue-500' },
-    { name: 'Debt Funds', value: 25, amount: '₹3,11,250', color: 'bg-green-500' },
-    { name: 'Gold ETF', value: 10, amount: '₹1,24,500', color: 'bg-yellow-500' },
-  ];
+      {/* Market Intelligence Section (Restyled to match Stone Theme) */}
+      <div className="pt-8 border-t border-stone-200">
+        <h3 className="text-xl font-bold text-stone-900 mb-6 flex items-center gap-2">
+          <Globe size={20} className="text-stone-800" />
+          Market Intelligence
+        </h3>
 
-  const holdings = [
-    { fund: 'HDFC Top 100 Fund', category: 'Large Cap', amount: '₹2,45,000', returns: '+12.4%', positive: true },
-    { fund: 'Axis Bluechip Fund', category: 'Large Cap', amount: '₹1,89,500', returns: '+8.7%', positive: true },
-    { fund: 'SBI Small Cap Fund', category: 'Small Cap', amount: '₹1,74,750', returns: '+15.2%', positive: true },
-    { fund: 'HDFC Corporate Bond', category: 'Debt', amount: '₹1,56,000', returns: '+6.8%', positive: true },
-    { fund: 'ICICI Prudential Gold ETF', category: 'Gold', amount: '₹1,24,500', returns: '+4.2%', positive: true },
-  ];
-
-  return (
-    <div className="space-y-6">
-      {/* Portfolio Heatmap */}
-      <PortfolioHeatmap />
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-slate-200">
-          <h3 className="text-lg font-semibold text-slate-900 mb-6">Asset Allocation</h3>
-          <div className="space-y-4">
-            {portfolioData.map((item, i) => (
-              <div key={i} className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="font-medium text-slate-900">{item.name}</span>
-                  <div className="text-right">
-                    <span className="font-semibold text-slate-900">{item.value}%</span>
-                    <p className="text-sm text-slate-600">{item.amount}</p>
-                  </div>
-                </div>
-                <div className="w-full bg-slate-200 rounded-full h-2">
-                  <div
-                    className={`${item.color} h-2 rounded-full transition-all duration-500`}
-                    style={{ width: `${item.value}%` }}
-                  />
-                </div>
-              </div>
-            ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="bg-stone-50 p-4 border border-stone-200">
+            <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-1">Total Market Cap</p>
+            <div className="flex items-center justify-between">
+              <p className="text-lg font-bold text-stone-900 font-mono">
+                {global.total_market_cap?.usd ? `$${(global.total_market_cap.usd / 1e12).toFixed(2)}T` : '---'}
+              </p>
+              <span className={`text-[10px] font-mono ${global.market_cap_change_percentage_24h_usd > 0 ? 'text-green-700' : 'text-red-700'}`}>
+                {global.market_cap_change_percentage_24h_usd ? `${global.market_cap_change_percentage_24h_usd.toFixed(1)}%` : ''}
+              </span>
+            </div>
+          </div>
+          <div className="bg-stone-50 p-4 border border-stone-200">
+            <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-1">24h Volume</p>
+            <p className="text-lg font-bold text-stone-900 font-mono">
+              {global.total_volume?.usd ? `$${(global.total_volume.usd / 1e9).toFixed(1)}B` : '---'}
+            </p>
+          </div>
+          <div className="bg-stone-50 p-4 border border-stone-200">
+            <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-1">BTC Dominance</p>
+            <p className="text-lg font-bold text-stone-900 font-mono">
+              {global.market_cap_percentage?.btc ? `${global.market_cap_percentage.btc.toFixed(1)}%` : '---'}
+            </p>
+          </div>
+          <div className="bg-stone-50 p-4 border border-stone-200">
+            <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-1">Active Coins</p>
+            <p className="text-lg font-bold text-stone-900 font-mono">
+              {global.active_cryptocurrencies ? global.active_cryptocurrencies.toLocaleString() : '---'}
+            </p>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-slate-200">
-          <h3 className="text-lg font-semibold text-slate-900 mb-6">Performance Summary</h3>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center p-4 bg-green-50 rounded-xl">
-              <div>
-                <p className="text-sm text-green-700 font-medium">Total Returns</p>
-                <p className="text-2xl font-bold text-green-800">+₹1,45,000</p>
-              </div>
-              <div className="text-right">
-                <p className="text-sm text-green-700">Overall Gain</p>
-                <p className="text-lg font-semibold text-green-800">+13.2%</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center p-3 bg-slate-50 rounded-xl">
-                <p className="text-sm text-slate-600">1Y Returns</p>
-                <p className="text-lg font-semibold text-slate-900">+12.4%</p>
-              </div>
-              <div className="text-center p-3 bg-slate-50 rounded-xl">
-                <p className="text-sm text-slate-600">3Y Returns</p>
-                <p className="text-lg font-semibold text-slate-900">+14.8%</p>
-              </div>
-            </div>
+        <div className="bg-white border border-stone-200 shadow-sm overflow-hidden">
+          <div className="p-5 border-b border-stone-100 flex items-center justify-between bg-stone-50/50">
+            <h4 className="font-bold text-stone-900 text-sm">Market Movers</h4>
+            <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Live Updates</span>
           </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-2xl border border-slate-200">
-        <div className="p-6 border-b border-slate-200">
-          <h3 className="text-lg font-semibold text-slate-900">Holdings</h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-slate-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Fund Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Category</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Investment</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Returns</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-200">
-              {holdings.map((holding, i) => (
-                <tr key={i} className="hover:bg-slate-50">
-                  <td className="px-6 py-4">
-                    <div className="font-medium text-slate-900">{holding.fund}</div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="inline-flex px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
-                      {holding.category}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 font-medium text-slate-900">{holding.amount}</td>
-                  <td className="px-6 py-4">
-                    <span className={`font-medium ${holding.positive ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                      {holding.returns}
-                    </span>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="text-left text-[10px] font-bold text-stone-400 uppercase tracking-[0.2em] border-b border-stone-100">
+                  <th className="px-6 py-4">Asset</th>
+                  <th className="py-4">Price</th>
+                  <th className="py-4">24h Change</th>
+                  <th className="py-4">7d Trend</th>
+                  <th className="px-6 py-4 text-right">Market Cap</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-stone-50">
+                {marketData.top_coins?.slice(0, 6).map((coin: any) => (
+                  <tr key={coin.id} className="hover:bg-stone-50/50 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <img src={coin.image} alt={coin.name} className="h-6 w-6 rounded-full opacity-80" />
+                        <div>
+                          <p className="text-sm font-bold text-stone-900 tracking-tight">{coin.name}</p>
+                          <p className="text-[9px] text-stone-400 font-bold uppercase tracking-wider">{coin.symbol}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4 text-sm font-bold text-stone-900 font-mono">
+                      ${coin.current_price?.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </td>
+                    <td className="py-4">
+                      <span className={`text-[11px] font-bold font-mono ${coin.price_change_percentage_24h > 0 ? 'text-green-700' : 'text-red-700'}`}>
+                        {coin.price_change_percentage_24h > 0 ? '+' : ''}{coin.price_change_percentage_24h?.toFixed(2)}%
+                      </span>
+                    </td>
+                    <td className="py-4">
+                      <Sparkline data={coin.sparkline_in_7d?.price} positive={coin.price_change_percentage_24h > 0} />
+                    </td>
+                    <td className="px-6 py-4 text-right text-xs font-bold text-stone-700 font-mono">
+                      ${(coin.market_cap / 1e9).toFixed(1)}B
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-const GoalsTab = () => {
-  const goals = [
-    {
-      id: 1,
-      name: 'House Purchase',
-      target: 5000000,
-      current: 1250000,
-      timeline: '7 years',
-      monthlyRequired: 25000,
-      progress: 25,
-      status: 'on-track'
-    },
-    {
-      id: 2,
-      name: 'Emergency Fund',
-      target: 600000,
-      current: 320000,
-      timeline: '1 year',
-      monthlyRequired: 23333,
-      progress: 53,
-      status: 'ahead'
-    },
-    {
-      id: 3,
-      name: 'Child Education',
-      target: 2500000,
-      current: 180000,
-      timeline: '12 years',
-      monthlyRequired: 8500,
-      progress: 7,
-      status: 'behind'
-    }
-  ];
+// Portfolio functionality moved back to its dedicated component Portfolio.tsx
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'ahead': return 'text-green-600 bg-green-100';
-      case 'on-track': return 'text-blue-600 bg-blue-100';
-      case 'behind': return 'text-red-600 bg-red-100';
-      default: return 'text-slate-600 bg-slate-100';
+const GoalsTab = ({ goals, onRefresh }: { goals: any[], onRefresh: () => void }) => {
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newGoal, setNewGoal] = useState({ name: '', target_amount: 0, current_amount: 0, timeline_years: 5, monthly_required: 0 });
+
+  const handleAddGoal = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await apiCall('/api/plans/goals', {
+        method: 'POST',
+        body: JSON.stringify(newGoal)
+      });
+      setShowAddForm(false);
+      setNewGoal({ name: '', target_amount: 0, current_amount: 0, timeline_years: 5, monthly_required: 0 });
+      onRefresh();
+    } catch (err) {
+      alert('Failed to add goal');
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount).replace('₹', '₹');
+  const handleDeleteGoal = async (id: number) => {
+    if (!window.confirm('Are you sure you want to delete this goal?')) return;
+    try {
+      await apiCall(`/api/plans/goals/${id}`, { method: 'DELETE' });
+      onRefresh();
+    } catch (err) {
+      alert('Failed to delete goal');
+    }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900">Financial Goals</h2>
-          <p className="text-slate-600">Track your progress towards your financial objectives</p>
+          <h2 className="text-3xl font-bold text-stone-900 mb-2">Life Goals</h2>
+          <p className="text-stone-600">Track and plan your financial objectives</p>
         </div>
-        <button className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">
+        <button
+          onClick={() => setShowAddForm(true)}
+          className="px-6 py-2 bg-stone-800 text-white font-bold rounded hover:bg-stone-900 transition-colors"
+        >
           Add New Goal
         </button>
       </div>
 
+      {showAddForm && (
+        <div className="bg-white p-6 border border-stone-200 shadow-sm rounded-lg">
+          <h3 className="text-lg font-bold text-stone-900 mb-4">Initialize New Financial Goal</h3>
+          <form onSubmit={handleAddGoal} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-stone-500 uppercase">Goal Name</label>
+              <input
+                type="text" required
+                value={newGoal.name}
+                onChange={e => setNewGoal({ ...newGoal, name: e.target.value })}
+                className="w-full p-2 border border-stone-200 rounded"
+                placeholder="e.g. Dream House"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-stone-500 uppercase">Target Amount (₹)</label>
+              <input
+                type="number" required
+                value={newGoal.target_amount || ''}
+                onChange={e => setNewGoal({ ...newGoal, target_amount: parseInt(e.target.value) })}
+                className="w-full p-2 border border-stone-200 rounded"
+                placeholder="5000000"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-stone-500 uppercase">Current Savings (₹)</label>
+              <input
+                type="number"
+                value={newGoal.current_amount || ''}
+                onChange={e => setNewGoal({ ...newGoal, current_amount: parseInt(e.target.value) })}
+                className="w-full p-2 border border-stone-200 rounded"
+                placeholder="500000"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-stone-500 uppercase">Timeline (Years)</label>
+              <input
+                type="number" required
+                value={newGoal.timeline_years || ''}
+                onChange={e => setNewGoal({ ...newGoal, timeline_years: parseInt(e.target.value) })}
+                className="w-full p-2 border border-stone-200 rounded"
+                placeholder="10"
+              />
+            </div>
+            <div className="md:col-span-2 flex justify-end gap-3 mt-4">
+              <button
+                type="button"
+                onClick={() => setShowAddForm(false)}
+                className="px-6 py-2 border border-stone-200 rounded text-stone-600 font-bold"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-6 py-2 bg-stone-800 text-white rounded font-bold"
+              >
+                Create Goal
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {goals.map((goal) => (
-          <div key={goal.id} className="bg-white p-6 rounded-2xl border border-slate-200 hover:shadow-lg transition-shadow">
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="font-semibold text-slate-900">{goal.name}</h3>
-              <span className={`px-2 py-1 text-xs font-medium rounded-full capitalize ${getStatusColor(goal.status)
-                }`}>
-                {goal.status.replace('-', ' ')}
-              </span>
-            </div>
-
-            <div className="space-y-3 mb-4">
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-600">Target</span>
-                <span className="font-medium text-slate-900">{formatCurrency(goal.target)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-600">Current</span>
-                <span className="font-medium text-slate-900">{formatCurrency(goal.current)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-600">Timeline</span>
-                <span className="font-medium text-slate-900">{goal.timeline}</span>
+          <div key={goal.id} className="bg-white p-6 border border-stone-200 shadow-sm hover:shadow-md transition-all group">
+            <div className="flex justify-between items-start mb-6">
+              <h3 className="font-bold text-stone-900 tracking-tight">{goal.name}</h3>
+              <div className="flex items-center gap-2">
+                <span className={`px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest rounded border bg-stone-50 text-stone-600 border-stone-100`}>
+                  {goal.status}
+                </span>
+                <button
+                  onClick={() => handleDeleteGoal(goal.id)}
+                  className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 transition-opacity"
+                >
+                  <TrendingDown size={14} />
+                </button>
               </div>
             </div>
-
-            <div className="mb-4">
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-slate-600">Progress</span>
-                <span className="font-medium text-slate-900">{goal.progress}%</span>
-              </div>
-              <div className="w-full bg-slate-200 rounded-full h-2">
-                <div
-                  className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-500"
-                  style={{ width: `${goal.progress}%` }}
-                />
-              </div>
+            <div className="w-full bg-stone-100 rounded-sm h-3 mb-4 border border-stone-200/50">
+              <div
+                className="bg-stone-800 h-full transition-all duration-1000"
+                style={{ width: `${goal.progress}%` }}
+              />
             </div>
-
-            <div className="pt-3 border-t border-slate-200">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-600">Monthly Required</span>
-                <span className="font-semibold text-slate-900">{formatCurrency(goal.monthlyRequired)}</span>
+            <div className="flex justify-between text-[11px] font-bold font-mono mb-6">
+              <span className="text-stone-900">₹{goal.current_amount.toLocaleString()}</span>
+              <span className="text-stone-400">Target ₹{goal.target_amount.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between items-center pt-4 border-t border-stone-50">
+              <span className="text-[10px] font-bold text-stone-500 uppercase tracking-widest">{goal.timeline} Horizon</span>
+              <div className="text-[10px] font-bold text-stone-900">
+                {goal.progress}% complete
               </div>
             </div>
           </div>
         ))}
+
+        {goals.length === 0 && !showAddForm && (
+          <div className="md:col-span-2 lg:col-span-3 py-12 text-center bg-stone-50 border border-dashed border-stone-300 rounded-xl">
+            <p className="text-stone-500 font-medium">No financial goals set yet. Start planning your future today.</p>
+            <button
+              onClick={() => setShowAddForm(true)}
+              className="mt-4 text-stone-900 font-bold hover:underline"
+            >
+              + Create your first goal
+            </button>
+          </div>
+        )}
       </div>
 
-      <div className="bg-white p-6 rounded-2xl border border-slate-200">
-        <h3 className="text-lg font-semibold text-slate-900 mb-4">Goal Planning Tips</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-4 bg-blue-50 rounded-xl">
-            <h4 className="font-medium text-blue-900 mb-2">Start Early</h4>
-            <p className="text-sm text-blue-700">The power of compounding works best when you start investing early. Even small amounts can grow significantly over time.</p>
-          </div>
-          <div className="p-4 bg-green-50 rounded-xl">
-            <h4 className="font-medium text-green-900 mb-2">Stay Consistent</h4>
-            <p className="text-sm text-green-700">Regular investments through SIPs help you benefit from rupee cost averaging and build discipline.</p>
-          </div>
-          <div className="p-4 bg-purple-50 rounded-xl">
-            <h4 className="font-medium text-purple-900 mb-2">Review Regularly</h4>
-            <p className="text-sm text-purple-700">Review your goals annually and adjust your investments based on life changes and market conditions.</p>
-          </div>
-          <div className="p-4 bg-orange-50 rounded-xl">
-            <h4 className="font-medium text-orange-900 mb-2">Diversify Wisely</h4>
-            <p className="text-sm text-orange-700">Spread your investments across different asset classes to reduce risk and optimize returns.</p>
-          </div>
+      {goals.length > 0 && (
+        <div className="bg-stone-50 p-8 border border-stone-200">
+          <h3 className="text-lg font-bold text-stone-900 mb-2">Portfolio Insights</h3>
+          <p className="text-sm text-stone-600 leading-relaxed font-medium">
+            Based on your active goals, you need to save approximately <strong className="text-stone-900">₹{goals.reduce((acc, curr) => acc + (curr.monthly_required || 0), 0).toLocaleString()}</strong> per month to stay on track.
+          </p>
         </div>
-      </div>
+      )}
     </div>
   );
 };
 
-// AgentTab removed
+interface DashboardProps {
+  onLogout: () => void;
+}
 
-const Dashboard = () => {
+const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
+  const location = useLocation();
+  const { tab } = useParams();
   const [activeTab, setActiveTab] = useState('overview');
+  const [marketData, setMarketData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+  const [userName, setUserName] = useState('User');
+  const [goals, setGoals] = useState<any[]>([]);
+  const [holdings, setHoldings] = useState<any[]>([]);
+  const [cryptoAnalysis, setCryptoAnalysis] = useState<Record<number, any>>({});
+
+  const fetchGoals = async () => {
+    try {
+      const response = await apiCall('/api/plans/goals');
+      if (response && response.goals) {
+        setGoals(response.goals);
+      }
+    } catch (err) {
+      console.error('Failed to fetch goals:', err);
+    }
+  };
+
+  const fetchHoldings = async () => {
+    try {
+      const response = await apiCall('/api/portfolio/holdings');
+      if (response && response.holdings) {
+        setHoldings(response.holdings);
+
+        // Fetch analysis for all crypto
+        const cryptoHoldings = response.holdings.filter((h: any) => h.category === 'Crypto' && h.symbol);
+        const results: Record<number, any> = {};
+        for (const h of cryptoHoldings) {
+          try {
+            const res = await apiCall('/api/market/weex/analysis', {
+              method: 'POST',
+              body: JSON.stringify({ symbol: h.symbol, date: h.date, entryPrice: h.entry_price })
+            });
+            if (res && !res.error) results[h.id] = res;
+          } catch (e) {
+            console.error(`ROI fetch failed for ${h.symbol}`, e);
+          }
+        }
+        setCryptoAnalysis(results);
+      }
+    } catch (err) {
+      console.error('Failed to fetch holdings:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (tab) {
+      setActiveTab(tab);
+    } else if (location.pathname === '/dashboard') {
+      setActiveTab('overview');
+    }
+  }, [tab, location.pathname]);
+
+  useEffect(() => {
+    const userData = localStorage.getItem('userData');
+    if (userData) {
+      const user = JSON.parse(userData);
+      setUserName(user.name || user.email?.split('@')[0] || 'User');
+    }
+
+    const fetchMarketData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await apiCall('/api/market/dashboard');
+        setMarketData(data);
+      } catch (err: any) {
+        console.error('Failed to fetch market data:', err);
+        setError(err.message || "Failed to fetch market data from the server.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMarketData();
+    fetchGoals();
+    fetchHoldings();
+  }, []);
 
   const renderContent = () => {
+    const marketDataWithAnalysis = { ...marketData, cryptoAnalysis };
     switch (activeTab) {
-      case 'overview':
-        return <OverviewTab />;
-      case 'portfolio':
-        return <PortfolioTab />;
-      case 'goals':
-        return <GoalsTab />;
-      case 'settings':
-        return <div className="bg-white p-8 rounded-2xl border border-slate-200"><h2 className="text-xl font-semibold">Settings</h2><p className="text-slate-600 mt-2">Coming soon...</p></div>;
-      default:
-        return <OverviewTab />;
+      case 'overview': return <OverviewTab marketData={marketDataWithAnalysis} loading={loading} error={error} userName={userName} goals={goals} holdings={holdings} />;
+      case 'portfolio': return <Portfolio holdings={holdings} onRefresh={fetchHoldings} marketData={marketData} cryptoAnalysisProp={cryptoAnalysis} />;
+      case 'goals': return <GoalsTab goals={goals} onRefresh={fetchGoals} />;
+      default: return <OverviewTab marketData={marketDataWithAnalysis} loading={loading} error={error} userName={userName} goals={goals} holdings={holdings} />;
     }
   };
 
   return (
-    <div className="h-screen bg-slate-50 flex overflow-hidden">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-      <main className="flex-1 p-8 overflow-y-auto custom-scrollbar">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">
-              {activeTab === 'overview' && 'Dashboard Overview'}
-              {activeTab === 'portfolio' && 'Portfolio Management'}
-              {activeTab === 'goals' && 'Financial Goals'}
-              {activeTab === 'settings' && 'Settings'}
-            </h1>
-            <p className="text-slate-600">
-              {activeTab === 'overview' && 'Monitor your financial progress and portfolio performance'}
-              {activeTab === 'portfolio' && 'Manage your investment portfolio and asset allocation'}
-              {activeTab === 'goals' && 'Track and plan your financial goals'}
-              {activeTab === 'settings' && 'Manage your account and preferences'}
-            </p>
+    <div className="h-screen bg-stone-50 flex overflow-hidden selection:bg-stone-200">
+      <Sidebar
+        isSidebarVisible={isSidebarVisible}
+        setIsSidebarVisible={setIsSidebarVisible}
+        userName={userName}
+        onLogout={onLogout}
+      />
+      <main className="flex-1 overflow-hidden relative flex flex-col">
+        {!isSidebarVisible && (
+          <button
+            onClick={() => setIsSidebarVisible(true)}
+            className="fixed top-8 left-8 p-2 bg-white border border-stone-200 rounded shadow-sm z-50 hover:bg-stone-50 transition-all text-stone-600"
+          >
+            <Activity size={18} />
+          </button>
+        )}
+
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-10">
+          <div className="max-w-7xl mx-auto">
+            {renderContent()}
           </div>
-          {renderContent()}
         </div>
       </main>
+
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #d6d3d1;
+          border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #a8a29e;
+        }
+      `}</style>
     </div>
   );
 };
