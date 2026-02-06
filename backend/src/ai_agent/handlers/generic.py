@@ -5,9 +5,6 @@ from ai_agent.types import AgentResponse, AgentIntent
 from ai_agent.handlers.base import BaseHandler
 from utils.opik_client import OpikConfig, trace
 
-# Upgraded to a more capable model for better financial advice
-MODEL_NAME = 'meta-llama/llama-3.1-8b-instruct:free'  # or 'mistralai/mistral-7b-instruct:free'
-
 from ai_agent.engine.user_service import UserService
 
 class GenericHandler(BaseHandler):
@@ -17,6 +14,8 @@ class GenericHandler(BaseHandler):
             base_url="https://openrouter.ai/api/v1"
         )
         self.client = OpikConfig.track_openai_client(self.client)
+        # Upgraded to a more capable model for better financial advice
+        self._model_name = os.getenv('MODEL_NAME')  # or 'mistralai/mistral-7b-instruct:free'
 
     @trace(name="handler_generic_process")
     async def process(self, query: str, user_id: Optional[int], context: Dict[str, Any] = {}) -> AgentResponse:
@@ -62,7 +61,7 @@ Guidelines:
 
         try:
             response = self.client.chat.completions.create(
-                model=MODEL_NAME,
+                model=self._model_name,
                 messages=messages,
                 temperature=0.7,
                 max_tokens=800
@@ -77,7 +76,7 @@ Guidelines:
             
         except Exception as e:
             return AgentResponse(
-                content=f"API Error ({MODEL_NAME}): {str(e)}",
+                content=f"API Error ({self._model_name}): {str(e)}",
                 intent=AgentIntent.GENERAL_ADVICE,
                 metadata={"error": str(e)}
             )

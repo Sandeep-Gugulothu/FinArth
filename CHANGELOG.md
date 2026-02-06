@@ -221,3 +221,20 @@
 - **Market Data**: Added real-time market data fetching for the "Market Pulse" panel.
  - We are using the **CoinGecko API(Analyst Plan)** for the market data in the HomePage.
  - We are using the **Weexs(CEX) API** for calulating the ROI and Total Value.
+
+## [0.5.1] - 2026-02-06
+### Backend Changes
+- Dead code removal
+- Error opik import handling
+- Opik evaluation draft
+- log filename and number update
+- cache file removal
+- env variable consideration for model name
+### Documentation Changes
+- README file update
+  - Project heading
+  - Component Description
+  - Removal of open source information
+  - Build scope update
+  - project structure
+  - basic hld inclusion

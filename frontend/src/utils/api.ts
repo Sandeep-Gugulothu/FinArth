@@ -1,6 +1,6 @@
 // API Configuration
 const API_CONFIG = {
-  development: 'http://localhost:5000',
+  development: 'http://localhost:8000', //Backend port
   production: 'https://fin-arth-frontend-f4b8-n7r42uwlp-gugulothu-sandeeps-projects.vercel.app'
 };
 
