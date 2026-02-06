@@ -6,7 +6,7 @@ from ai_agent.handlers.base import BaseHandler
 from utils.opik_client import OpikConfig, trace
 
 # Upgraded to a more capable model for better financial advice
-MODEL_NAME = 'meta-llama/llama-3.1-8b-instruct:free'  # or 'mistralai/mistral-7b-instruct:free'
+MODEL_NAME = 'google/gemini-2.0-flash-exp:free'
 
 from ai_agent.engine.user_service import UserService
 
