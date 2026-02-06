@@ -17,6 +17,7 @@ const GoalPage = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSidebarVisible, setIsSidebarVisible] = useState(true);
     const [userName, setUserName] = useState('User');
+    const [isLive, setIsLive] = useState(true);
 
     const [newGoal, setNewGoal] = useState({
         name: '',
@@ -37,11 +38,19 @@ const GoalPage = () => {
         try {
             setLoading(true);
             const response = await apiCall('/api/plans/goals');
-            if (response && response.goals) {
+            if (response && response.goals && response.goals.length > 0) {
                 setGoals(response.goals);
+                setIsLive(true);
+            } else {
+                throw new Error("No goals found");
             }
         } catch (err) {
-            console.error('Failed to fetch goals:', err);
+            console.warn('Using mock goals due to connection failure');
+            setIsLive(false);
+            setGoals([
+                { id: 1, name: 'House Downpayment', target_amount: 5000000, current_amount: 1500000, progress: 30, monthly_required: 45000, timeline_years: 5, updated_at: new Date().toISOString() },
+                { id: 2, name: 'Retirement Fund', target_amount: 50000000, current_amount: 5000000, progress: 10, monthly_required: 25000, timeline_years: 25, updated_at: new Date().toISOString() }
+            ]);
         } finally {
             setLoading(false);
         }
@@ -172,13 +181,20 @@ const GoalPage = () => {
                                 <h1 className="text-xl font-bold text-stone-900 tracking-tight">FinArth Goal Architect</h1>
                             </div>
                         </div>
-                        <button
-                            onClick={handleSaveGoal}
-                            disabled={isSubmitting}
-                            className="px-8 py-2 bg-stone-900 text-white font-bold rounded shadow-lg shadow-stone-200 hover:bg-black transition-all disabled:opacity-50 text-sm"
-                        >
-                            {isSubmitting ? 'Architecting...' : 'Deploy Plan'}
-                        </button>
+                        <div className="flex items-center gap-6">
+                            <div className={`flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-widest ${isLive ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-amber-50 text-amber-700 border-amber-100'
+                                }`}>
+                                <span className={`w-1.5 h-1.5 rounded-full ${isLive ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+                                {isLive ? 'Live Blueprint' : 'Simulated Environment'}
+                            </div>
+                            <button
+                                onClick={handleSaveGoal}
+                                disabled={isSubmitting}
+                                className="px-8 py-2 bg-stone-900 text-white font-bold rounded shadow-lg shadow-stone-200 hover:bg-black transition-all disabled:opacity-50 text-sm"
+                            >
+                                {isSubmitting ? 'Architecting...' : 'Deploy Plan'}
+                            </button>
+                        </div>
                     </div>
                 </nav>
 

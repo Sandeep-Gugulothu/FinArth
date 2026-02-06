@@ -34,7 +34,7 @@ const Sparkline = ({ data, positive }: { data: number[]; positive: boolean }) =>
   );
 };
 
-const OverviewTab = ({ marketData, loading, error, userName, goals, holdings }: { marketData: any; loading: boolean; error: string | null; userName: string; goals: any[]; holdings: any[] }) => {
+const OverviewTab = ({ marketData, loading, error, userName, goals, holdings, isLive }: { marketData: any; loading: boolean; error: string | null; userName: string; goals: any[]; holdings: any[]; isLive: boolean }) => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-4">
@@ -57,8 +57,6 @@ const OverviewTab = ({ marketData, loading, error, userName, goals, holdings }: 
   const global = marketData.global || {};
 
   const completedGoals = goals.filter(g => g.progress >= 100).length;
-
-  // Calculate true current value including ROI
 
   const totalPortfolioValue = holdings.reduce((sum, h) => {
     let growth = 0;
@@ -111,20 +109,25 @@ const OverviewTab = ({ marketData, loading, error, userName, goals, holdings }: 
 
   const goalProgress = goals.map(g => ({
     goal: g.name,
-    current: g.current_amount / 100000, // Convert to Lakhs for display
+    current: g.current_amount / 100000,
     target: g.target_amount / 100000,
     progress: g.progress
   })).slice(0, 3);
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Header Section */}
-      <div className="mb-0">
-        <h2 className="text-3xl font-bold text-stone-900 mb-2">Welcome Back</h2>
-        <p className="text-stone-600">Monitor your financial progress and portfolio performance</p>
+      <div className="mb-0 flex justify-between items-start">
+        <div>
+          <h2 className="text-3xl font-bold text-stone-900 mb-2">Welcome Back</h2>
+          <p className="text-stone-600">Monitor your financial progress and portfolio performance</p>
+        </div>
+        <div className={`mt-2 flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-widest ${isLive ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-amber-50 text-amber-700 border-amber-100'
+          }`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${isLive ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+          {isLive ? 'Live Portfolio' : 'Simulated Environment'}
+        </div>
       </div>
 
-      {/* Main Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
           <div key={i} className="bg-white p-6 border-l-4 border-stone-800 shadow-sm hover:shadow-md transition-shadow">
@@ -139,7 +142,6 @@ const OverviewTab = ({ marketData, loading, error, userName, goals, holdings }: 
         ))}
       </div>
 
-      {/* Activity and Progress Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white p-6 border border-stone-200 shadow-sm">
           <h3 className="text-lg font-bold text-stone-900 mb-6 border-b border-stone-100 pb-2">Recent Activity</h3>
@@ -181,7 +183,6 @@ const OverviewTab = ({ marketData, loading, error, userName, goals, holdings }: 
         </div>
       </div>
 
-      {/* Market Intelligence Section (Restyled to match Stone Theme) */}
       <div className="pt-8 border-t border-stone-200">
         <h3 className="text-xl font-bold text-stone-900 mb-6 flex items-center gap-2">
           <Globe size={20} className="text-stone-800" />
@@ -289,42 +290,69 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   const [goals, setGoals] = useState<any[]>([]);
   const [holdings, setHoldings] = useState<any[]>([]);
   const [cryptoAnalysis, setCryptoAnalysis] = useState<Record<number, any>>({});
+  const [isLive, setIsLive] = useState(true);
 
-  const fetchGoals = async () => {
+  const fetchMarketData = async () => {
     try {
-      const response = await apiCall('/api/plans/goals');
-      if (response && response.goals) {
-        setGoals(response.goals);
-      }
-    } catch (err) {
-      console.error('Failed to fetch goals:', err);
+      setLoading(true);
+      setError(null);
+      const data = await apiCall('/api/market/dashboard');
+      if (!data || data.error) throw new Error("Backend unavailable");
+      setMarketData(data);
+      setIsLive(true);
+    } catch (err: any) {
+      console.warn('Using mock market data due to connection failure');
+      setIsLive(false);
+      setMarketData({
+        global: {
+          total_market_cap: { usd: 2450000000000 },
+          market_cap_change_percentage_24h_usd: 1.2,
+          total_volume: { usd: 85000000000 },
+          market_cap_percentage: { btc: 52.1 },
+          active_cryptocurrencies: 12450
+        },
+        top_coins: [
+          { id: 'bitcoin', symbol: 'btc', name: 'Bitcoin', current_price: 64230.50, price_change_percentage_24h: 1.5, market_cap: 1200000000000, image: 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png', sparkline_in_7d: { price: [60000, 61000, 60500, 62000, 63000, 64000, 64230] } },
+          { id: 'ethereum', symbol: 'eth', name: 'Ethereum', current_price: 3450.20, price_change_percentage_24h: -0.5, market_cap: 400000000000, image: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png', sparkline_in_7d: { price: [3500, 3400, 3450, 3550, 3500, 3450, 3450] } },
+          { id: 'solana', symbol: 'sol', name: 'Solana', current_price: 145.80, price_change_percentage_24h: 4.2, market_cap: 65000000000, image: 'https://assets.coingecko.com/coins/images/4128/large/solana.png', sparkline_in_7d: { price: [130, 135, 140, 138, 142, 145, 145] } }
+        ]
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const fetchHoldings = async () => {
+  const fetchGoalsWithFallback = async () => {
     try {
-      const response = await apiCall('/api/portfolio/holdings');
-      if (response && response.holdings) {
-        setHoldings(response.holdings);
-
-        // Fetch analysis for all crypto
-        const cryptoHoldings = response.holdings.filter((h: any) => h.category === 'Crypto' && h.symbol);
-        const results: Record<number, any> = {};
-        for (const h of cryptoHoldings) {
-          try {
-            const res = await apiCall('/api/market/weex/analysis', {
-              method: 'POST',
-              body: JSON.stringify({ symbol: h.symbol, date: h.date, entryPrice: h.entry_price })
-            });
-            if (res && !res.error) results[h.id] = res;
-          } catch (e) {
-            console.error(`ROI fetch failed for ${h.symbol}`, e);
-          }
-        }
-        setCryptoAnalysis(results);
+      const response = await apiCall('/api/plans/goals');
+      if (response && response.goals && response.goals.length > 0) {
+        setGoals(response.goals);
+      } else {
+        throw new Error("No goals");
       }
     } catch (err) {
-      console.error('Failed to fetch holdings:', err);
+      setIsLive(false);
+      setGoals([
+        { id: 1, name: 'House Downpayment', target_amount: 5000000, current_amount: 1500000, progress: 30, monthly_required: 45000, timeline_years: 5, updated_at: new Date().toISOString() },
+        { id: 2, name: 'Retirement Fund', target_amount: 50000000, current_amount: 5000000, progress: 10, monthly_required: 25000, timeline_years: 25, updated_at: new Date().toISOString() }
+      ]);
+    }
+  };
+
+  const fetchHoldingsWithFallback = async () => {
+    try {
+      const response = await apiCall('/api/portfolio/holdings');
+      if (response && response.holdings && response.holdings.length > 0) {
+        setHoldings(response.holdings);
+      } else {
+        throw new Error("No holdings");
+      }
+    } catch (err) {
+      setIsLive(false);
+      setHoldings([
+        { id: 1, name: 'Bitcoin', symbol: 'BTC', category: 'Crypto', amount: 0.5 * 64000, units: 0.5, entry_price: 45000, created_at: new Date().toISOString() },
+        { id: 2, name: 'Nifty 50 Index', symbol: 'NIFTY50', category: 'Stocks', amount: 250000, created_at: new Date().toISOString() }
+      ]);
     }
   };
 
@@ -343,30 +371,17 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
       setUserName(user.name || user.email?.split('@')[0] || 'User');
     }
 
-    const fetchMarketData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await apiCall('/api/market/dashboard');
-        setMarketData(data);
-      } catch (err: any) {
-        console.error('Failed to fetch market data:', err);
-        setError(err.message || "Failed to fetch market data from the server.");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchMarketData();
-    fetchGoals();
-    fetchHoldings();
+    fetchGoalsWithFallback();
+    fetchHoldingsWithFallback();
   }, []);
 
   const renderContent = () => {
     const marketDataWithAnalysis = { ...marketData, cryptoAnalysis };
     switch (activeTab) {
-      case 'overview': return <OverviewTab marketData={marketDataWithAnalysis} loading={loading} error={error} userName={userName} goals={goals} holdings={holdings} />;
-      case 'portfolio': return <Portfolio holdings={holdings} onRefresh={fetchHoldings} marketData={marketData} cryptoAnalysisProp={cryptoAnalysis} />;
-      default: return <OverviewTab marketData={marketDataWithAnalysis} loading={loading} error={error} userName={userName} goals={goals} holdings={holdings} />;
+      case 'overview': return <OverviewTab marketData={marketDataWithAnalysis} loading={loading} error={null} userName={userName} goals={goals} holdings={holdings} isLive={isLive} />;
+      case 'portfolio': return <Portfolio holdings={holdings} onRefresh={fetchHoldingsWithFallback} marketData={marketData} cryptoAnalysisProp={cryptoAnalysis} />;
+      default: return <OverviewTab marketData={marketDataWithAnalysis} loading={loading} error={null} userName={userName} goals={goals} holdings={holdings} isLive={isLive} />;
     }
   };
 
