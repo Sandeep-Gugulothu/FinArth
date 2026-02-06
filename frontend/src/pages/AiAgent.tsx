@@ -8,9 +8,6 @@ import {
     UserIcon as User,
     Send,
     PanelLeftOpen,
-    Sparkles,
-    TrendingUp,
-    Target,
     CheckCircle,
     Plus,
     MessageSquare,
@@ -75,6 +72,7 @@ const AiAgent: React.FC = () => {
         }
         loadSessions();
         startNewChat();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const loadSessions = async () => {

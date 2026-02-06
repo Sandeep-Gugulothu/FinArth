@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-    ArrowLeft,
     Target,
     TrendingUp,
-    Shield,
     Info,
     ChevronRight,
-    Clock,
-    Wallet,
-    TrendingDown,
-    Trash2,
-    CheckCircle
+    Trash2
 } from '../components/Icons.tsx';
 import Sidebar from '../components/Sidebar.tsx';
 import { apiCall } from '../utils/api.ts';
