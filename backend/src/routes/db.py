@@ -61,16 +61,34 @@ def database_viewer():
                 <h2>📈 Portfolio Holdings</h2>
                 <div id="portfolio-table">Loading...</div>
             </div>
+
+            <div class="section">
+                <h2>🎯 Financial Goals</h2>
+                <div id="goals-table">Loading...</div>
+            </div>
+
+            <div class="section">
+                <h2>💬 Chat Sessions</h2>
+                <div id="sessions-table">Loading...</div>
+            </div>
+
+            <div class="section">
+                <h2>✉️ Recent Chat Messages</h2>
+                <div id="messages-table">Loading...</div>
+            </div>
         </div>
 
         <script>
             async function loadData() {
                 try {
-                    const [users, investments, objectives, portfolio] = await Promise.all([
+                    const [users, investments, objectives, portfolio, goals, sessions, messages] = await Promise.all([
                         fetch('/api/db/users').then(r => r.json()),
                         fetch('/api/db/investments').then(r => r.json()),
                         fetch('/api/db/objectives').then(r => r.json()),
-                        fetch('/api/db/portfolio').then(r => r.json())
+                        fetch('/api/db/portfolio').then(r => r.json()),
+                        fetch('/api/db/goals').then(r => r.json()),
+                        fetch('/api/db/sessions').then(r => r.json()),
+                        fetch('/api/db/messages').then(r => r.json())
                     ]);
 
                     // Render users table
@@ -127,7 +145,7 @@ def database_viewer():
                     // Render portfolio table
                     const portfolioHtml = portfolio.length ? `
                         <table>
-                            <tr><th>ID</th><th>User</th><th>Name</th><th>Category</th><th>Amount</th><th>Date</th><th>Symbol</th><th>Created</th></tr>
+                            <tr><th>ID</th><th>User</th><th>Name</th><th>Category</th><th>Amount</th><th>Date</th><th>Symbol</th><th>Entry Price</th><th>Created</th></tr>
                             ${portfolio.map(holding => `
                                 <tr>
                                     <td>${holding.id}</td>
@@ -137,16 +155,71 @@ def database_viewer():
                                     <td>₹${holding.amount.toLocaleString()}</td>
                                     <td>${holding.date}</td>
                                     <td>${holding.symbol || '<span class="empty">None</span>'}</td>
+                                    <td>${holding.entry_price ? '₹' + holding.entry_price.toLocaleString() : '<span class="empty">Fetch Pending</span>'}</td>
                                     <td>${new Date(holding.created_at).toLocaleString()}</td>
                                 </tr>
                             `).join('')}
                         </table>
                     ` : '<p class="empty">No portfolio holdings found</p>';
 
+                    // Render goals table
+                    const goalsHtml = goals.length ? `
+                        <table>
+                            <tr><th>ID</th><th>User</th><th>Name</th><th>Target</th><th>Current</th><th>Years</th><th>Monthly</th><th>Status</th><th>Updated</th></tr>
+                            ${goals.map(goal => `
+                                <tr>
+                                    <td>${goal.id}</td>
+                                    <td>${goal.user_id}</td>
+                                    <td>${goal.name}</td>
+                                    <td>₹${goal.target_amount.toLocaleString()}</td>
+                                    <td>₹${goal.current_amount.toLocaleString()}</td>
+                                    <td>${goal.timeline_years}y</td>
+                                    <td>₹${goal.monthly_required.toLocaleString()}</td>
+                                    <td><span class="badge ${goal.status === 'on-track' ? 'verified' : ''}">${goal.status}</span></td>
+                                    <td>${new Date(goal.updated_at).toLocaleString()}</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                    ` : '<p class="empty">No financial goals found</p>';
+
+                    // Render sessions table
+                    const sessionsHtml = sessions.length ? `
+                        <table>
+                            <tr><th>ID</th><th>User</th><th>Title</th><th>Updated</th></tr>
+                            ${sessions.map(s => `
+                                <tr>
+                                    <td><small>${s.id}</small></td>
+                                    <td>${s.user_id}</td>
+                                    <td>${s.title || '<span class="empty">Untitled</span>'}</td>
+                                    <td>${new Date(s.updated_at).toLocaleString()}</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                    ` : '<p class="empty">No chat sessions found</p>';
+
+                    // Render messages table
+                    const messagesHtml = messages.length ? `
+                        <table>
+                            <tr><th>ID</th><th>Session</th><th>Role</th><th>Content Preview</th><th>Timestamp</th></tr>
+                            ${messages.map(m => `
+                                <tr>
+                                    <td>${m.id}</td>
+                                    <td><small>${m.session_id}</small></td>
+                                    <td><span class="badge">${m.role}</span></td>
+                                    <td>${m.content ? m.content.substring(0, 50) + '...' : ''}</td>
+                                    <td>${new Date(m.timestamp).toLocaleString()}</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                    ` : '<p class="empty">No chat messages found</p>';
+
                     document.getElementById('users-table').innerHTML = usersHtml;
                     document.getElementById('investments-table').innerHTML = investmentsHtml;
                     document.getElementById('objectives-table').innerHTML = objectivesHtml;
                     document.getElementById('portfolio-table').innerHTML = portfolioHtml;
+                    document.getElementById('goals-table').innerHTML = goalsHtml;
+                    document.getElementById('sessions-table').innerHTML = sessionsHtml;
+                    document.getElementById('messages-table').innerHTML = messagesHtml;
                 } catch (error) {
                     console.error('Error loading data:', error);
                     document.body.innerHTML += '<div style="color: red; margin: 20px;">Error loading data. Make sure the backend is running.</div>';
@@ -197,5 +270,35 @@ def get_portfolio():
         cursor.execute("SELECT * FROM portfolio_holdings ORDER BY created_at DESC")
         portfolio = cursor.fetchall()
         return jsonify([dict(holding) for holding in portfolio])
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@db_blue_print.route('/goals', methods=['GET'])
+def get_goals():
+    try:
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM financial_goals ORDER BY created_at DESC")
+        goals = cursor.fetchall()
+        return jsonify([dict(goal) for goal in goals])
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@db_blue_print.route('/sessions', methods=['GET'])
+def get_sessions():
+    try:
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM chat_sessions ORDER BY updated_at DESC")
+        sessions = cursor.fetchall()
+        return jsonify([dict(session) for session in sessions])
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@db_blue_print.route('/messages', methods=['GET'])
+def get_messages():
+    try:
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM chat_messages ORDER BY timestamp DESC LIMIT 100")
+        messages = cursor.fetchall()
+        return jsonify([dict(msg) for msg in messages])
     except Exception as e:
         return jsonify({'error': str(e)}), 500
