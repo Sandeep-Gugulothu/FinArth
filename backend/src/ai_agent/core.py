@@ -33,11 +33,12 @@ class AgentOrchestrator:
         handler = self.handlers.get(router_result.intent, self.handlers[AgentIntent.GENERAL_ADVICE])
         
         # 3. Process with Handler
-        # Pass router context to handler
+        # Pass router context and conversation history to handler
         context = {
             "intent_confidence": router_result.confidence,
             "intent_reasoning": router_result.reasoning,
-            "original_query": query
+            "original_query": query,
+            "conversation_history": history  # Pass conversation history
         }
         
         response = await handler.process(query, user_id, context)

@@ -201,3 +201,23 @@
 - **UI/UX Polishing**:
   - Implemented static sidebars and panels to prevent full-page scrolling.
   - Added custom scrollbars to content areas for a cleaner, premium feel.
+
+## [0.5.0] - 2026-02-07
+### Frontend Changes
+- **Dashboard Page**:
+  - Added the visuals of the data fetched from the coinGecko and Weexs API.
+  - Changed the Hardcoded values to the dynamic values.
+  - Recent Activity panel update and Market Intelligence panel update.
+- **Portfolio Page**:
+  - Added the visuals of the data fetched from the coinGecko and Weexs API.
+  - Changed the Hardcoded values to the dynamic values.
+  - Recent Activity panel update and Market Intelligence panel update.
+  - Calculating the profits in the real time
+  - Fully implemented for the crypto currencies.  
+- **Goals Page**
+  - Implemeted the Goal Creation and Tracking.
+### Backend Changes
+- **Portfolio Analysis**: Enhanced `PortfolioAnalyzer` to calculate "Total Value" (Current Value + ROI) for the dashboard summary.
+- **Market Data**: Added real-time market data fetching for the "Market Pulse" panel.
+ - We are using the **CoinGecko API(Analyst Plan)** for the market data in the HomePage.
+ - We are using the **Weexs(CEX) API** for calulating the ROI and Total Value.

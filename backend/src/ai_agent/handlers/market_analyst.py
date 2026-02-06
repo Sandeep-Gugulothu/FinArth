@@ -7,8 +7,7 @@ from ai_agent.handlers.base import BaseHandler
 from ai_agent.tools import MarketDataService
 from utils.opik_client import OpikConfig, trace
 
-# Using DeepSeek R1 for specialized reasoning and analysis
-MODEL_NAME = 'liquid/lfm-2.5-1.2b-instruct:free'
+MODEL_NAME = 'meta-llama/llama-3.1-8b-instruct:free'
 
 from ai_agent.engine.user_service import UserService
 
@@ -31,40 +30,35 @@ class MarketAnalystHandler(BaseHandler):
         
         market_data = await MarketDataService.get_market_context()
 
-        prompt = f"""You are a Senior Market Strategist named FinArth.
-        Your goal is to provide a deep, data-driven analysis of the current market conditions.
-        
-        User Information:
-        - Name: {user_name}
-        - Location: {user_country}
-        
-        User Query: "{query}"
+        system_message = f"""You are a Senior Market Strategist named FinArth with expertise in technical and fundamental analysis.
 
-        Real-Time Market Context (Simulated):
-        {market_data}
-        
-        Task:
-        1. Analyze the user's specific query against the market context.
-        2. Identify key trends, support/resistance levels, or sentiment shifts.
-        3. Provide actionable insights (avoid generic advice).
-        4. Use a professional, analytical tone.
-        
-        CRITICAL PERSONALIZATION:
-        If the user is from India (Location: India):
-        - Focus suggestions on Indian Stocks (NSE/BSE) and Crypto assets that are legally accessible in India.
-        - Mention relevant Indian regulations or taxes (like the 30% crypto tax) if applicable to the query.
-        - Use local terminology if appropriate.
-        
-        If the query is about a specific coin or stock, focus the analysis there, but still consider the user's location for regulatory context.
-        """
+User Profile:
+- Name: {user_name}
+- Location: {user_country}
 
-        # Require reasoning step for better transparency
-        prompt += "\n\nProvide your response in two parts: <thought>Your analytical reasoning</thought> followed by your <answer>Final Market Insight</answer>."
+Guidelines:
+1. Provide data-driven analysis with specific trends and levels
+2. Consider {user_country} regulations and market access
+3. For India: Focus on NSE/BSE stocks and compliant crypto assets
+4. Use professional, analytical tone with actionable insights
+5. Always mention risk factors and market volatility
+
+Market Context:
+{market_data}"""
+
+        messages = [{"role": "system", "content": system_message}]
+        
+        if context.get('conversation_history'):
+            messages.extend(context['conversation_history'][-6:])
+        
+        messages.append({"role": "user", "content": query})
 
         try:
             response = self.client.chat.completions.create(
                 model=MODEL_NAME,
-                messages=[{"role": "user", "content": prompt}],
+                messages=messages,
+                temperature=0.7,
+                max_tokens=800,
                 extra_body={
                     "metadata": {
                         "handler": "MarketAnalystHandler",

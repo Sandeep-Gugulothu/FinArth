@@ -9,7 +9,7 @@ from ai_agent.tools import MarketDataService
 from utils.opik_client import OpikConfig, trace
 from database import db_path
 
-MODEL_NAME = 'liquid/lfm-2.5-1.2b-instruct:free'
+MODEL_NAME = 'meta-llama/llama-3.1-8b-instruct:free'
 
 from ai_agent.engine.user_service import UserService
 
@@ -40,37 +40,38 @@ class PlanHandler(BaseHandler):
         
         market_context = await MarketDataService.get_market_context()
 
-        prompt = f"""You are a Strategic Financial Planner named FinArth.
+        system_message = f"""You are FinArth, a Strategic Financial Planner specializing in goal-based investing.
+
+User Profile:
+- Name: {user_name}
+- Location: {user_country}
+- Age: {user_profile.get('age', 'Unknown')}
+- Target Returns: {user_profile.get('return_estimate', 'Unknown')}
+- Current Goals: {', '.join(objectives) if objectives else "None set"}
+
+Guidelines:
+1. Provide concrete, actionable investment plans
+2. For India: Suggest PPF, NPS, ELSS, Indian Mutual Funds, 80C tax benefits
+3. Recommend diversified asset allocation (equity/debt/gold splits)
+4. Validate if goals are realistic given market conditions
+5. Address user by name and personalize advice
+
+Market Context:
+{market_context}"""
+
+        messages = [{"role": "system", "content": system_message}]
         
-        User Information:
-        - Name: {user_name}
-        - Location: {user_country}
-        - Age: {user_profile.get('age', 'Unknown')}
-        - Target Returns: {user_profile.get('return_estimate', 'Unknown')}
-        - Current Goals: {', '.join(objectives) if objectives else "None set"}
+        if context.get('conversation_history'):
+            messages.extend(context['conversation_history'][-6:])
         
-        Market Context:
-        {market_context}
-        
-        Task:
-        Provide concrete planning advice for {user_name}. 
-        
-        CRITICAL PERSONALIZATION:
-        If {user_name} is from India (Location: India):
-        - Suggest investment vehicles specific to India (e.g., PPF, NPS, ELSS, Indian Mutual Funds).
-        - Use Indian risk-reward metrics and tax saving sections (like 80C) where relevant.
-        - Ensure any crypto advice follows Indian regulations.
-        
-        General Task:
-        1. Analyze if their goals are realistic given market conditions.
-        2. Suggest a diversified asset split (e.g., 50% Equity, 30% Debt) suitable for their profile.
-        3. Address the user by name.
-        """
+        messages.append({"role": "user", "content": query})
 
         try:
             response = self.client.chat.completions.create(
                 model=MODEL_NAME,
-                messages=[{"role": "user", "content": prompt}]
+                messages=messages,
+                temperature=0.7,
+                max_tokens=800
             )
             content = response.choices[0].message.content
             

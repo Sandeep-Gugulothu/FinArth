@@ -10,6 +10,7 @@ from routes.users import users_blue_print
 from routes.db import db_blue_print
 from routes.portfolio import portfolio_blue_print
 from routes.agent import agent_blue_print
+from routes.market import market_blue_print
 
 load_dotenv()
 
@@ -30,6 +31,7 @@ app.register_blueprint(users_blue_print, url_prefix='/api/users')
 app.register_blueprint(db_blue_print, url_prefix='/api/db')
 app.register_blueprint(portfolio_blue_print, url_prefix='/api/portfolio')
 app.register_blueprint(agent_blue_print, url_prefix='/api/agent')
+app.register_blueprint(market_blue_print, url_prefix='/api/market')
 
 # Root route
 @app.route('/')

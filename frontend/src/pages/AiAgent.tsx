@@ -19,6 +19,7 @@ import {
     ThumbsUp,
     ThumbsDown
 } from '../components/Icons.tsx';
+import API_BASE_URL from '../utils/api.ts';
 
 type Message = {
     id: string | number;
@@ -80,7 +81,7 @@ const AiAgent: React.FC = () => {
         const userId = localStorage.getItem('userId');
         if (!userId) return;
         try {
-            const response = await fetch(`http://localhost:5000/api/agent/sessions?userId=${userId}`);
+            const response = await fetch(`${API_BASE_URL}/api/agent/sessions?userId=${userId}`);
             const data = await response.json();
             if (data.success) {
                 setSessions(data.sessions);
@@ -94,7 +95,7 @@ const AiAgent: React.FC = () => {
         setIsHistoryLoading(true);
         setCurrentSessionId(sessionId);
         try {
-            const response = await fetch(`http://localhost:5000/api/agent/sessions/${sessionId}`);
+            const response = await fetch(`${API_BASE_URL}/api/agent/sessions/${sessionId}`);
             const data = await response.json();
             if (data.success) {
                 const formattedMessages: Message[] = data.messages.map((m: any) => ({
@@ -127,7 +128,7 @@ const AiAgent: React.FC = () => {
     const deleteSession = async (e: React.MouseEvent, sessionId: string) => {
         e.stopPropagation();
         try {
-            await fetch(`http://localhost:5000/api/agent/sessions/${sessionId}`, { method: 'DELETE' });
+            await fetch(`${API_BASE_URL}/api/agent/sessions/${sessionId}`, { method: 'DELETE' });
             loadSessions();
             if (currentSessionId === sessionId) startNewChat();
         } catch (error) {
@@ -144,7 +145,7 @@ const AiAgent: React.FC = () => {
         ));
 
         try {
-            await fetch('http://localhost:5000/api/agent/message-feedback', {
+            await fetch(`${API_BASE_URL}/api/agent/message-feedback`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -187,7 +188,7 @@ const AiAgent: React.FC = () => {
             const userId = localStorage.getItem('userId');
             const userIdNum = userId ? parseInt(userId) : null;
 
-            const response = await fetch('http://localhost:5000/api/agent/generate-insight', {
+            const response = await fetch(`${API_BASE_URL}/api/agent/generate-insight`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
