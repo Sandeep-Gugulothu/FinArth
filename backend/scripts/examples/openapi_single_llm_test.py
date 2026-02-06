@@ -9,7 +9,7 @@ except ImportError:
     OPIK_AVAILABLE = False
     print("Warning: Opik integration disabled due to compatibility issues")
 
-MODEL_NAME = 'nvidia/nemotron-3-nano-30b-a3b:free'
+MODEL_NAME = os.getenv('MODEL_NAME')
 
 # Initialize OpenAI client
 client = OpenAI(

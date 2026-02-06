@@ -5,8 +5,6 @@ from typing import List, Dict, Any
 from ai_agent.types import AgentIntent, RouterResult
 from utils.opik_client import OpikConfig, trace
 
-MODEL_NAME = 'liquid/lfm-2.5-1.2b-instruct:free'
-
 class IntentRouter:
     def __init__(self):
         self.client = OpenAI(
@@ -55,7 +53,7 @@ class IntentRouter:
 
         try:
             response = self.client.chat.completions.create(
-                model=MODEL_NAME,
+                model=os.getenv('MODEL_NAME'),
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}

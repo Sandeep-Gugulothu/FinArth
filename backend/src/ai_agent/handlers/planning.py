@@ -9,8 +9,6 @@ from ai_agent.tools import MarketDataService
 from utils.opik_client import OpikConfig, trace
 from database import db_path
 
-MODEL_NAME = 'meta-llama/llama-3.1-8b-instruct:free'
-
 from ai_agent.engine.user_service import UserService
 
 class PlanHandler(BaseHandler):
@@ -20,6 +18,7 @@ class PlanHandler(BaseHandler):
             base_url="https://openrouter.ai/api/v1"
         )
         self.client = OpikConfig.track_openai_client(self.client)
+        self._model_name = os.getenv('MODEL_NAME')
 
     @trace(name="handler_planning_process")
     async def process(self, query: str, user_id: Optional[int], context: Dict[str, Any] = {}) -> AgentResponse:
@@ -68,7 +67,7 @@ Market Context:
 
         try:
             response = self.client.chat.completions.create(
-                model=MODEL_NAME,
+                model=self._model_name,
                 messages=messages,
                 temperature=0.7,
                 max_tokens=800
@@ -86,7 +85,7 @@ Market Context:
             
         except Exception as e:
             return AgentResponse(
-                content=f"API Error ({MODEL_NAME}): {str(e)}",
+                content=f"API Error ({self._model_name}): {str(e)}",
                 intent=AgentIntent.INVESTMENT_PLANNING,
                 metadata={"error": str(e)}
             )

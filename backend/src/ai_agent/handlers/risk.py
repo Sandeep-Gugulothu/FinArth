@@ -9,8 +9,6 @@ from ai_agent.tools import MarketDataService
 from utils.opik_client import OpikConfig, trace
 from database import db_path
 
-MODEL_NAME = 'meta-llama/llama-3.1-8b-instruct:free'
-
 class RiskHandler(BaseHandler):
     def __init__(self):
         self.client = OpenAI(
@@ -18,6 +16,7 @@ class RiskHandler(BaseHandler):
             base_url="https://openrouter.ai/api/v1"
         )
         self.client = OpikConfig.track_openai_client(self.client)
+        self._model_name = os.getenv('MODEL_NAME')
 
     def _get_user_profile(self, user_id: int):
         if not user_id:
@@ -101,7 +100,7 @@ Market Context:
 
         try:
             response = self.client.chat.completions.create(
-                model=MODEL_NAME,
+                model=self._model_name,
                 messages=messages,
                 temperature=0.7,
                 max_tokens=800
@@ -119,7 +118,7 @@ Market Context:
             
         except Exception as e:
             return AgentResponse(
-                content=f"API Error ({MODEL_NAME}): {str(e)}",
+                content=f"API Error ({self._model_name}): {str(e)}",
                 intent=AgentIntent.RISK_ASSESSMENT,
                 metadata={"error": str(e)}
             )

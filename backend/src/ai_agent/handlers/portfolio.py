@@ -10,8 +10,6 @@ from utils.opik_client import OpikConfig, trace
 from database import db_path  # Import db_path to connect
 from ai_agent.engine.portfolio_analyzer import PortfolioAnalyzer
 
-MODEL_NAME = 'meta-llama/llama-3.1-8b-instruct:free'
-
 from ai_agent.engine.user_service import UserService
 
 class PortfolioHandler(BaseHandler):
@@ -21,6 +19,7 @@ class PortfolioHandler(BaseHandler):
             base_url="https://openrouter.ai/api/v1"
         )
         self.client = OpikConfig.track_openai_client(self.client)
+        self._model_name = os.getenv('MODEL_NAME')
 
     def _get_user_holdings(self, user_id: int):
         if not user_id:
@@ -98,7 +97,7 @@ Market Context:
 
         try:
             response = self.client.chat.completions.create(
-                model=MODEL_NAME,
+                model=self._model_name,
                 messages=messages,
                 temperature=0.7,
                 max_tokens=800,
@@ -119,13 +118,13 @@ Market Context:
                     "handler": "PortfolioHandler", 
                     "holdings_count": len(holdings),
                     "total_value": analysis['total_value'],
-                    "model": MODEL_NAME
+                    "model": self._model_name
                 }
             )
             
         except Exception as e:
             return AgentResponse(
-                content=f"API Error ({MODEL_NAME}): {str(e)}",
+                content=f"API Error ({self._model_name}): {str(e)}",
                 intent=AgentIntent.PORTFOLIO_ANALYSIS,
                 metadata={"error": str(e)}
             )

@@ -136,7 +136,7 @@ class ReactAgent:
         if user_id:
             try:
                 logger.info('Fetching user preferences for LLM context', user_id)
-                backend_port = os.getenv('PORT', '5000')
+                backend_port = os.getenv('PORT', '8000')
                 response = requests.get(f'http://localhost:{backend_port}/api/users/{user_id}/preferences')
                 if response.status_code == 200:
                     data = response.json()

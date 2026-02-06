@@ -4,6 +4,7 @@ from datetime import datetime
 from pathlib import Path
 from enum import Enum
 from typing import Optional, Dict, Any
+import inspect
 
 class LogLevel(Enum):
     INFO = 'INFO'
@@ -17,7 +18,7 @@ class Logger:
     def __init__(self):
         self.config = {
             'max_lines_per_file': 1000,
-            'log_level': LogLevel.INFO,
+            'log_level': LogLevel.DEBUG,
             'enable_colors': True
         }
         self.log_dir = Path(__file__).parent.parent / 'logs'
@@ -69,18 +70,34 @@ class Logger:
             file_index += 1
         return current_file
 
-    def _format_log_entry(self, level: LogLevel, message: str, user_id: Optional[int], metadata: Optional[Dict]) -> str:
+    def _get_caller_info(self) -> Dict[str, Any]:
+        """Get the filename and line number of the caller"""
+        frame = inspect.currentframe()
+        # Go up the stack to find the actual caller (skip logger internal methods)
+        caller_frame = frame.f_back.f_back.f_back
+        # Skip one more frame if called from helper methods like log_db_operation
+        if caller_frame and 'log_' in caller_frame.f_code.co_name:
+            caller_frame = caller_frame.f_back
+        if caller_frame:
+            filename = Path(caller_frame.f_code.co_filename).name
+            line_number = caller_frame.f_lineno
+            return {'file': filename, 'line': line_number}
+        return {'file': 'unknown', 'line': 0}
+
+    def _format_log_entry(self, level: LogLevel, message: str, user_id: Optional[int], metadata: Optional[Dict], caller_info: Dict[str, Any]) -> str:
         timestamp = datetime.now().isoformat()
         color_code = self.color_codes[level] if self.config['enable_colors'] else ''
         reset_code = self.color_codes['RESET'] if self.config['enable_colors'] else ''
         user_info = f'[User:{user_id}]' if user_id else '[System]'
+        location = f"[{caller_info['file']}:{caller_info['line']}]"
         metadata_str = f' | {json.dumps(metadata)}' if metadata else ''
         # add additional formatting for better readability
-        return f'{color_code}[{timestamp}] [{level.value}] {user_info} {message}{metadata_str}{reset_code}'
+        return f'{color_code}[{timestamp}] [{level.value}] {user_info} {location} {message}{metadata_str}{reset_code}'
 
     def _write_log(self, level: LogLevel, message: str, user_id: Optional[int], metadata: Optional[Dict]):
         log_file = self._get_next_log_file(user_id)
-        formatted_entry = self._format_log_entry(level, message, user_id, metadata)
+        caller_info = self._get_caller_info()
+        formatted_entry = self._format_log_entry(level, message, user_id, metadata, caller_info)
         # open the log file in append mode and write the log entry
         with open(log_file, 'a') as f:
             f.write(formatted_entry + '\n')
