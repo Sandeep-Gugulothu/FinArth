@@ -3,7 +3,4 @@ flask-cors==4.0.0
 python-dotenv==1.0.0
 requests==2.31.0
 openai==1.12.0
-pydantic-ai-slim==0.0.14
-pydantic-ai==0.0.14
-logfire==0.51.0
 opik==0.2.25
