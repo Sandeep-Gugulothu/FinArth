@@ -36,6 +36,8 @@ database.sqlite
 # Temporary
 tmp/
 temp/
+market_cache.json
+*/market_cache.json
 
 # Python
 __pycache__/
