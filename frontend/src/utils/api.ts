@@ -1,7 +1,7 @@
 // API Configuration
 const API_CONFIG = {
-  development: 'http://localhost:8000', //Backend port
-  production: 'https://fin-arth-frontend-f4b8-n7r42uwlp-gugulothu-sandeeps-projects.vercel.app'
+  development: 'http://localhost:5000', //Backend port
+  production: 'https://finarth.onrender.com'
 };
 
 export const API_BASE_URL = API_CONFIG[process.env.NODE_ENV as keyof typeof API_CONFIG] || API_CONFIG.development;

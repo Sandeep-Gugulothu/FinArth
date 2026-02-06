@@ -40,8 +40,19 @@ def create_goal(current_user):
         data = request.json
         cursor = db.cursor()
         cursor.execute(
-            'INSERT INTO financial_goals (user_id, name, target_amount, current_amount, timeline_years, monthly_required, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            (current_user['id'], data['name'], data['target_amount'], data.get('current_amount', 0), data['timeline_years'], data['monthly_required'], data.get('status', 'on-track'))
+            'INSERT INTO financial_goals (user_id, name, target_amount, current_amount, timeline_years, monthly_required, risk_profile, adjust_inflation, return_rate, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            (
+                current_user['id'], 
+                data['name'], 
+                data['target_amount'], 
+                data.get('current_amount', 0), 
+                data['timeline_years'], 
+                data['monthly_required'],
+                data.get('risk_profile', 'Moderate'),
+                1 if data.get('adjust_inflation', True) else 0,
+                data.get('return_rate'),
+                data.get('status', 'on-track')
+            )
         )
         db.commit()
         return jsonify({'message': 'Goal created successfully', 'id': cursor.lastrowid}), 201
@@ -56,8 +67,20 @@ def update_goal(current_user, goal_id):
         data = request.json
         cursor = db.cursor()
         cursor.execute(
-            'UPDATE financial_goals SET name = ?, target_amount = ?, current_amount = ?, timeline_years = ?, monthly_required = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?',
-            (data['name'], data['target_amount'], data['current_amount'], data['timeline_years'], data['monthly_required'], data['status'], goal_id, current_user['id'])
+            'UPDATE financial_goals SET name = ?, target_amount = ?, current_amount = ?, timeline_years = ?, monthly_required = ?, risk_profile = ?, adjust_inflation = ?, return_rate = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?',
+            (
+                data['name'], 
+                data['target_amount'], 
+                data['current_amount'], 
+                data['timeline_years'], 
+                data['monthly_required'],
+                data.get('risk_profile'),
+                1 if data.get('adjust_inflation', True) else 0,
+                data.get('return_rate'),
+                data['status'], 
+                goal_id, 
+                current_user['id']
+            )
         )
         db.commit()
         return jsonify({'message': 'Goal updated successfully'}), 200

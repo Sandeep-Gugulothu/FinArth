@@ -8,9 +8,6 @@ import {
     UserIcon as User,
     Send,
     PanelLeftOpen,
-    Sparkles,
-    TrendingUp,
-    Target,
     CheckCircle,
     Plus,
     MessageSquare,
@@ -75,6 +72,7 @@ const AiAgent: React.FC = () => {
         }
         loadSessions();
         startNewChat();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const loadSessions = async () => {
@@ -256,11 +254,11 @@ const AiAgent: React.FC = () => {
                             )}
                             <div className="flex flex-col">
                                 <h1 className="text-sm font-bold text-stone-900 tracking-tight">
-                                    {currentSessionId ? sessions.find(s => s.id === currentSessionId)?.title : 'FinArth Intelligence'}
+                                    {currentSessionId ? sessions.find(s => s.id === currentSessionId)?.title : 'FinArth Knowledge Base'}
                                 </h1>
                                 <div className="flex items-center gap-1.5">
                                     <span className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse" />
-                                    <span className="text-[9px] font-bold text-stone-400 uppercase tracking-widest">Autonomous Advisor Active</span>
+                                    <span className="text-[9px] font-bold text-stone-400 uppercase tracking-widest">Autonomous Intelligence Active</span>
                                 </div>
                             </div>
                         </div>
@@ -385,7 +383,7 @@ const AiAgent: React.FC = () => {
                                     value={inputMessage}
                                     onChange={(e) => setInputMessage(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && !isTyping && sendMessage()}
-                                    placeholder="Consult your AI wealth advisor..."
+                                    placeholder="Consult your wealth knowledge base..."
                                     className="w-full pl-5 pr-14 py-3.5 bg-transparent border-none focus:ring-0 text-stone-900 text-sm placeholder-stone-400 font-medium"
                                     disabled={isTyping}
                                 />
