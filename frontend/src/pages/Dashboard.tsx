@@ -284,12 +284,12 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [marketData, setMarketData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   const [userName, setUserName] = useState('User');
   const [goals, setGoals] = useState<any[]>([]);
   const [holdings, setHoldings] = useState<any[]>([]);
-  const [cryptoAnalysis, setCryptoAnalysis] = useState<Record<number, any>>({});
+  const [cryptoAnalysis] = useState<Record<number, any>>({});
   const [isLive, setIsLive] = useState(true);
 
   const fetchMarketData = async () => {
