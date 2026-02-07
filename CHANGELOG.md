@@ -246,3 +246,15 @@
   - Build scope update
   - project structure
   - basic hld inclusion
+
+## [0.5.3] - 2026-02-07
+### Backend Changes
+- opik auth update
+- opik thread sample update
+- DB schematic sql file update
+- tool script thread update
+- thread_id formation update
+### Documentation Changes
+- README file update
+- design and web interface updates.
+- db arch doc update

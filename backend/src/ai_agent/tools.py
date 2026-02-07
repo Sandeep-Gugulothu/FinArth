@@ -57,7 +57,17 @@ class MarketDataService:
                 return d
 
         # Use threading lock to prevent thundering herd across Flask threads
-        with MarketDataService._fetch_lock:
+        acquired = MarketDataService._fetch_lock.acquire(blocking=False)
+        if not acquired:
+            # Another thread is fetching, return cached data
+            cache = MarketDataService._load_cache()
+            if cache.get("data"):
+                return cache["data"]
+            # Wait for the other thread to finish
+            with MarketDataService._fetch_lock:
+                return MarketDataService._load_cache().get("data", {"global": {}, "top_coins": []})
+        
+        try:
             # Re-check cache inside lock
             cache = MarketDataService._load_cache()
             if cache.get("data") and current_time < cache.get("expiry", 0):
@@ -67,6 +77,8 @@ class MarketDataService:
             
             # Perform the fetch
             return await MarketDataService._perform_fetch(cache)
+        finally:
+            MarketDataService._fetch_lock.release()
 
     @staticmethod
     async def _perform_fetch(cache):

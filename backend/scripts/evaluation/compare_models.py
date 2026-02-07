@@ -24,6 +24,7 @@ client = OpenAI(
 
 # Initialize Opik client
 opik_client = Opik()
+opik_client.auth_check()
 
 # Models to evaluate
 MODELS_TO_TEST = [

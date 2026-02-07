@@ -59,8 +59,9 @@ if __name__ == "__main__":
     if not os.getenv("OPIK_API_KEY"):
         print("Please set OPIK_API_KEY to run evaluation.")
         exit(1)
-        
+
     client = Opik()
+    client.auth_check()
     dataset = client.get_or_create_dataset(name="FinArth_Router_Benchmark")
     dataset.insert(DATASET_ITEMS)
     
