@@ -246,3 +246,7 @@
   - Build scope update
   - project structure
   - basic hld inclusion
+
+## [0.5.3] - 2026-02-07
+ - Removed the Demo Login functionality.
+ - Fixed the profit calculation logic.

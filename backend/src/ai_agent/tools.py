@@ -168,17 +168,20 @@ class WeexService:
             return None
 
     @staticmethod
-    def get_history(symbol: str, start_time_ms: int):
-        """Fetches historical daily candles from WEEX."""
+    def get_history(symbol: str, investment_date_ms: int):
+        """Fetches the specific candle for the investment date using startTime and endTime."""
         clean = symbol.lower().split('_')[-1]
         weex_symbol = f"cmt_{clean}"
-        # Filter for candles AFTER the start time
-        url = f"https://api-contract.weex.com/capi/v2/market/historyCandles?symbol={weex_symbol}&granularity=1d&startTime={start_time_ms}&limit=100"
-        print(f"Fetching WEEX History: {url}")
+        # Use both startTime and endTime to get exactly the candle for that day
+        end_time_ms = investment_date_ms + (24 * 60 * 60 * 1000)  # Next day
+        url = f"https://api-contract.weex.com/capi/v2/market/historyCandles?symbol={weex_symbol}&granularity=1d&startTime={investment_date_ms}&endTime={end_time_ms}&limit=1"
         try:
             r = requests.get(url, timeout=10)
             if r.status_code == 200:
-                return r.json()
+                candles = r.json()
+                if candles and len(candles) > 0:
+                    return candles[0]  # Return the single candle
+                return None
             return None
         except Exception as e:
             print(f"WEEX History Exception: {str(e)}")
@@ -200,14 +203,14 @@ class WeexService:
             if purchase_price is None:
                 import datetime
                 dt = datetime.datetime.strptime(investment_date_str, "%Y-%m-%d")
-                start_ms = int(dt.timestamp() * 1000)
-                history = WeexService.get_history(symbol, start_ms)
+                investment_ms = int(dt.timestamp() * 1000)
+                candle = WeexService.get_history(symbol, investment_ms)
                 
-                # If we have history, use the first candle (closest to investment date)
-                if history and len(history) > 0:
+                # Use closing price (index 4) from the candle
+                if candle and len(candle) > 4:
                     try:
-                        purchase_price = float(history[0][1])
-                    except (IndexError, ValueError):
+                        purchase_price = float(candle[4])  # Closing price
+                    except (IndexError, ValueError, TypeError):
                         pass
             
             if purchase_price and purchase_price > 0:
