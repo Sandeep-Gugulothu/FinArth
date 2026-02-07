@@ -49,8 +49,8 @@ def add_holding(current_user):
                 dt = datetime.datetime.strptime(date, "%Y-%m-%d")
                 start_ms = int(dt.timestamp() * 1000)
                 history = WeexService.get_history(symbol, start_ms)
-                if history and len(history) > 0:
-                    entry_price = float(history[0][1]) # Opening price on that day
+                if history and len(history) >= 5:
+                    entry_price = float(history[4]) # Closing price on that day
             except Exception as e:
                 logger.error(f'Failed to fetch historical entry price for {symbol}: {str(e)}')
 
@@ -86,8 +86,8 @@ def update_holding(current_user, holding_id):
                     dt = datetime.datetime.strptime(date, "%Y-%m-%d")
                     start_ms = int(dt.timestamp() * 1000)
                     history = WeexService.get_history(symbol, start_ms)
-                    if history and len(history) > 0:
-                        entry_price = float(history[0][1])
+                    if history and len(history) >= 5:
+                        entry_price = float(history[4])
                 except Exception as e:
                     logger.error(f'Failed to update historical entry price for {symbol}: {str(e)}')
 
