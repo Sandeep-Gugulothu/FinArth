@@ -58,7 +58,52 @@ const CryptoTracker = ({ symbol, date, entryPrice }: { symbol: string; date: str
 const Portfolio: React.FC<PortfolioProps> = ({ holdings, onRefresh, marketData, cryptoAnalysisProp = {} }) => {
   const [expandedAsset, setExpandedAsset] = useState<string | null>(null);
   const [hoveredAsset, setHoveredAsset] = useState<string | null>(null);
-  const cryptoAnalysis = cryptoAnalysisProp;
+  const [cryptoAnalysis, setCryptoAnalysis] = useState<Record<number, any>>(cryptoAnalysisProp);
+  const [isAnalysisLoading, setIsAnalysisLoading] = useState(true);
+
+  // Fetch crypto analysis when component mounts or holdings change
+  useEffect(() => {
+    const fetchCryptoAnalysis = async () => {
+      setIsAnalysisLoading(true);
+      const cryptoHoldings = holdings.filter(h => h.category === 'Crypto' && h.symbol && h.date);
+
+      if (cryptoHoldings.length === 0) {
+        setIsAnalysisLoading(false);
+        return;
+      }
+
+      const analysisResults: Record<number, any> = {};
+
+      await Promise.all(
+        cryptoHoldings.map(async (holding) => {
+          try {
+            const res = await apiCall('/api/market/weex/analysis', {
+              method: 'POST',
+              body: JSON.stringify({
+                symbol: holding.symbol,
+                date: holding.date,
+                entryPrice: holding.entry_price
+              })
+            });
+            if (res && !res.error) {
+              analysisResults[holding.id] = res;
+            }
+          } catch (e) {
+            console.error(`Failed to fetch analysis for ${holding.symbol}:`, e);
+          }
+        })
+      );
+
+      setCryptoAnalysis(analysisResults);
+      setIsAnalysisLoading(false);
+    };
+
+    if (holdings.length > 0) {
+      fetchCryptoAnalysis();
+    } else {
+      setIsAnalysisLoading(false);
+    }
+  }, [holdings]);
 
   // Calculate dynamic portfolio data based on actual holdings
   const calculatePortfolioData = () => {
@@ -88,6 +133,8 @@ const Portfolio: React.FC<PortfolioProps> = ({ holdings, onRefresh, marketData, 
       return sum + val;
     }, 0);
 
+
+
     const categoryTotals = holdings.reduce((acc, holding: any) => {
       acc[holding.category] = (acc[holding.category] || 0) + (holding.amount || 0);
       return acc;
@@ -97,6 +144,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ holdings, onRefresh, marketData, 
       acc[category] = totalInvested > 0 ? Math.round(((amount as number) / totalInvested) * 100) : 0;
       return acc;
     }, {} as Record<string, number>);
+
 
     // Dynamically derive growth data for heatmap and indicators
     const cryptoHoldings = holdings.filter(h => h.category === 'Crypto');
@@ -262,9 +310,13 @@ const Portfolio: React.FC<PortfolioProps> = ({ holdings, onRefresh, marketData, 
               <div className="flex items-center gap-2 text-sm font-medium text-stone-600">
                 <span>Invested: {formatCurrency(portfolioData.totalInvested)}</span>
                 <span className="text-stone-300">|</span>
-                <span className={getGrowthColor(portfolioData.totalProfit)}>
-                  {portfolioData.totalProfit >= 0 ? '+' : ''}{formatCurrency(portfolioData.totalProfit)} Profit
-                </span>
+                {isAnalysisLoading ? (
+                  <span className="text-stone-400 animate-pulse">Calculating profit...</span>
+                ) : (
+                  <span className={getGrowthColor(portfolioData.totalProfit)}>
+                    {portfolioData.totalProfit >= 0 ? '+' : ''}{formatCurrency(portfolioData.totalProfit)} Profit
+                  </span>
+                )}
               </div>
               <div className={`text-base font-bold ${getGrowthColor(totalGrowth)} flex items-center gap-2 mt-1`}>
                 <span>{totalGrowth >= 0 ? '↗' : '↘'}</span>

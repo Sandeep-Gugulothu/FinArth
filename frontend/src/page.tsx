@@ -78,29 +78,7 @@ const Login = ({ onLogin }: {
     setIsLoading(false);
   };
 
-  const handleQuickLogin = () => {
-    setIsLoading(true);
 
-    // Create sample guest user data
-    const guestUserId = 999; // Special ID for guest users
-    const guestUserData = {
-      id: guestUserId,
-      email: 'guest@finarth.demo',
-      name: 'Demo User',
-      emailVerified: true
-    };
-
-    // Set localStorage similar to signup
-    localStorage.setItem('userId', guestUserId.toString());
-    localStorage.setItem('userEmail', 'guest@finarth.demo');
-    localStorage.setItem('userData', JSON.stringify(guestUserData));
-    localStorage.setItem('onboardingCompleted', 'false');
-
-    setTimeout(() => {
-      setIsLoading(false);
-      onLogin();
-    }, 1000);
-  };
 
   return (
     <div className="min-h-screen bg-stone-100 flex items-center justify-center p-4">
@@ -194,19 +172,6 @@ const Login = ({ onLogin }: {
             </button>
           </form>
 
-          <div className="my-6 flex items-center">
-            <div className="flex-1 border-t border-stone-200"></div>
-            <span className="px-4 text-sm text-stone-500">or</span>
-            <div className="flex-1 border-t border-stone-200"></div>
-          </div>
-
-          <button
-            onClick={handleQuickLogin}
-            disabled={isLoading}
-            className="w-full px-4 py-3 border border-stone-300 text-stone-700 font-medium rounded-lg hover:bg-stone-50 focus:outline-none focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-          >
-            {isLoading ? 'Loading...' : 'Quick Demo Login'}
-          </button>
 
           <p className="mt-6 text-center text-sm text-stone-600">
             Don't have an account?{' '}
@@ -295,6 +260,7 @@ const Signup = ({ onSignup }: {
       if (response.ok) {
         localStorage.setItem('userId', data.userId.toString());
         localStorage.setItem('userEmail', email);
+        localStorage.setItem('authToken', data.token); // Crucial for live environment
         onSignup();
       } else {
         setError(data.error || 'Registration failed');
