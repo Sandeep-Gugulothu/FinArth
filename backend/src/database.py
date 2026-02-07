@@ -68,11 +68,19 @@ def initialize_tables():
             return_estimate TEXT,
             email_verified BOOLEAN DEFAULT FALSE,
             verification_token TEXT,
+            session_token TEXT,
             is_first_login BOOLEAN DEFAULT TRUE,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     """)
+    
+    # Auto-migration
+    try:
+        cursor.execute("ALTER TABLE users ADD COLUMN session_token TEXT")
+    except sqlite3.OperationalError:
+        pass
+
     # User investments table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS user_investments (
