@@ -49,10 +49,15 @@ def register():
         db.commit()
         user_id = cursor.lastrowid
         
+        session_token = Authentication().generate_token()
+        cursor.execute('UPDATE users SET session_token = ? WHERE id = ?', (session_token, user_id))
+        db.commit()
+        
         logger.info('User registered successfully', user_id, {'email': email, 'user_id': user_id})
         return jsonify({
             'success': True,
             'userId': user_id,
+            'token': session_token,
             'message': 'User registered successfully'
         })
     except sqlite3.IntegrityError as e:
@@ -247,29 +252,6 @@ def verify_email(token):
 
 @users_blue_print.route('/<int:user_id>/preferences', methods=['GET'])
 def get_user_preferences(user_id):
-    # Handle demo user (ID 999)
-    if user_id == 999:
-        demo_preferences = {
-            'userId': 999,
-            'name': 'Demo User',
-            'country': 'India',
-            'age': 30,
-            'riskPreference': 'moderate',
-            'familiarInvestments': ['Mutual Funds', 'Stocks'],
-            'returnEstimate': 'ai',
-            'selectedOptions': ['strategy', 'returns'],
-            'isFirstLogin': False
-        }
-        
-        # Cache demo preferences
-        session_cache.set(999, demo_preferences)
-        
-        return jsonify({
-            'success': True,
-            'source': 'demo',
-            'preferences': demo_preferences
-        })
-    
     # First check session cache
     cached_session = session_cache.get(user_id)
     if cached_session:
@@ -334,23 +316,6 @@ def get_user_preferences(user_id):
 
 @users_blue_print.route('/<int:user_id>', methods=['GET'])
 def get_user_profile(user_id):
-    # Handle demo user (ID 999)
-    if user_id == 999:
-        demo_user = {
-            'id': 999,
-            'email': 'guest@finarth.demo',
-            'name': 'Demo User',
-            'country': 'India',
-            'age': 30,
-            'risk_preference': 'moderate',
-            'return_estimate': 'ai',
-            'email_verified': True,
-            'is_first_login': False,
-            'investments': 'Mutual Funds,Stocks',
-            'objectives': 'strategy,returns'
-        }
-        return jsonify(demo_user)
-    
     try:
         cursor = db.cursor()
         cursor.execute("""

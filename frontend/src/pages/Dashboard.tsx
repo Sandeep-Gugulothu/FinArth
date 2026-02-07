@@ -58,6 +58,9 @@ const OverviewTab = ({ marketData, loading, error, userName, goals, holdings, is
 
   const completedGoals = goals.filter(g => g.progress >= 100).length;
 
+  // Calculate dynamic portfolio data
+  const totalInvested = holdings.reduce((sum, h) => sum + (h.amount || 0), 0);
+
   const totalPortfolioValue = holdings.reduce((sum, h) => {
     let growth = 0;
     if (h.category === 'Crypto') {
@@ -77,14 +80,18 @@ const OverviewTab = ({ marketData, loading, error, userName, goals, holdings, is
     return sum + (h.amount * (1 + growth / 100));
   }, 0);
 
+  const totalProfit = totalPortfolioValue - totalInvested;
+  const totalGrowthPct = totalInvested > 0 ? (totalProfit / totalInvested) * 100 : 0;
+
   const totalMonthlySIP = goals.reduce((sum, g) => sum + (g.monthly_required || 0), 0);
 
   const stats = [
-    { label: 'Total Portfolio', value: `₹${totalPortfolioValue.toLocaleString()}`, change: holdings.length > 0 ? 'Verified' : 'Zero', positive: true },
+    { label: 'Total Portfolio', value: `₹${totalPortfolioValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, change: `+${totalGrowthPct.toFixed(1)}%`, positive: totalGrowthPct >= 0 },
+    { label: 'Total Profit', value: `₹${totalProfit.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, change: totalProfit >= 0 ? 'Profit' : 'Loss', positive: totalProfit >= 0 },
     { label: 'Monthly SIP', value: `₹${totalMonthlySIP.toLocaleString()}`, change: totalMonthlySIP > 0 ? 'Active' : 'Add Goals', positive: true },
     { label: 'Goals Progress', value: `${completedGoals}/${goals.length}`, change: goals.length > 0 ? 'On Track' : 'No Goals', positive: true },
-    { label: 'Expected Returns', value: '12.4%', change: '+0.8%', positive: true },
   ];
+
 
   // Derive recent activity from goals and holdings
   const combinedActivity = [
@@ -289,8 +296,48 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   const [userName, setUserName] = useState('User');
   const [goals, setGoals] = useState<any[]>([]);
   const [holdings, setHoldings] = useState<any[]>([]);
-  const [cryptoAnalysis] = useState<Record<number, any>>({});
+  const [cryptoAnalysis, setCryptoAnalysis] = useState<Record<number, any>>({});
   const [isLive, setIsLive] = useState(true);
+
+  // Fetch crypto analysis when holdings change
+  useEffect(() => {
+    const fetchCryptoAnalysis = async () => {
+      const cryptoHoldings = holdings.filter(h => h.category === 'Crypto' && h.symbol && h.date);
+      if (cryptoHoldings.length === 0) {
+        setCryptoAnalysis({});
+        return;
+      }
+
+      const analysisResults: Record<number, any> = {};
+      await Promise.all(
+        cryptoHoldings.map(async (holding) => {
+          try {
+            const res = await apiCall('/api/market/weex/analysis', {
+              method: 'POST',
+              body: JSON.stringify({
+                symbol: holding.symbol,
+                date: holding.date,
+                entryPrice: holding.entry_price
+              })
+            });
+            if (res && !res.error) {
+              analysisResults[holding.id] = res;
+            }
+          } catch (e) {
+            console.error(`Failed to fetch analysis for ${holding.symbol}:`, e);
+          }
+        })
+      );
+      setCryptoAnalysis(analysisResults);
+    };
+
+    if (holdings.length > 0) {
+      fetchCryptoAnalysis();
+    } else {
+      setCryptoAnalysis({});
+    }
+  }, [holdings]);
+
 
   const fetchMarketData = async () => {
     try {

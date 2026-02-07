@@ -44,9 +44,11 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         if (isSignup) {
           localStorage.setItem('userId', data.userId.toString());
           localStorage.setItem('userEmail', email);
+          localStorage.setItem('authToken', data.token);
         } else {
           localStorage.setItem('userId', data.user.id.toString());
           localStorage.setItem('userData', JSON.stringify(data.user));
+          localStorage.setItem('authToken', data.token);
           localStorage.setItem('onboardingCompleted', data.needsOnboarding ? 'false' : 'true');
         }
         onLogin();
@@ -60,15 +62,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     setIsLoading(false);
   };
 
-  const handleQuickLogin = () => {
-    localStorage.setItem('userData', JSON.stringify({
-      id: 999,
-      email: 'demo@finarth.com',
-      name: 'Demo User'
-    }));
-    localStorage.setItem('onboardingCompleted', 'true');
-    onLogin();
-  };
+
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', background: '#fafaf9' }}>
@@ -157,20 +151,6 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             </button>
           </form>
 
-          <div style={{ margin: '24px 0', display: 'flex', alignItems: 'center' }}>
-            <div style={{ flex: 1, borderTop: '1px solid #e7e5e4' }}></div>
-            <span style={{ padding: '0 16px', fontSize: '14px', color: '#78716c' }}>or</span>
-            <div style={{ flex: 1, borderTop: '1px solid #e7e5e4' }}></div>
-          </div>
-
-          <button
-            onClick={handleQuickLogin}
-            style={{ width: '100%', padding: '12px 16px', border: '1px solid #d6d3d1', color: '#44403c', fontWeight: '500', borderRadius: '8px', background: 'white', cursor: 'pointer', fontSize: '16px', transition: 'all 0.2s' }}
-            onMouseOver={(e) => ((e.target as HTMLButtonElement).style.background = '#fafaf9')}
-            onMouseOut={(e) => ((e.target as HTMLButtonElement).style.background = 'white')}
-          >
-            Quick Demo Login
-          </button>
 
           <div style={{ marginTop: '24px', textAlign: 'center', fontSize: '14px', color: '#57534e' }}>
             {isSignup ? 'Already have an account?' : "Don't have an account?"}{' '}

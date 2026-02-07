@@ -248,7 +248,10 @@
   - basic hld inclusion
 
 ## [0.5.3] - 2026-02-07
+### Frontend Changes
+- Removed the Demo Login functionality.
 ### Backend Changes
+- Fixed the profit calculation logic.
 - opik auth update
 - opik thread sample update
 - DB schematic sql file update
