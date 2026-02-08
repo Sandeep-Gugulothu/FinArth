@@ -64,7 +64,13 @@ Guidelines:
                 model=self._model_name,
                 messages=messages,
                 temperature=0.7,
-                max_tokens=800
+                max_tokens=1500,
+                extra_body={
+                    "metadata": {
+                        "handler": "GenericHandler",
+                        "user_id": user_id
+                    }
+                }
             )
             content = response.choices[0].message.content
             
