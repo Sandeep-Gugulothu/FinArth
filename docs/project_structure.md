@@ -25,6 +25,12 @@ FinArth
 │   │   │   ├── openrouter_api_opik_integration.py
 │   │   │   └── openrouter_api.py
 │   │   └── start_python.py
+│   ├── db                  # Database schema and migrations
+│   │   └── migrations
+│   │       ├── 001_initial_schema.sql
+│   │       ├── 002_add_session_token.sql
+│   │       ├── 003_add_read_indexes.sql
+│   │       └── 004_add_tracing_and_feedback.sql
 │   ├── src
 │   │   ├── __init__.py
 │   │   ├── ai_agent

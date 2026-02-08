@@ -2,6 +2,8 @@
 import os
 import logging
 import uuid
+from typing import List, Dict, Any, Optional
+
 try:
     from opik import opik_context, Opik, track
     from opik.integrations.openai import track_openai
@@ -24,20 +26,26 @@ class OpikConfig:
         if cls._client is None and OPIK_AVAILABLE:
             api_key = os.getenv("OPIK_API_KEY")
             workspace = os.getenv("OPIK_WORKSPACE")
+            # The Opik constructor expects 'host' for custom URLs
+            host = os.getenv("OPIK_URL_OVERRIDE")
+            project_name = os.getenv("OPIK_PROJECT_NAME", "FINARTH")
 
             if not api_key:
                 logger.warning("OPIK_API_KEY not found in environment variables.")
                 return None
 
             try:
+                # Initialize with correct argument names
                 cls._client = Opik(
                     api_key=api_key,
-                    workspace=workspace
+                    workspace=workspace,
+                    host=host if host and host.strip() else None,
+                    project_name=project_name
                 )
-                cls.client.auth_check()
-                logger.info("Opik client initialized successfully.")
+                cls._client.auth_check()
+                logger.info(f"Opik client initialized for project: {project_name}")
             except Exception as e:
-                logger.error(f"Failed to initialize Opik client or failed to authenticate Opik: {e}")
+                logger.error(f"Failed to initialize Opik client: {e}")
                 return None
 
         return cls._client
@@ -46,6 +54,7 @@ class OpikConfig:
     def track_openai_client(cls, openai_client):
         """Wraps OpenAI client with Opik tracking if available."""
         if OPIK_AVAILABLE:
+            cls.get_client()
             return track_openai(openai_client)
         return openai_client
 
@@ -58,6 +67,42 @@ class OpikConfig:
                 logger.info("Opik client flushed successfully.")
             except Exception as e:
                 logger.error(f"Failed to flush Opik client: {e}")
+
+    @classmethod
+    def get_current_trace_id(cls):
+        """Returns the current trace ID if available."""
+        if OPIK_AVAILABLE:
+            try:
+                trace_data = opik_context.get_current_trace_data()
+                if trace_data:
+                    # Using .id as per documentation and common patterns
+                    return trace_data.id
+            except Exception as e:
+                logger.debug(f"Could not get current trace ID: {e}")
+        return None
+
+    @classmethod
+    def log_feedback(cls, trace_id: str, name: str, value: float):
+        """Logs a feedback score to Opik for a given trace ID."""
+        if OPIK_AVAILABLE:
+            client = cls.get_client()
+            if client:
+                try:
+                    project_name = os.getenv("OPIK_PROJECT_NAME", "FINARTH")
+                    # Using the exact structure from the provided documentation
+                    client.log_traces_feedback_scores(
+                        scores=[{
+                            "id": trace_id,
+                            "name": name,
+                            "value": value,
+                            "project_name": project_name
+                        }]
+                    )
+                    # Flushed immediately to ensure visibility in dashboard
+                    client.flush()
+                    logger.info(f"Logged feedback '{name}={value}' to Opik project '{project_name}' for trace: {trace_id}")
+                except Exception as e:
+                    logger.error(f"Failed to log feedback to Opik: {e}")
 
     @classmethod
     def get_thread_id(cls, user_id):
