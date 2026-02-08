@@ -276,3 +276,13 @@
 - README file update
 - design and web interface updates.
 - db arch doc update
+
+## [0.5.4] - 2026-02-08
+### Frontend Changes
+- trace ID update in AI Agent
+### Backend Changes
+- per-response feedback with Opik integration implementation
+- restructure migrations
+- add Opik diagnostics and switch to system logger for production visibility
+### Documentation Changes
+- README file update
