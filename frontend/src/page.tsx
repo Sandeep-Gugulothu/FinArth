@@ -770,7 +770,7 @@ const FeatureBento = () => {
               </div>
               <div className="font-mono text-[9px] text-stone-400 leading-tight">
                 const ROI = ((currentPrice - entryPrice) / entryPrice) * 100;<br />
-                // Cross-checked via WEEX & CoinGecko
+                {/* Cross-checked via WEEX & CoinGecko */}
               </div>
             </div>
           </div>
