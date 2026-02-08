@@ -289,38 +289,45 @@ const Portfolio: React.FC<PortfolioProps> = ({ holdings, onRefresh, marketData, 
           <div className="text-right">
             <div className="flex flex-col items-end gap-1 mb-2">
               <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Total Current Value</span>
-              <div className="flex items-center gap-3">
-                <div className="text-4xl font-bold text-stone-900 font-mono tracking-tight">
-                  {formatCurrency(portfolioData.currentValue)}
+              <div className="text-4xl font-bold text-stone-900 font-mono tracking-tight group relative">
+                {formatCurrency(portfolioData.currentValue)}
+                <div className="absolute hidden group-hover:block -top-16 right-0 bg-stone-900 text-white px-3 py-2 rounded-lg shadow-xl text-xs w-48 z-50">
+                  <div className="font-bold mb-1">Portfolio Value</div>
+                  <div className="text-stone-300">Current market value of all your investments</div>
+                  <div className="absolute -bottom-2 right-4 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-stone-900"></div>
                 </div>
-                <button
-                  onClick={() => {
-                    setIsEditing(!isEditing);
-                    setShowAddForm(false);
-                    setEditingHolding(null);
-                  }}
-                  className="px-3 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 text-sm font-medium"
-                >
-                  {isEditing ? 'Done' : 'Edit'}
-                </button>
               </div>
             </div>
 
             <div className="flex flex-col items-end gap-1">
               <div className="flex items-center gap-2 text-sm font-medium text-stone-600">
-                <span>Invested: {formatCurrency(portfolioData.totalInvested)}</span>
+                <span className="group relative">
+                  Invested: {formatCurrency(portfolioData.totalInvested)}
+                  <div className="absolute hidden group-hover:block -top-14 left-0 bg-stone-900 text-white px-3 py-2 rounded-lg shadow-xl text-xs w-40 z-50">
+                    <div className="text-stone-300">Total amount you've invested</div>
+                    <div className="absolute -bottom-2 left-4 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-stone-900"></div>
+                  </div>
+                </span>
                 <span className="text-stone-300">|</span>
                 {isAnalysisLoading ? (
                   <span className="text-stone-400 animate-pulse">Calculating profit...</span>
                 ) : (
-                  <span className={getGrowthColor(portfolioData.totalProfit)}>
+                  <span className={`${getGrowthColor(portfolioData.totalProfit)} group relative`}>
                     {portfolioData.totalProfit >= 0 ? '+' : ''}{formatCurrency(portfolioData.totalProfit)} Profit
+                    <div className="absolute hidden group-hover:block -top-14 right-0 bg-stone-900 text-white px-3 py-2 rounded-lg shadow-xl text-xs w-40 z-50">
+                      <div className="text-stone-300">Net profit/loss from all investments</div>
+                      <div className="absolute -bottom-2 right-4 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-stone-900"></div>
+                    </div>
                   </span>
                 )}
               </div>
-              <div className={`text-base font-bold ${getGrowthColor(totalGrowth)} flex items-center gap-2 mt-1`}>
+              <div className={`text-base font-bold ${getGrowthColor(totalGrowth)} flex items-center gap-2 mt-1 group relative`}>
                 <span>{totalGrowth >= 0 ? '↗' : '↘'}</span>
                 {totalGrowth >= 0 ? '+' : ''}{totalGrowth.toFixed(2)}% Performance
+                <div className="absolute hidden group-hover:block -top-14 right-0 bg-stone-900 text-white px-3 py-2 rounded-lg shadow-xl text-xs w-44 z-50">
+                  <div className="text-stone-300">Overall portfolio performance rate</div>
+                  <div className="absolute -bottom-2 right-4 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-stone-900"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -334,7 +341,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ holdings, onRefresh, marketData, 
           <p className="text-stone-600">Click on any asset to explore detailed holdings</p>
         </div>
 
-        <div className="relative w-full h-96 bg-stone-100 rounded-lg overflow-hidden border border-stone-200">
+        <div className="relative w-full h-96 bg-stone-100 rounded-lg border border-stone-200" style={{ overflow: 'visible' }}>
           {treemapData.map(([category, percentage], index) => {
             const positions = [
               { left: '1%', top: '1%', width: '40%', height: '62%' },
@@ -354,15 +361,15 @@ const Portfolio: React.FC<PortfolioProps> = ({ holdings, onRefresh, marketData, 
             return (
               <div
                 key={category}
-                className="absolute border border-stone-300 flex flex-col justify-center items-center text-stone-900 font-semibold cursor-pointer transition-all duration-300 hover:z-20 hover:shadow-lg rounded"
+                className="absolute border border-stone-300 flex flex-col justify-center items-center text-stone-900 font-semibold cursor-pointer transition-all duration-300 hover:shadow-xl rounded group"
                 style={{
                   left: position.left,
                   top: position.top,
                   width: position.width,
                   height: position.height,
                   backgroundColor: getColor(category),
-                  transform: isHovered ? 'scale(1.05) rotate(2deg)' : 'scale(1)',
-                  zIndex: isHovered ? 20 : 1
+                  transform: isHovered ? 'scale(1.02)' : 'scale(1)',
+                  zIndex: isHovered ? 30 : 1
                 }}
                 onMouseEnter={() => setHoveredAsset(category)}
                 onMouseLeave={() => setHoveredAsset(null)}
@@ -377,6 +384,29 @@ const Portfolio: React.FC<PortfolioProps> = ({ holdings, onRefresh, marketData, 
                     {growth >= 0 ? '+' : ''}{growth.toFixed(1)}%
                   </div>
                 </div>
+                {/* Tooltip */}
+                {isHovered && (
+                  <div className="absolute -top-24 left-1/2 transform -translate-x-1/2 bg-stone-900 text-white px-4 py-3 rounded-lg shadow-2xl w-52 text-xs pointer-events-none" style={{ zIndex: 100 }}>
+                    <div className="font-bold mb-2 text-center border-b border-stone-700 pb-2">{category}</div>
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between">
+                        <span className="text-stone-400">Allocation:</span>
+                        <span className="font-mono font-bold">{percentage}%</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-stone-400">Value:</span>
+                        <span className="font-mono font-bold">{formatCurrency(portfolioData.categoryCurrentValues[category] || 0)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-stone-400">Growth:</span>
+                        <span className={`font-mono font-bold ${growth >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {growth >= 0 ? '+' : ''}{growth.toFixed(2)}%
+                        </span>
+                      </div>
+                    </div>
+                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-stone-900"></div>
+                  </div>
+                )}
               </div>
             );
           })}
@@ -384,35 +414,67 @@ const Portfolio: React.FC<PortfolioProps> = ({ holdings, onRefresh, marketData, 
       </div>
 
       {/* Holdings */}
-      <div className="bg-white p-6 border border-stone-200 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-semibold text-stone-900">Holdings</h3>
-          {isEditing && (
+      <div className="bg-white p-8 rounded-xl border border-stone-200 shadow-lg">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h3 className="text-2xl font-bold text-stone-900 mb-1">Holdings</h3>
+            <p className="text-sm text-stone-600">Manage your investment portfolio</p>
+          </div>
+          <div className="flex gap-3">
             <button
-              onClick={() => setShowAddForm(true)}
-              className="px-4 py-2 bg-green-100 text-green-600 rounded hover:bg-green-200 font-medium"
+              onClick={() => {
+                setIsEditing(!isEditing);
+                setShowAddForm(false);
+                setEditingHolding(null);
+              }}
+              className="px-4 py-2 bg-stone-800 text-stone-50 rounded-lg hover:bg-stone-900 font-semibold transition-all shadow-sm flex items-center gap-2"
             >
-              Add New
+              {isEditing ? (
+                <>
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Done
+                </>
+              ) : (
+                <>
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Edit
+                </>
+              )}
             </button>
-          )}
+            {isEditing && (
+              <button
+                onClick={() => setShowAddForm(true)}
+                className="px-4 py-2 bg-stone-100 text-stone-900 rounded-lg hover:bg-stone-200 font-semibold transition-all border border-stone-300 flex items-center gap-2"
+              >
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Add New
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Add/Edit Form */}
         {isEditing && showAddForm && (
-          <div className="bg-stone-50 p-4 rounded-lg mb-6 border border-stone-200">
-            <h4 className="font-semibold text-stone-900 mb-3">{editingHolding ? 'Edit Holding' : 'Add New Holding'}</h4>
+          <div className="bg-gradient-to-br from-stone-50 to-stone-100 p-6 rounded-xl mb-6 border border-stone-300 shadow-sm">
+            <h4 className="font-bold text-stone-900 mb-4 text-lg">{editingHolding ? 'Edit Holding' : 'Add New Holding'}</h4>
             <div className="grid grid-cols-2 gap-4">
               <input
                 type="text"
                 placeholder="Investment name"
                 value={newHolding.name}
                 onChange={(e) => setNewHolding(prev => ({ ...prev, name: e.target.value }))}
-                className="p-2 border border-stone-300 rounded"
+                className="p-3 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-500 focus:border-stone-500 transition-all bg-white"
               />
               <select
                 value={newHolding.category}
                 onChange={(e) => setNewHolding(prev => ({ ...prev, category: e.target.value }))}
-                className="p-2 border border-stone-300 rounded"
+                className="p-3 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-500 focus:border-stone-500 transition-all bg-white"
               >
                 {categories.map(cat => (
                   <option key={cat} value={cat}>{cat}</option>
@@ -423,13 +485,13 @@ const Portfolio: React.FC<PortfolioProps> = ({ holdings, onRefresh, marketData, 
                 placeholder="Amount"
                 value={newHolding.amount}
                 onChange={(e) => setNewHolding(prev => ({ ...prev, amount: e.target.value }))}
-                className="p-2 border border-stone-300 rounded"
+                className="p-3 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-500 focus:border-stone-500 transition-all bg-white"
               />
               <input
                 type="date"
                 value={newHolding.date}
                 onChange={(e) => setNewHolding(prev => ({ ...prev, date: e.target.value }))}
-                className="p-2 border border-stone-300 rounded"
+                className="p-3 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-500 focus:border-stone-500 transition-all bg-white"
               />
               <input
                 type="text"
@@ -443,14 +505,14 @@ const Portfolio: React.FC<PortfolioProps> = ({ holdings, onRefresh, marketData, 
                     symbol: prev.category === 'Crypto' ? val.toLowerCase() : val.toUpperCase()
                   }));
                 }}
-                className="p-2 border border-stone-300 rounded"
+                className="p-3 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-500 focus:border-stone-500 transition-all bg-white"
               />
             </div>
-            <div className="flex gap-2 mt-4">
+            <div className="flex gap-3 mt-6">
               <button
                 onClick={() => saveHolding(newHolding)}
                 disabled={!newHolding.name || !newHolding.amount || !newHolding.date}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-300"
+                className="px-6 py-2.5 bg-stone-800 text-stone-50 rounded-lg hover:bg-stone-900 disabled:bg-stone-300 disabled:cursor-not-allowed font-semibold transition-all shadow-sm"
               >
                 {editingHolding ? 'Update' : 'Add'}
               </button>
@@ -460,7 +522,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ holdings, onRefresh, marketData, 
                   setEditingHolding(null);
                   setNewHolding({ name: '', category: 'Stocks', amount: '', date: '', symbol: '' });
                 }}
-                className="px-4 py-2 bg-gray-100 text-gray-600 rounded hover:bg-gray-200"
+                className="px-6 py-2.5 bg-white text-stone-700 rounded-lg hover:bg-stone-50 border border-stone-300 font-semibold transition-all"
               >
                 Cancel
               </button>
@@ -530,13 +592,13 @@ const Portfolio: React.FC<PortfolioProps> = ({ holdings, onRefresh, marketData, 
                                     <div className="flex gap-2">
                                       <button
                                         onClick={() => startEdit(holding)}
-                                        className="px-2 py-1 bg-blue-100 text-blue-600 rounded text-sm hover:bg-blue-200"
+                                        className="px-3 py-1.5 bg-stone-100 text-stone-700 rounded-lg text-sm hover:bg-stone-200 font-medium transition-all border border-stone-300"
                                       >
                                         Edit
                                       </button>
                                       <button
                                         onClick={() => deleteHolding(holding.id)}
-                                        className="px-2 py-1 bg-red-100 text-red-600 rounded text-sm hover:bg-red-200"
+                                        className="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-sm hover:bg-red-100 font-medium transition-all border border-red-200"
                                       >
                                         Delete
                                       </button>

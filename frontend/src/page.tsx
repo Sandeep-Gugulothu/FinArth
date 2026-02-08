@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import OnboardingPage from './pages/onboarding.tsx';
 import AiAgent from './pages/AiAgent.tsx';
@@ -400,21 +400,9 @@ const Signup = ({ onSignup }: {
 
 
 // Simple icon components
-const Shield = ({ size = 24 }: { size?: number }) => (
-  <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-  </svg>
-);
-
 const Target = ({ size = 24 }: { size?: number }) => (
   <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 16c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-10c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z" />
-  </svg>
-);
-
-const Calculator = ({ size = 24 }: { size?: number }) => (
-  <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
   </svg>
 );
 
@@ -424,25 +412,19 @@ const ArrowRight = ({ size = 24 }: { size?: number }) => (
   </svg>
 );
 
-
-
 const Bot = ({ size = 24 }) => (
   <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
   </svg>
 );
 
-
-
-
-
-
-
-const CheckCircle = ({ size = 24 }) => (
-  <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+const TrendingUp = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
+  <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
   </svg>
 );
+
+
 
 const Navbar = ({ onGetStarted, isConnecting }: { onGetStarted: () => void; isConnecting: boolean }) => (
   <nav className="fixed top-0 left-0 right-0 w-full z-50 border-b border-stone-300/20 bg-stone-50/90 backdrop-blur-md overflow-hidden">
@@ -472,10 +454,39 @@ const Navbar = ({ onGetStarted, isConnecting }: { onGetStarted: () => void; isCo
   </nav>
 );
 
+const PoweredBy = () => (
+  <div className="bg-stone-50 py-12 border-y border-stone-100 overflow-hidden">
+    <div className="max-w-7xl mx-auto px-6 mb-10 text-center">
+      <span className="text-[10px] font-bold text-stone-800 uppercase tracking-[0.3em] opacity-100">Powered by</span>
+    </div>
+    <div className="flex w-max animate-marquee whitespace-nowrap items-center hover:[animation-play-state:paused]">
+      {/* Set 1 */}
+      <div className="flex items-center gap-24 md:gap-40 px-12 md:px-20">
+        <img src="/CGAPI_logo.png" alt="CoinGecko" className="h-8 md:h-10 object-contain hover:scale-110 transition-transform" />
+        <img src="/WEEX_logo.png" alt="Weexs" className="h-[24px] md:h-[32px] object-contain hover:scale-110 transition-transform" />
+        <img src="/open_router.png" alt="OpenRouter" className="h-12 md:h-16 object-contain scale-125 hover:scale-[1.35] transition-transform" />
+        <img src="/opik-logo.png" alt="Opik" className="h-[22px] md:h-[26px] object-contain hover:scale-110 transition-transform" />
+      </div>
+      {/* Set 2 */}
+      <div className="flex items-center gap-24 md:gap-40 px-12 md:px-20">
+        <img src="/CGAPI_logo.png" alt="CoinGecko" className="h-8 md:h-10 object-contain hover:scale-110 transition-transform" />
+        <img src="/WEEX_logo.png" alt="Weexs" className="h-[24px] md:h-[32px] object-contain hover:scale-110 transition-transform" />
+        <img src="/open_router.png" alt="OpenRouter" className="h-12 md:h-16 object-contain scale-125 hover:scale-[1.35] transition-transform" />
+        <img src="/opik-logo.png" alt="Opik" className="h-[22px] md:h-[26px] object-contain hover:scale-110 transition-transform" />
+      </div>
+      {/* Set 3 */}
+      <div className="flex items-center gap-24 md:gap-40 px-12 md:px-20">
+        <img src="/CGAPI_logo.png" alt="CoinGecko" className="h-8 md:h-10 object-contain hover:scale-110 transition-transform" />
+        <img src="/WEEX_logo.png" alt="Weexs" className="h-[24px] md:h-[32px] object-contain hover:scale-110 transition-transform" />
+        <img src="/open_router.png" alt="OpenRouter" className="h-12 md:h-16 object-contain scale-125 hover:scale-[1.35] transition-transform" />
+        <img src="/opik-logo.png" alt="Opik" className="h-[22px] md:h-[26px] object-contain hover:scale-110 transition-transform" />
+      </div>
+    </div>
+  </div>
+);
+
 const Hero = ({ onGetStarted, isConnecting }: { onGetStarted: () => void; isConnecting: boolean }) => {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-
-
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -486,37 +497,100 @@ const Hero = ({ onGetStarted, isConnecting }: { onGetStarted: () => void; isConn
   }, []);
 
   return (
-    <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden perspective-1000">
+    <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-stone-50/50 selection:bg-stone-200 perspective-1000">
+      {/* Background: Dot Grid */}
+      <div className="absolute inset-0 z-0 opacity-[0.4] pointer-events-none" style={{
+        backgroundImage: 'radial-gradient(#a8a29e 1px, transparent 1px)',
+        backgroundSize: '40px 40px',
+        maskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)'
+      }} />
+
+      {/* Dynamic Background Blob */}
       <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-stone-200/30 rounded-full blur-[120px] -z-10 transition-transform duration-1000 ease-out"
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-gradient-to-tr from-stone-200/40 via-blue-50/30 to-purple-50/30 rounded-full blur-[100px] -z-10 transition-transform duration-700 ease-out will-change-transform"
         style={{
-          transform: `translate(-50%, ${mousePos.y * 0.02}px) rotateX(${mousePos.y * 0.01}deg) rotateY(${mousePos.x * 0.01}deg)`
+          transform: `translate(calc(-50% + ${mousePos.x * 0.02}px), ${mousePos.y * 0.02}px)`
         }}
       />
 
-      {/* Hero design elements */}
-      <div className="absolute top-40 left-16 w-20 h-20 border-2 border-purple-400/20 rounded-full animate-spin" style={{ animationDuration: '15s' }} />
-      <div className="absolute top-60 right-20 w-16 h-16 bg-gradient-to-br from-blue-400/20 to-green-400/20 rotate-45 animate-pulse" />
-      <div className="absolute bottom-32 left-1/4 w-12 h-12 border border-dashed border-orange-400/30 animate-bounce" />
-      <div className="absolute top-1/3 right-1/3 w-6 h-6 bg-pink-400/40 rounded-full animate-ping" style={{ animationDelay: '2s' }} />
+      {/* House Goal Card - Left Floating Visual (Positioned below heading level) */}
+      <div
+        className="absolute top-1/2 left-4 lg:left-10 -z-5 transform -rotate-6 hidden xl:block transition-transform duration-1000 ease-out hover:scale-105 hover:z-20 transition-all cursor-default"
+        style={{ transform: `translate(-${mousePos.x * 0.01}px, calc(-50% - ${mousePos.y * 0.01}px)) rotate(-6deg)` }}
+      >
+        <div className="bg-white p-6 border border-stone-200 rounded-[2rem] shadow-xl w-[320px] relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-6 opacity-[0.05]">
+            <Target size={100} />
+          </div>
 
-      <div className="max-w-7xl mx-auto px-6 text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-stone-200/50 border border-stone-300/30 text-stone-700 text-sm font-medium mb-8 scroll-animate">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-stone-600 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-stone-700"></span>
+          <div className="flex justify-between items-start mb-6 relative z-10">
+            <div>
+              <h4 className="font-extrabold text-stone-900 text-2xl tracking-tight">House</h4>
+              <div className="mt-2 flex items-center gap-2">
+                <span className="px-2 py-1 bg-stone-100 border border-stone-200 rounded text-[10px] font-bold text-stone-500 uppercase tracking-wider">
+                  10 Year Mission
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-6 relative z-10">
+            {/* Progress Bar Section */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-end">
+                <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Blueprint Progress</span>
+                <span className="text-sm font-bold text-stone-900 font-mono">5%</span>
+              </div>
+              <div className="w-full h-2 bg-stone-50 rounded-full overflow-hidden border border-stone-100">
+                <div className="bg-stone-900 h-full w-[5%] rounded-full" />
+              </div>
+            </div>
+
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-3 bg-stone-50 rounded-2xl border border-stone-100">
+                <p className="text-[9px] font-bold text-stone-400 uppercase tracking-widest mb-1 leading-none">Savings</p>
+                <p className="text-sm font-bold text-stone-800 font-mono tracking-tight leading-none">₹20,000,000</p>
+              </div>
+              <div className="p-3 bg-stone-50 rounded-2xl border border-stone-100">
+                <p className="text-[9px] font-bold text-stone-400 uppercase tracking-widest mb-1 leading-none">Target</p>
+                <p className="text-sm font-bold text-stone-800 font-mono tracking-tight leading-none">₹8,954,238</p>
+              </div>
+            </div>
+
+            {/* Footer Section */}
+            <div className="pt-4 border-t border-stone-50 flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <TrendingUp size={14} className="text-stone-400" />
+                <span className="text-[10px] font-bold text-stone-500 uppercase tracking-widest">Automated Monitoring</span>
+              </div>
+              <div className="text-right">
+                <p className="text-[9px] font-bold text-stone-400 uppercase mb-1">Monthly Draft</p>
+                <p className="text-xs font-black text-stone-900 font-mono">₹31,751</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-stone-200/80 shadow-sm text-stone-600 text-sm font-medium mb-8 animate-fade-in-up hover:shadow-md transition-shadow cursor-default">
+          <span className="relative flex h-2 w-2 mr-1">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-600"></span>
           </span>
           Autonomous Financial Planning
         </div>
 
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-stone-900 mb-6 scroll-animate">
+        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-stone-900 mb-8 scroll-animate">
           Financial Confidence <br />
-          <span className="text-stone-700">
-            Engine
+          <span className="relative inline-block">
+            <span className="relative z-10">Engine</span>
+            <div className="absolute -bottom-2 md:-bottom-4 left-0 right-0 h-4 md:h-6 bg-stone-200/50 -rotate-1 -z-10 rounded-full blur-sm transform scale-x-110"></div>
           </span>
         </h1>
 
-        <p className="text-lg md:text-xl text-stone-600 max-w-2xl mx-auto mb-10 leading-relaxed scroll-animate">
+        <p className="text-lg md:text-2xl text-stone-600 max-w-2xl mx-auto mb-10 leading-relaxed scroll-animate">
           Convert your life goals into safe, automated, and understandable financial action.
           No fear, no confusion, just confident progress toward what matters to you.
         </p>
@@ -525,23 +599,39 @@ const Hero = ({ onGetStarted, isConnecting }: { onGetStarted: () => void; isConn
           <button
             onClick={onGetStarted}
             disabled={isConnecting}
-            className="w-full md:w-auto px-8 py-4 rounded-lg bg-stone-900 text-stone-50 font-bold hover:bg-stone-800 transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-sm"
+            className="w-full md:w-auto px-8 py-4 rounded-xl bg-stone-900 text-white font-bold hover:bg-stone-800 transition-all transform hover:-translate-y-1 hover:shadow-lg hover:shadow-stone-900/20 flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {isConnecting ? 'Loading...' : 'Start Planning'} <ArrowRight size={18} />
           </button>
           <button
-            className="w-full md:w-auto px-8 py-4 rounded-lg bg-stone-100 text-stone-900 font-medium hover:bg-stone-200 border border-stone-300 transition-all flex items-center justify-center gap-2"
+            className="w-full md:w-auto px-8 py-4 rounded-xl bg-white text-stone-900 font-bold hover:bg-stone-50 border border-stone-200 transition-all transform hover:-translate-y-1 hover:shadow-md flex items-center justify-center gap-2 group"
             onClick={() => {
               document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
             }}
           >
-            See Example Plan
+            Why Choose FinArth?
+            <span className="group-hover:translate-x-1 transition-transform">→</span>
           </button>
         </div>
 
-        {/* Trust indicators */}
-        <div className="mt-12 flex flex-col items-center gap-4 scroll-animate">
-          <p className="text-sm text-stone-500">Trusted by 10,000+ investors</p>
+        {/* Trust indicators - Enhanced */}
+        <div className="mt-16 flex flex-col items-center gap-4 scroll-animate opacity-0" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
+          <div className="flex -space-x-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-stone-200 overflow-hidden shadow-sm">
+                <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${i + 10}&backgroundColor=e5e5e5`} alt="User" className="w-full h-full object-cover" />
+              </div>
+            ))}
+            <div className="w-10 h-10 rounded-full border-2 border-white bg-stone-100 flex items-center justify-center text-xs font-bold text-stone-600 shadow-sm">
+              10k+
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="flex text-yellow-400">
+              {'★'.repeat(5)}
+            </div>
+            <p className="text-sm font-semibold text-stone-600">Trusted by multiple investors</p>
+          </div>
         </div>
       </div>
     </section>
@@ -586,7 +676,16 @@ const FeatureBento = () => {
                 Explains finance in plain language, answers "Should I?" questions, and understands your unique situation.
               </p>
             </div>
-            <div className="absolute right-0 bottom-0 w-64 h-64 bg-gradient-to-tl from-blue-100/30 to-transparent opacity-50 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110 group-hover:rotate-12" />
+            {/* Animated Chat Simulation */}
+            <div className="absolute right-4 bottom-4 w-64 space-y-3 opacity-40 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0 group-hover:scale-105">
+              <div className="bg-stone-50 rounded-2xl rounded-bl-none p-3 text-[11px] text-stone-600 border border-stone-200 shadow-sm max-w-[200px]">
+                "How is my portfolio doing ?"
+              </div>
+              <div className="bg-stone-800 text-stone-50 rounded-2xl rounded-br-none p-3 text-[11px] shadow-md max-w-[200px] ml-auto">
+                "Your portfolio is currently up 2.90% (BTC) and 4.42% (ADA), High Risk Exposure: Your 100% crypto allocation ..."
+              </div>
+            </div>
+            <div className="absolute right-0 bottom-0 w-72 h-72 bg-gradient-to-tl from-blue-100/20 to-transparent -z-10 group-hover:scale-110 transition-transform duration-700" />
           </div>
 
           <div
@@ -620,7 +719,7 @@ const FeatureBento = () => {
           </div>
 
           <div
-            className="p-8 rounded-3xl bg-white border border-stone-200 hover:border-green-400/50 transition-all transform-gpu hover:scale-[1.02] hover:shadow-xl hover:shadow-green-400/10 scroll-animate"
+            className="p-8 rounded-3xl bg-white border border-stone-200 hover:border-green-400/50 transition-all transform-gpu hover:scale-[1.02] hover:shadow-xl hover:shadow-green-400/10 scroll-animate group overflow-hidden relative"
             onMouseEnter={() => setHoveredCard(2)}
             onMouseLeave={() => setHoveredCard(null)}
             style={{
@@ -628,17 +727,30 @@ const FeatureBento = () => {
               transformStyle: 'preserve-3d'
             }}
           >
-            <div className="h-12 w-12 bg-stone-100 rounded-xl flex items-center justify-center text-stone-700 mb-6 transform-gpu hover:scale-110 hover:rotate-12 transition-all duration-300">
-              <CheckCircle size={24} />
-            </div>
             <h3 className="text-xl font-bold text-stone-900 mb-2">The Automated Partner</h3>
-            <p className="text-stone-600 text-sm">
+            <p className="text-stone-600 text-sm mb-6">
               Handles complex calculations, monitors progress continuously, and automates execution.
             </p>
+
+            {/* Data Stream / Computation Visual */}
+            <div className="space-y-3 mt-auto">
+              <div className="flex items-center gap-2">
+                <div className="h-1 w-full bg-stone-100 rounded-full overflow-hidden">
+                  <div className="h-full w-2/3 bg-stone-300 group-hover:bg-stone-500 transition-all duration-700" />
+                </div>
+                <span className="text-[10px] font-mono font-bold text-stone-400">MATH</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="h-1 w-full bg-stone-100 rounded-full overflow-hidden">
+                  <div className="h-full w-1/3 bg-stone-200 group-hover:bg-stone-400 transition-all duration-700 delay-75" />
+                </div>
+                <span className="text-[10px] font-mono font-bold text-stone-300">DATA</span>
+              </div>
+            </div>
           </div>
 
           <div
-            className="p-8 rounded-3xl bg-white border border-stone-200 hover:border-orange-400/50 transition-all transform-gpu hover:scale-[1.02] hover:shadow-xl hover:shadow-orange-400/10 scroll-animate"
+            className="p-8 rounded-3xl bg-white border border-stone-200 hover:border-orange-400/50 transition-all transform-gpu hover:scale-[1.02] hover:shadow-xl hover:shadow-orange-400/10 scroll-animate group overflow-hidden relative"
             onMouseEnter={() => setHoveredCard(3)}
             onMouseLeave={() => setHoveredCard(null)}
             style={{
@@ -646,13 +758,21 @@ const FeatureBento = () => {
               transformStyle: 'preserve-3d'
             }}
           >
-            <div className="h-12 w-12 bg-stone-100 rounded-xl flex items-center justify-center text-stone-800 mb-6 transform-gpu hover:scale-110 hover:rotate-12 transition-all duration-300">
-              <Shield size={24} />
-            </div>
             <h3 className="text-xl font-bold text-stone-900 mb-2">The Trust Builder</h3>
-            <p className="text-stone-600 text-sm">
+            <p className="text-stone-600 text-sm mb-6">
               No black-box recommendations. Every calculation cross-checked and explained.
             </p>
+
+            <div className="p-3 bg-stone-900 rounded-xl border border-stone-800 transform group-hover:translate-y-[-4px] transition-all duration-500">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-[9px] font-bold text-stone-500 uppercase tracking-widest">Logic Verification</span>
+                <div className="px-1.5 py-0.5 bg-green-500/10 border border-green-500/20 rounded text-[8px] font-bold text-green-400">VERIFIED</div>
+              </div>
+              <div className="font-mono text-[9px] text-stone-400 leading-tight">
+                const ROI = ((currentPrice - entryPrice) / entryPrice) * 100;<br />
+                // Cross-checked via WEEX & CoinGecko
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -670,78 +790,204 @@ const UseCases = () => {
   }, []);
 
   return (
-    <section className="py-24 bg-stone-100 relative">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-          {/* Left Half - Scroll-Responsive Confusion Geometry */}
-          <div className="space-y-8">
-            <div className="relative h-96 flex items-center justify-center">
+    <section className="py-20 bg-stone-50 relative overflow-hidden">
+      {/* Background Texture - Light Mesh */}
+      <div className="absolute inset-0 opacity-[0.4]"
+        style={{
+          backgroundImage: 'radial-gradient(#d6d3d1 1px, transparent 1px)',
+          backgroundSize: '24px 24px'
+        }}
+      />
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+          {/* Left Half - Scroll-Responsive Confusion Geometry & Heading */}
+          <div className="space-y-12 sticky top-32">
+            <div className="pl-4 max-w-lg">
+              <h2 className="text-3xl md:text-5xl font-bold text-stone-900 mb-6 leading-tight">The Execution Gap</h2>
+              <p className="text-lg text-stone-600 leading-relaxed font-medium">
+                Most people know what they want. The problem is bridging the gap between intention and action.
+              </p>
+            </div>
+
+            <div className="relative h-80 flex items-center justify-center">
               {/* Confusion spiral - rotates with scroll */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div
-                  className="w-64 h-64 border-4 border-dashed border-stone-400/40 rounded-full"
+                  className="w-56 h-56 border-4 border-dashed border-blue-400/20 rounded-full"
                   style={{ transform: `rotate(${scrollY * 0.3}deg)` }}
                 />
                 <div
-                  className="absolute w-48 h-48 border-2 border-stone-500/30 rounded-full"
+                  className="absolute w-40 h-40 border-2 border-purple-500/20 rounded-full"
                   style={{ transform: `rotate(${-scrollY * 0.2}deg)` }}
                 />
                 <div
-                  className="absolute w-32 h-32 border border-stone-600/30 rounded-full"
+                  className="absolute w-28 h-28 border border-amber-600/20 rounded-full"
                   style={{ transform: `rotate(${scrollY * 0.4}deg)` }}
                 />
               </div>
 
               {/* Question marks - move with scroll */}
               <div
-                className="absolute top-8 left-8 text-6xl text-stone-400/60"
+                className="absolute top-8 left-12 text-5xl text-blue-500/30 font-bold"
                 style={{ transform: `translateY(${Math.sin(scrollY * 0.01) * 10}px)` }}
               >?</div>
               <div
-                className="absolute top-16 right-12 text-5xl text-stone-500/60"
+                className="absolute top-16 right-16 text-4xl text-purple-500/30 font-bold"
                 style={{ transform: `translateY(${Math.cos(scrollY * 0.015) * 15}px)` }}
-              >?</div>
-              <div
-                className="absolute bottom-12 left-16 text-4xl text-stone-600/60"
-                style={{ transform: `translateY(${Math.sin(scrollY * 0.02) * 8}px)` }}
-              >?</div>
-              <div
-                className="absolute bottom-8 right-8 text-3xl text-stone-500/60"
-                style={{ transform: `translateY(${Math.cos(scrollY * 0.012) * 12}px)` }}
               >?</div>
 
               {/* Central confusion symbol */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div
-                  className="text-8xl text-stone-400/30"
+                  className="text-7xl text-stone-500/20 font-bold"
                   style={{ transform: `rotate(${scrollY * 0.1}deg) scale(${1 + Math.sin(scrollY * 0.005) * 0.1})` }}
                 >?</div>
               </div>
             </div>
           </div>
 
-          {/* Right Half - Enhanced Problem Section */}
-          <div className="space-y-8">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-stone-900 mb-4">The Problem We Solve</h2>
-              <p className="text-stone-600 text-lg leading-relaxed">
-                People want to grow their money safely toward real-life goals, but they are unable to translate intent into confident action.
-              </p>
+          {/* Right Half - Interactive Problem/Solution Cards */}
+          <div className="space-y-5">
+            {/* Problem 1: Financial Paralysis */}
+            <div className="group relative bg-white border border-stone-200 rounded-[2rem] p-6 transition-all duration-500 hover:shadow-xl hover:border-blue-200 hover:-translate-y-1 overflow-hidden cursor-default h-[260px]">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-stone-50 rounded-bl-[3rem] -mr-6 -mt-6 transition-all duration-500 group-hover:scale-[2.5] group-hover:bg-blue-50/50" />
+
+              <div className="relative z-10 h-full flex flex-col justify-between">
+                <div className="flex justify-end items-start">
+                  <span className="text-[10px] font-bold px-3 py-1 bg-stone-100 text-stone-500 rounded-full group-hover:bg-white group-hover:text-blue-600 transition-colors uppercase tracking-widest border border-stone-200 group-hover:border-blue-100">
+                    Problem 01
+                  </span>
+                </div>
+
+                <div className="relative flex-1 mt-4">
+                  {/* Problem State */}
+                  <div className="absolute inset-0 transition-all duration-500 opacity-100 translate-y-0 group-hover:opacity-0 group-hover:-translate-y-4">
+                    <h3 className="text-xl font-bold text-stone-900 mb-2">Financial Paralysis</h3>
+                    <p className="text-stone-600 text-[15px] leading-relaxed">
+                      "I don't know where to start."<br />
+                      Overwhelmed by thousands of options, conflicting advice, and fear of making the wrong move.
+                    </p>
+                  </div>
+
+                  {/* Solution State - Engine UI */}
+                  <div className="absolute inset-0 transition-all duration-500 opacity-0 translate-y-8 group-hover:opacity-100 group-hover:translate-y-0 flex flex-col justify-center">
+                    <div className="space-y-3">
+                      <div className="mb-1">
+                        <h3 className="text-base font-bold text-stone-900">Goal-to-Action Engine</h3>
+                      </div>
+
+                      <div className="bg-white rounded-xl border border-stone-200 p-4 shadow-sm space-y-2">
+                        <div className="flex justify-between items-center text-sm border-b border-stone-100 pb-2">
+                          <span className="text-stone-500 text-xs">Monthly SIP</span>
+                          <span className="font-mono font-bold text-stone-900">₹25,000</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-stone-500 text-xs">Feasibility</span>
+                          <span className="font-mono font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded text-xs">85% Achievable</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-6">
-              <h3 className="text-xl font-bold text-stone-900 border-b-2 border-stone-800 pb-2 inline-block">Core Problems</h3>
+            {/* Problem 2: Investment Blindness */}
+            <div className="group relative bg-white border border-stone-200 rounded-[2rem] p-6 transition-all duration-500 hover:shadow-xl hover:border-purple-200 hover:-translate-y-1 overflow-hidden cursor-default h-[260px]">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-stone-50 rounded-bl-[3rem] -mr-6 -mt-6 transition-all duration-500 group-hover:scale-[2.5] group-hover:bg-purple-50/50" />
 
-              <div className="border-l-4 border-stone-600 pl-6 py-2">
-                <h4 className="text-stone-900 font-bold mb-2">What You Want:</h4>
-                <p className="text-stone-700">"I want to buy a house, need money to grow reliably, don't want to gamble my future."</p>
-              </div>
+              <div className="relative z-10 h-full flex flex-col justify-between">
+                <div className="flex justify-end items-start">
+                  <span className="text-[10px] font-bold px-3 py-1 bg-stone-100 text-stone-500 rounded-full group-hover:bg-white group-hover:text-purple-600 transition-colors uppercase tracking-widest border border-stone-200 group-hover:border-purple-100">
+                    Problem 02
+                  </span>
+                </div>
 
-              <div className="border-l-4 border-stone-700 pl-6 py-2">
-                <h4 className="text-stone-900 font-bold mb-2">The Reality:</h4>
-                <p className="text-stone-700">"Terrified of losing money, confused by options, need automation, don't trust advice."</p>
+                <div className="relative flex-1 mt-4">
+                  {/* Problem State */}
+                  <div className="absolute inset-0 transition-all duration-500 opacity-100 translate-y-0 group-hover:opacity-0 group-hover:-translate-y-4">
+                    <h3 className="text-xl font-bold text-stone-900 mb-2">Investment Blindness</h3>
+                    <p className="text-stone-600 text-[15px] leading-relaxed">
+                      "Is my money growing or dying?"<br />
+                      No unified view. Scattered investments. Cannot track real ROI or catch underperforming assets in time.
+                    </p>
+                  </div>
+
+                  {/* Solution State - Dashboard UI */}
+                  <div className="absolute inset-0 transition-all duration-500 opacity-0 translate-y-8 group-hover:opacity-100 group-hover:translate-y-0 flex flex-col justify-center">
+                    <div className="space-y-3">
+                      <div className="mb-1">
+                        <h3 className="text-base font-bold text-stone-900">Portfolio Intelligence</h3>
+                      </div>
+
+                      <div className="bg-white rounded-xl border border-stone-200 p-3 shadow-sm space-y-2">
+                        <div className="flex justify-between items-end border-b border-stone-100 pb-2">
+                          <div>
+                            <p className="text-[10px] text-stone-500 font-bold uppercase tracking-wider">Total Portfolio</p>
+                            <p className="text-sm font-bold text-stone-900">₹12.5L</p>
+                          </div>
+                          <span className="text-green-600 bg-green-50 px-1.5 py-0.5 rounded text-[10px] font-bold">+5.2% Today</span>
+                        </div>
+                        <div className="space-y-1.5">
+                          <div className="flex justify-between text-[10px] items-center">
+                            <span className="text-stone-600">Crypto (BTC)</span>
+                            <span className="font-mono font-bold text-stone-700">+12.4%</span>
+                          </div>
+                          <div className="flex justify-between text-[10px] items-center">
+                            <span className="text-stone-600">Eq (Nifty)</span>
+                            <span className="font-mono font-bold text-stone-700">+1.2%</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
+
+            {/* Problem 3: Financial Loneliness */}
+            <div className="group relative bg-white border border-stone-200 rounded-[2rem] p-6 transition-all duration-500 hover:shadow-xl hover:border-green-200 hover:-translate-y-1 overflow-hidden cursor-default h-[260px]">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-stone-50 rounded-bl-[3rem] -mr-6 -mt-6 transition-all duration-500 group-hover:scale-[2.5] group-hover:bg-green-50/50" />
+
+              <div className="relative z-10 h-full flex flex-col justify-between">
+                <div className="flex justify-end items-start">
+                  <span className="text-[10px] font-bold px-3 py-1 bg-stone-100 text-stone-500 rounded-full group-hover:bg-white group-hover:text-green-600 transition-colors uppercase tracking-widest border border-stone-200 group-hover:border-green-100">
+                    Problem 03
+                  </span>
+                </div>
+
+                <div className="relative flex-1 mt-4">
+                  {/* Problem State */}
+                  <div className="absolute inset-0 transition-all duration-500 opacity-100 translate-y-0 group-hover:opacity-0 group-hover:-translate-y-4">
+                    <h3 className="text-xl font-bold text-stone-900 mb-2">Financial Loneliness</h3>
+                    <p className="text-stone-600 text-[15px] leading-relaxed">
+                      "I need expert advice but can't afford it."<br />
+                      Generic robo-advisors don't listen. Human advisors are expensive. Decisions are made in isolation.
+                    </p>
+                  </div>
+
+                  {/* Solution State - Chat UI */}
+                  <div className="absolute inset-0 transition-all duration-500 opacity-0 translate-y-8 group-hover:opacity-100 group-hover:translate-y-0 flex flex-col justify-center">
+                    <div className="space-y-3">
+                      <div className="mb-1">
+                        <h3 className="text-base font-bold text-stone-900">AI Financial Partner</h3>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="bg-stone-100 rounded-lg rounded-tl-none p-3 text-[11px] text-stone-600 border border-stone-200">
+                          Should I invest in Bitcoin now?
+                        </div>
+                        <div className="bg-blue-600 text-white rounded-lg rounded-tr-none p-3 text-[11px] shadow-sm">
+                          Considering your 30% risk appetite, limit exposure to 5%. Here's why...
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -752,15 +998,33 @@ const UseCases = () => {
 const HowItWorks = () => {
   const [activeStep, setActiveStep] = useState<number | null>(null);
   const [scrollY, setScrollY] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
+  const [lineHeight, setLineHeight] = useState(0);
 
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+      if (sectionRef.current) {
+        const rect = sectionRef.current.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        // Start filling line when section enters viewport
+        // Adjust offset to match the timing of the reveal
+        const startOffset = viewportHeight * 0.4;
+        const relativeY = startOffset - rect.top;
+
+        if (relativeY > 0) {
+          setLineHeight(relativeY);
+        } else {
+          setLineHeight(0);
+        }
+      }
+    };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
-    <section id="how-it-works" className="py-24 bg-stone-100 relative overflow-hidden">
+    <section ref={sectionRef} id="how-it-works" className="py-24 bg-stone-100 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-stone-100 via-stone-50/30 to-stone-100" />
 
       {/* HowItWorks design elements */}
@@ -776,7 +1040,7 @@ const HowItWorks = () => {
         </div>
 
         <div className="relative">
-          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-stone-600 to-stone-300 hidden md:block" />
+          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-stone-300 to-stone-200 hidden md:block" />
 
           {/* Crazy design element on the right - Scroll responsive */}
           <div className="absolute right-0 top-0 w-80 h-96 hidden lg:block overflow-hidden"
@@ -818,14 +1082,14 @@ const HowItWorks = () => {
             </svg>
 
             {/* Orbiting particles */}
-            <div className="absolute top-24 right-24 w-4 h-4 bg-blue-500/60 rounded-full animate-ping"
+            <div className="absolute top-24 right-24 w-4 h-4 bg-stone-500/40 rounded-full animate-ping"
               style={{ transform: `translate(${Math.cos(scrollY * 0.01) * 10}px, ${Math.sin(scrollY * 0.01) * 10}px)` }} />
-            <div className="absolute top-40 right-40 w-3 h-3 bg-purple-500/60 rounded-full animate-ping"
+            <div className="absolute top-40 right-40 w-3 h-3 bg-stone-400/40 rounded-full animate-ping"
               style={{
                 animationDelay: '1s',
                 transform: `translate(${Math.cos(scrollY * 0.015 + 1) * 15}px, ${Math.sin(scrollY * 0.015 + 1) * 15}px)`
               }} />
-            <div className="absolute top-56 right-20 w-2 h-2 bg-green-500/60 rounded-full animate-ping"
+            <div className="absolute top-56 right-20 w-2 h-2 bg-stone-300/40 rounded-full animate-ping"
               style={{
                 animationDelay: '2s',
                 transform: `translate(${Math.cos(scrollY * 0.02 + 2) * 8}px, ${Math.sin(scrollY * 0.02 + 2) * 8}px)`
@@ -846,48 +1110,60 @@ const HowItWorks = () => {
             <div className="absolute bottom-20 right-48 w-14 h-14 border-2 border-pink-400/30 rounded-full animate-spin" style={{ animationDuration: '6s', animationDirection: 'reverse' }} />
           </div>
 
-          <div className="space-y-12">
+          <div className="space-y-12 relative pl-12 md:pl-24 pb-8">
+            {/* Background Line */}
+            <div className="absolute left-8 top-6 bottom-6 w-[1px] bg-stone-200 hidden md:block" />
+
+            {/* Anchor dots */}
+            <div className="absolute left-8 top-6 bottom-6 w-[1px] hidden md:block">
+              {[0, 1, 2].map((i) => (
+                <div
+                  key={i}
+                  className={`absolute left-1/2 -translate-x-1/2 w-2 h-2 rounded-full border border-stone-200 transition-all duration-300 ${activeStep === i ? 'bg-stone-800 scale-125' : 'bg-white'}`}
+                  style={{ top: `${i * 50}%` }}
+                />
+              ))}
+            </div>
+
+            {/* Traveling Progress Line - Fixed Start */}
+            <div
+              className="absolute left-8 w-[1px] bg-stone-800 hidden md:block transition-all duration-100 ease-out"
+              style={{
+                top: '1.5rem',
+                height: `${Math.max(0, lineHeight - 100)}px`,
+                maxHeight: 'calc(100% - 3rem)'
+              }}
+            >
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-stone-800 rounded-full border border-white shadow-sm" />
+            </div>
+
             {[
               {
                 title: "Share Your Goal",
-                desc: "Tell us your current savings, target amount, and timeline in plain English.",
-                icon: <Target size={20} />,
-                color: "text-stone-600"
+                desc: "Tell us your current savings, target amount, and timeline in plain English."
               },
               {
                 title: "AI Analysis",
-                desc: "Our AI calculates required returns, assigns your personality, and validates for safety.",
-                icon: <Calculator size={20} />,
-                color: "text-stone-700"
+                desc: "Our AI calculates required returns, assigns your personality, and validates for safety."
               },
               {
-                title: "Get Your Plan",
-                desc: "Receive specific investment allocations with clear explanations and next steps.",
-                icon: <CheckCircle size={20} />,
-                color: "text-stone-800"
+                title: "Continuous Risk Monitoring",
+                desc: "Stay protected with 24/7 oversight. We track market volatility and auto-adjust your strategy to keep you on the fastest path to wealth."
               }
             ].map((step, i) => (
               <div
                 key={i}
-                className="relative flex gap-8 items-start scroll-animate transform-gpu hover:scale-105 transition-all duration-300 cursor-pointer"
+                className="relative py-4 transition-all duration-300 cursor-default group"
                 onMouseEnter={() => setActiveStep(i)}
                 onMouseLeave={() => setActiveStep(null)}
               >
-                <div
-                  className="hidden md:flex h-16 w-16 bg-white border border-stone-300 rounded-2xl items-center justify-center z-10 shrink-0 transform-gpu hover:scale-110 hover:rotate-12 transition-all duration-500"
-                  style={{
-                    transform: activeStep === i ? 'scale(1.2) rotate(12deg)' : 'scale(1) rotate(0deg)',
-                    boxShadow: activeStep === i ? '0 20px 40px rgba(0, 0, 0, 0.1)' : 'none'
-                  }}
-                >
-                  <div className={`${step.color}`}>{step.icon}</div>
-                </div>
-                <div className="pt-2">
-                  <h3 className="text-xl font-bold text-stone-900 mb-2 flex items-center gap-3 transform-gpu hover:translate-x-2 transition-all duration-300">
-                    <span className="md:hidden p-2 bg-white rounded-lg border border-stone-300">{step.icon}</span>
+                <div className={`max-w-xl transition-all duration-300 ${activeStep === i ? 'translate-x-4' : 'translate-x-0'}`}>
+                  <h3 className="text-xl md:text-2xl font-bold mb-2 text-stone-900">
                     {step.title}
                   </h3>
-                  <p className="text-stone-600 max-w-xl">{step.desc}</p>
+                  <p className="text-stone-600 leading-relaxed font-medium">
+                    {step.desc}
+                  </p>
                 </div>
               </div>
             ))}
@@ -1107,9 +1383,17 @@ export default function Page() {
             clip-path: polygon(25% 0%, 75% 0%, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0% 75%, 0% 25%);
           }
         }
+        .animate-marquee {
+          animation: marquee 35s linear infinite;
+        }
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-33.3333%); }
+        }
       `}</style>
       <Navbar onGetStarted={handleGetStarted} isConnecting={connecting} />
       <Hero onGetStarted={handleGetStarted} isConnecting={connecting} />
+      <PoweredBy />
       <UseCases />
       <HowItWorks />
       <FeatureBento />

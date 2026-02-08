@@ -25,7 +25,6 @@ type Message = {
     content: string;
     timestamp: Date;
     feedback?: 'up' | 'down';
-    traceId?: string;
 };
 
 type Session = {
@@ -207,7 +206,6 @@ const AiAgent: React.FC = () => {
                 const finalMessage: Message = {
                     id: Date.now() + 1000,
                     dbMessageId: data.data.messageId,
-                    traceId: data.data.traceId,
                     type: 'bot',
                     content: data.data.finalAnswer,
                     timestamp: new Date()
@@ -318,35 +316,29 @@ const AiAgent: React.FC = () => {
                                                 </div>
 
                                                 {message.type === 'bot' && message.id !== 'welcome' && (
-                                                    <div className="flex items-center gap-2 mt-2 px-1">
+                                                    <div className={`absolute -right-12 top-0 flex flex-col gap-1 transition-opacity duration-200 ${message.feedback ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
                                                         <button
                                                             onClick={() => handleFeedback(message, 'up')}
-                                                            className={`p-1 rounded-md transition-all hover:bg-emerald-50 ${message.feedback === 'up' ? 'text-emerald-600 bg-emerald-50 shadow-sm' : 'text-stone-300 hover:text-emerald-500'}`}
-                                                            title="Helpful"
+                                                            className={`p-1.5 rounded-md transition-all hover:bg-emerald-50 ${message.feedback === 'up' ? 'text-emerald-600 bg-emerald-50' : 'text-stone-300 hover:text-emerald-500'}`}
                                                         >
-                                                            <ThumbsUp size={12} />
+                                                            <ThumbsUp size={14} />
                                                         </button>
                                                         <button
                                                             onClick={() => handleFeedback(message, 'down')}
-                                                            className={`p-1 rounded-md transition-all hover:bg-red-50 ${message.feedback === 'down' ? 'text-red-600 bg-red-50 shadow-sm' : 'text-stone-300 hover:text-red-500'}`}
-                                                            title="Not helpful"
+                                                            className={`p-1.5 rounded-md transition-all hover:bg-red-50 ${message.feedback === 'down' ? 'text-red-600 bg-red-50' : 'text-stone-300 hover:text-red-500'}`}
                                                         >
-                                                            <ThumbsDown size={12} />
+                                                            <ThumbsDown size={14} />
                                                         </button>
-                                                        <div className="h-3 w-[1px] bg-stone-100 mx-1" />
-                                                        <p className="text-[8px] font-bold uppercase tracking-widest text-stone-400">
-                                                            {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                        </p>
-                                                        <CheckCircle size={8} className="text-emerald-500" />
                                                     </div>
                                                 )}
+                                            </div>
 
-                                                {message.type === 'user' && (
-                                                    <div className="flex items-center justify-end gap-2 mt-1 px-1">
-                                                        <p className="text-[8px] font-bold uppercase tracking-widest text-stone-400">
-                                                            {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                        </p>
-                                                    </div>
+                                            <div className={`flex items-center gap-2 px-1 ${message.type === 'user' ? 'flex-row-reverse' : ''}`}>
+                                                <p className="text-[8px] font-bold uppercase tracking-widest text-stone-400">
+                                                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                </p>
+                                                {message.type === 'bot' && (
+                                                    <CheckCircle size={8} className="text-emerald-500" />
                                                 )}
                                             </div>
                                         </div>

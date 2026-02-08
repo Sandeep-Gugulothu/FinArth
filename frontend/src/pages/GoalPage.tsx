@@ -187,13 +187,6 @@ const GoalPage = () => {
                                 <span className={`w-1.5 h-1.5 rounded-full ${isLive ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
                                 {isLive ? 'Live Blueprint' : 'Simulated Environment'}
                             </div>
-                            <button
-                                onClick={handleSaveGoal}
-                                disabled={isSubmitting}
-                                className="px-8 py-2 bg-stone-900 text-white font-bold rounded shadow-lg shadow-stone-200 hover:bg-black transition-all disabled:opacity-50 text-sm"
-                            >
-                                {isSubmitting ? 'Architecting...' : 'Deploy Plan'}
-                            </button>
                         </div>
                     </div>
                 </nav>
@@ -416,12 +409,12 @@ const GoalPage = () => {
 
                         {/* Right: AI Output Display */}
                         <div className="lg:col-span-5 space-y-6 animate-in fade-in slide-in-from-right-8 duration-700 delay-200">
-                            <div className="bg-stone-900 rounded-[2.5rem] p-12 text-white shadow-2xl relative overflow-hidden h-full flex flex-col justify-between">
-                                <div className="absolute top-0 right-0 w-64 h-64 bg-stone-800/50 rounded-full blur-3xl -mr-32 -mt-32" />
+                            <div className="bg-stone-800 rounded-[2.5rem] p-12 text-white shadow-2xl relative overflow-hidden h-full flex flex-col justify-between">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-stone-700/50 rounded-full blur-3xl -mr-32 -mt-32" />
 
                                 <div className="relative z-10 space-y-12">
                                     <div className="flex justify-between items-center">
-                                        <div className="px-4 py-1.5 bg-stone-800 border border-stone-700 rounded-full flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
+                                        <div className="px-4 py-1.5 bg-stone-700 border border-stone-600 rounded-full flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
                                             Live Structural Projection
                                         </div>
                                     </div>
@@ -434,18 +427,18 @@ const GoalPage = () => {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-10 pt-10 border-t border-stone-800">
+                                    <div className="grid grid-cols-2 gap-10 pt-10 border-t border-stone-700">
                                         <div className="space-y-2">
-                                            <p className="text-[10px] font-extrabold text-stone-600 uppercase tracking-widest">Target @ Horizon</p>
+                                            <p className="text-[10px] font-extrabold text-stone-500 uppercase tracking-widest">Target @ Horizon</p>
                                             <p className="text-2xl font-bold font-mono text-stone-200">₹{smartData.adjustedTarget.toLocaleString()}</p>
                                         </div>
                                         <div className="space-y-2">
-                                            <p className="text-[10px] font-extrabold text-stone-600 uppercase tracking-widest">Return Profile</p>
+                                            <p className="text-[10px] font-extrabold text-stone-500 uppercase tracking-widest">Return Profile</p>
                                             <p className="text-2xl font-bold font-mono text-stone-200">{riskRates[newGoal.risk_profile]}%</p>
                                         </div>
                                     </div>
 
-                                    <div className="space-y-5 pt-10 border-t border-stone-800">
+                                    <div className="space-y-5 pt-10 border-t border-stone-700">
                                         <div className="flex justify-between items-end">
                                             <div>
                                                 <p className="text-[11px] font-bold text-stone-500 uppercase tracking-widest mb-1">Feasibility Score</p>
@@ -453,12 +446,28 @@ const GoalPage = () => {
                                             </div>
                                             <span className={`text-3xl font-black font-mono ${feasibility.color}`}>{feasibility.score}%</span>
                                         </div>
-                                        <div className="w-full h-3 bg-stone-800 rounded-full overflow-hidden p-0.5 border border-stone-700">
+                                        <div className="w-full h-3 bg-stone-700 rounded-full overflow-hidden p-0.5 border border-stone-600">
                                             <div
                                                 className={`h-full transition-all duration-1000 rounded-full ${feasibility.score < 40 ? 'bg-rose-500' : feasibility.score < 80 ? 'bg-amber-500' : 'bg-green-500'}`}
                                                 style={{ width: `${feasibility.score}%` }}
                                             />
                                         </div>
+                                        <button
+                                            onClick={handleSaveGoal}
+                                            disabled={isSubmitting}
+                                            className="w-full mt-6 px-6 py-4 bg-white text-black font-bold rounded-xl hover:bg-stone-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg"
+                                        >
+                                            {isSubmitting ? (
+                                                <>
+                                                    <div className="h-4 w-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                                                    Architecting...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    Deploy Plan
+                                                </>
+                                            )}
+                                        </button>
                                     </div>
                                 </div>
                             </div>
