@@ -9,7 +9,6 @@ FinArth
 │   ├── __init__.py
 │   ├── database_backup.sqlite
 │   ├── database.sqlite
-│   ├── implementation_plan.md
 │   ├── logs
 │   ├── market_cache.json
 │   ├── package.json
@@ -80,6 +79,7 @@ FinArth
 ├── CHANGELOG.md        # version log maintenance.
 ├── deploy-backend.sh
 ├── docs                # project documentation
+│   ├── implementation_plan.md
 │   ├── logging_system.md
 │   ├── project_structure.md
 │   ├── REACT_SETUP.md
@@ -90,7 +90,7 @@ FinArth
 │   ├── public
 │   │   ├── index.html  # App hosting page
 │   │   └── logo.png    # Project logo
-│   ├── src
+│   ├── src             # Backend source code folder
 │   │   ├── components
 │   │   │   ├── Icons.tsx
 │   │   │   ├── PortfolioHeatmap.tsx
@@ -98,7 +98,7 @@ FinArth
 │   │   ├── index.css
 │   │   ├── index.tsx   # App entry point
 │   │   ├── page.tsx    # Main landing page
-│   │   ├── pages
+│   │   ├── pages       # Aims to represent user's data and serve the user.
 │   │   │   ├── AiAgent.tsx
 │   │   │   ├── Dashboard.tsx
 │   │   │   ├── HomePage.tsx
