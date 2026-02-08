@@ -137,53 +137,61 @@ const OverviewTab = ({ marketData, loading, error, userName, goals, holdings, is
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
-          <div key={i} className="bg-white p-6 border-l-4 border-stone-800 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between mb-2">
+          <div key={i} className="bg-gradient-to-br from-white to-stone-50 p-6 rounded-xl border border-stone-200 shadow-lg hover:shadow-xl transition-all hover:scale-105 duration-300">
+            <div className="flex items-center justify-between mb-3">
               <p className="text-xs font-bold text-stone-500 uppercase tracking-widest">{stat.label}</p>
-              <span className={`text-[10px] px-2 py-0.5 font-mono font-bold bg-stone-50 text-stone-600 border border-stone-100 rounded`}>
+              <span className={`text-[10px] px-2.5 py-1 font-mono font-bold rounded-full ${stat.positive ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
                 {stat.change}
               </span>
             </div>
-            <p className="text-2xl font-bold text-stone-900 font-mono tracking-tight">{stat.value}</p>
+            <p className="text-3xl font-black text-stone-900 font-mono tracking-tight">{stat.value}</p>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-6 border border-stone-200 shadow-sm">
-          <h3 className="text-lg font-bold text-stone-900 mb-6 border-b border-stone-100 pb-2">Recent Activity</h3>
+        <div className="bg-white p-8 rounded-xl border border-stone-200 shadow-lg hover:shadow-xl transition-all">
+          <h3 className="text-xl font-bold text-stone-900 mb-6 flex items-center gap-2">
+            <Activity size={20} className="text-stone-800" />
+            Recent Activity
+          </h3>
           <div className="space-y-4">
             {recentActivity.map((activity, i) => (
-              <div key={i} className="flex items-center justify-between py-2 border-b border-stone-50 last:border-b-0">
+              <div key={i} className="flex items-center justify-between py-3 px-4 rounded-lg hover:bg-stone-50 transition-all border-b border-stone-100 last:border-b-0">
                 <div>
                   <p className="font-bold text-stone-900 text-sm">{activity.action}</p>
-                  <p className="text-xs text-stone-500">{activity.fund}</p>
+                  <p className="text-xs text-stone-500 mt-0.5">{activity.fund}</p>
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-stone-900 text-sm font-mono">{activity.amount}</p>
-                  <p className="text-[10px] text-stone-400 font-medium">{activity.time}</p>
+                  <p className="text-[10px] text-stone-400 font-medium mt-0.5">{activity.time}</p>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="bg-white p-6 border border-stone-200 shadow-sm">
-          <h3 className="text-lg font-bold text-stone-900 mb-6 border-b border-stone-100 pb-2">Goal Progress</h3>
+        <div className="bg-white p-8 rounded-xl border border-stone-200 shadow-lg hover:shadow-xl transition-all">
+          <h3 className="text-xl font-bold text-stone-900 mb-6 flex items-center gap-2">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="text-stone-800">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+            </svg>
+            Goal Progress
+          </h3>
           <div className="space-y-6">
             {goalProgress.map((goal, i) => (
-              <div key={i} className="space-y-2">
+              <div key={i} className="space-y-3 p-4 rounded-lg bg-stone-50 border border-stone-200 hover:border-stone-300 transition-all">
                 <div className="flex justify-between items-end">
                   <span className="font-bold text-stone-900 text-sm">{goal.goal}</span>
                   <span className="text-[11px] text-stone-600 font-mono font-bold">₹{goal.current}L / ₹{goal.target}L</span>
                 </div>
-                <div className="w-full bg-stone-100 h-2 rounded-sm overflow-hidden border border-stone-200/50">
+                <div className="w-full bg-stone-200 h-2.5 rounded-full overflow-hidden">
                   <div
-                    className="bg-stone-800 h-full transition-all duration-1000 ease-out"
+                    className="bg-stone-800 h-full transition-all duration-1000 ease-out rounded-full"
                     style={{ width: `${goal.progress}%` }}
                   />
                 </div>
-                <p className="text-[10px] text-stone-400 font-bold uppercase tracking-wider">{goal.progress}% complete</p>
+                <p className="text-[10px] text-stone-500 font-bold uppercase tracking-wider">{goal.progress}% complete</p>
               </div>
             ))}
           </div>
@@ -197,46 +205,46 @@ const OverviewTab = ({ marketData, loading, error, userName, goals, holdings, is
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="bg-stone-50 p-4 border border-stone-200">
-            <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-1">Total Market Cap</p>
+          <div className="bg-gradient-to-br from-stone-50 to-stone-100 p-5 rounded-xl border border-stone-200 shadow-sm hover:shadow-md transition-all">
+            <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2">Total Market Cap</p>
             <div className="flex items-center justify-between">
-              <p className="text-lg font-bold text-stone-900 font-mono">
+              <p className="text-xl font-black text-stone-900 font-mono">
                 {global.total_market_cap?.usd ? `$${(global.total_market_cap.usd / 1e12).toFixed(2)}T` : '---'}
               </p>
-              <span className={`text-[10px] font-mono ${global.market_cap_change_percentage_24h_usd > 0 ? 'text-green-700' : 'text-red-700'}`}>
+              <span className={`text-xs font-mono font-bold px-2 py-1 rounded-full ${global.market_cap_change_percentage_24h_usd > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                 {global.market_cap_change_percentage_24h_usd ? `${global.market_cap_change_percentage_24h_usd.toFixed(1)}%` : ''}
               </span>
             </div>
           </div>
-          <div className="bg-stone-50 p-4 border border-stone-200">
-            <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-1">24h Volume</p>
-            <p className="text-lg font-bold text-stone-900 font-mono">
+          <div className="bg-gradient-to-br from-stone-50 to-stone-100 p-5 rounded-xl border border-stone-200 shadow-sm hover:shadow-md transition-all">
+            <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2">24h Volume</p>
+            <p className="text-xl font-black text-stone-900 font-mono">
               {global.total_volume?.usd ? `$${(global.total_volume.usd / 1e9).toFixed(1)}B` : '---'}
             </p>
           </div>
-          <div className="bg-stone-50 p-4 border border-stone-200">
-            <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-1">BTC Dominance</p>
-            <p className="text-lg font-bold text-stone-900 font-mono">
+          <div className="bg-gradient-to-br from-stone-50 to-stone-100 p-5 rounded-xl border border-stone-200 shadow-sm hover:shadow-md transition-all">
+            <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2">BTC Dominance</p>
+            <p className="text-xl font-black text-stone-900 font-mono">
               {global.market_cap_percentage?.btc ? `${global.market_cap_percentage.btc.toFixed(1)}%` : '---'}
             </p>
           </div>
-          <div className="bg-stone-50 p-4 border border-stone-200">
-            <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-1">Active Coins</p>
-            <p className="text-lg font-bold text-stone-900 font-mono">
+          <div className="bg-gradient-to-br from-stone-50 to-stone-100 p-5 rounded-xl border border-stone-200 shadow-sm hover:shadow-md transition-all">
+            <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-2">Active Coins</p>
+            <p className="text-xl font-black text-stone-900 font-mono">
               {global.active_cryptocurrencies ? global.active_cryptocurrencies.toLocaleString() : '---'}
             </p>
           </div>
         </div>
 
-        <div className="bg-white border border-stone-200 shadow-sm overflow-hidden">
-          <div className="p-5 border-b border-stone-100 flex items-center justify-between bg-stone-50/50">
-            <h4 className="font-bold text-stone-900 text-sm">Market Movers</h4>
-            <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Live Updates</span>
+        <div className="bg-white border border-stone-200 shadow-lg rounded-xl overflow-hidden">
+          <div className="p-6 border-b border-stone-200 flex items-center justify-between bg-gradient-to-r from-stone-50 to-white">
+            <h4 className="font-bold text-stone-900 text-lg">Market Movers</h4>
+            <span className="text-[10px] font-bold text-stone-500 uppercase tracking-widest px-3 py-1 bg-white rounded-full border border-stone-200">Live Updates</span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="text-left text-[10px] font-bold text-stone-400 uppercase tracking-[0.2em] border-b border-stone-100">
+                <tr className="text-left text-[10px] font-bold text-stone-500 uppercase tracking-[0.2em] bg-stone-50">
                   <th className="px-6 py-4">Asset</th>
                   <th className="py-4">Price</th>
                   <th className="py-4">24h Change</th>
@@ -244,10 +252,10 @@ const OverviewTab = ({ marketData, loading, error, userName, goals, holdings, is
                   <th className="px-6 py-4 text-right">Market Cap</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-stone-50">
+              <tbody className="divide-y divide-stone-100">
                 {marketData.top_coins?.slice(0, 6).map((coin: any) => (
-                  <tr key={coin.id} className="hover:bg-stone-50/50 transition-colors">
-                    <td className="px-6 py-4">
+                  <tr key={coin.id} className="hover:bg-stone-50 transition-colors group">
+                    <td className="px-6 py-5">
                       <div className="flex items-center gap-3">
                         <img src={coin.image} alt={coin.name} className="h-6 w-6 rounded-full opacity-80" />
                         <div>
