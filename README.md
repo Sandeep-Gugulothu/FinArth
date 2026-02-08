@@ -17,31 +17,31 @@
 
 FinArth is an AI-powered financial planning platform that converts life goals into safe, automated, and understandable financial action. It helps users move from financial uncertainty to confident investment decisions through personalized guidance and transparent recommendations.
 
-## Features
-
-- **AI-Powered Financial Planning**: Intelligent analysis and personalized investment recommendations
-- **Goal-Based Planning**: Convert specific life goals into actionable financial plans
-- **Personalized Math**: Exact calculations based on individual financial situations
-- **Clear Action Steps**: Specific investment allocations with transparent explanations
-- **Modern UI**: Responsive React frontend with animated components and dark theme
-
 ## Architecture
 
-![High_Level_Design_1](./artifacts/system_design/FinArth_design_1.jpg)
+In order to architect our FinArth system, we had to come-up with a basic high-level system design diagram.
 
-Initially, FinArth followed traditional three-tier architecture and based on the project progress it is growing towards modular monolith architecture and it can migrate to a microservices architecture in future based on project's budget, bandwidth, scope, and maintenance.
+### High Level Design
 
-![Architecture_HLD](./artifacts/system_design/FinArth_3_tier_architecture.png)
+![High_Level_Design_1](./media/system_design/FinArth_design_1.jpg)
+
+Initially, FinArth followed traditional three-tier architecture as shown in the diagram below.
+
+![Architecture_HLD](./media/system_design/FinArth_3_tier_architecture.png)
+
+Based on the project's progress it is growing towards modular monolith architecture and it can migrate to a microservices architecture in future based on project's budget, bandwidth, scope, and maintenance.
 
 ### Components
 
-The three main components of the three-tier architecture:
+As represented in the three-tier architectural diagram above, we have three main components:
 
 1. Frontend system
 2. Backend system
 3. Storage system
 
 #### Technology Matrix
+
+There can be more choices when it comes to technology selection, but we stick to the ones below.
 
 <table>
     <tr>
@@ -51,31 +51,61 @@ The three main components of the three-tier architecture:
     </tr>
     <tr>
         <td rowspan="3"><strong>Frontend System</strong></td>
-        <td>HTML</td>
+        <td><code>HTML</code></td>
         <td>We used HTML to render our web-page by embedding executable code.</td>
     </tr>
     <tr>
-        <td>CSS</td>
+        <td><code>CSS</code></td>
         <td>We used Cascading Style Sheet to style our webpage.</td>
     </tr>
     <tr>
-        <td>TypeScript</td>
+        <td><code>TypeScript</code></td>
         <td>We are using TypeScript to make our webpage actionable.</td>
     </tr>
     <tr>
         <td><strong>Backend System</strong></td>
-        <td>Python</td>
+        <td><code>Python</code></td>
         <td>We used Python programming to code our business logic.</td>
     </tr>
     <tr>
         <td><strong>Storage System</strong></td>
-        <td>Sqlite</td>
+        <td><code>Sqlite</code></td>
         <td>We used sqlite to store user and their financial preference data.</td>
     </tr>
 </table>
 
+##### Technology Significance
+
+<table>
+    <tr>
+        <th>Technology</th>
+        <th>Purpose</th>
+    </tr>
+    <tr>
+        <td><code>HTML</code></td>
+        <td>Hyper Text Mark-up Language is one of widely used languages for webpage development.</td>
+    </tr>
+    <tr>
+        <td><code>CSS</code></td>
+        <td>Cascading Style Sheet gives us more flexibility to style any kind of webpage.</td>
+    </tr>
+    <tr>
+        <td><code>TypeScript</code></td>
+        <td>As the name suggests, Type Script is a type checked language and gives us convenience to reuse Java Script functionality.</td>
+    </tr>
+    <tr>
+        <td><code>Python</code></td>
+        <td>Python is an Object Oriented Language that was written in C language. It resembles object oriented behaviour.</td>
+    </tr>
+    <tr>
+        <td><code>Sqlite</code></td>
+        <td>A file based storage and best for any kind of projects that are at initial stage. Widely used for desktop based applications etc.</td>
+    </tr>
+</table>
 
 #### Feature Matrix
+
+What are the features that we offer to the end-user? Let's dive into each one of them.
 
 <table>
     <tr>
@@ -139,30 +169,53 @@ The three main components of the three-tier architecture:
     </tr>
     <tr>
         <td>Goals.</td>
-        <td>User can view their financial goals.</td>
+        <td>Convert specific life goals into actionable financial plans</td>
     </tr>
     <tr>
-        <td>AI Agent.</td>
-        <td>User can get their financial advice as per their preference and chat history.</td>
+        <td><strong>AI Agent</strong></td>
+        <td>AI-Powered Financial Planning: Intelligent analysis and personalized investment recommendations</td>
     </tr>
 </table>
 
+## Data Flow Diagram
+
+How data will flow through the features we listed above? Let's take a look at it.
+
+![Data Flow Diagram](./media/data_flow/FinArth_dataflow.svg)
+
 ## Web Interface
 
+We can view FinArth web interface through the video links below.
+
 ### Home page
-![WebDesign_home_page](./artifacts/web_interface/homepage.mp4)
+
+<video width="100%" controls>
+  <source src="./media/web_interface/homepage.mp4" type="video/mp4">
+  <p>Your browser does not support the html video. Here is<a href="./media/web_interface/homepage.mp4" download="./media/web_interface/homepage.mp4">a link to the video</a>instead</p>
+</video>
 
 ### Onboard page
-![WebDesign_onboard_page](./artifacts/web_interface/preferences.mp4)
+
+<video width="100%" controls>
+  <source src="./media/web_interface/preferences.mp4" type="video/mp4">
+  <p>Your browser does not support the html video. Here is<a href="./media/web_interface/preferences.mp4" download="./media/web_interface/preferences.mp4">a link to the video</a>instead</p>
+</video>
 
 ### Dashboard page
-![WebDesign_dashboard_page](./artifacts/web_interface/dashboard.mp4)
+
+<video width="100%" controls>
+  <source src="./media/web_interface/dashboard.mp4" type="video/mp4">
+  <p>Your browser does not support the html video. Here is<a href="./media/web_interface/dashboard.mp4" download="./media/web_interface/dashboard.mp4">a link to the video</a>instead</p>
+</video>
 
 ## Project Structure
+
+This is the high-level project folder structure and corresponding details.
 
 ```
 FinArth
 ├── backend/             # back-end & storage system functionality
+|   ├── db/              # Database schema and migrations
 │   ├── scripts/         # stand-alone scripts to experiment the opik functionality
 │   ├── src/             # FinArth business logic lies here along with storage system.
 │   ├── tests/           # test-cases using pytest framework.
@@ -178,6 +231,7 @@ FinArth
 │   ├── tailwind.config.js  # defining design systems like fonts, colors, animations
 │   └── vercel.json      # frontend python deployment
 ├── market_cache.json    # run time cache file to store CoinGecko API responses.
+├── media/               # design and documentation references are placed in this folder.
 ├── package-lock.json    # an auto generated file to ensure consistent dependency versions across installations
 ├── package.json         # Workspace configuration.
 ├── pytest.ini           # definition of Python test discovery paths.
@@ -187,6 +241,17 @@ FinArth
 ```
 
 We can find the detailed project structure [here](./docs/project_structure.md).
+
+## Demo Ready Features
+
+- User Registration & Login
+- Onboarding
+- Dashboard
+
+## Operative Channels
+
+Live Demo: [Vercel Deployed Link](https://fin-arth-frontend.vercel.app)
+Documentation: [Project Technical Documentation Link](./docs/)
 
 ## Build
 
