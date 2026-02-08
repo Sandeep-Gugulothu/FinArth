@@ -10,6 +10,9 @@ from utils.opik_client import OpikConfig, trace
 
 class AgentOrchestrator:
     def __init__(self):
+        # Initialize Opik client early to ensure correct project/workspace settings
+        OpikConfig.get_client()
+        
         self.router = IntentRouter()
         self.handlers = {
             AgentIntent.PORTFOLIO_ANALYSIS: PortfolioHandler(),
@@ -42,6 +45,9 @@ class AgentOrchestrator:
         }
         
         response = await handler.process(query, user_id, context)
+        
+        # Capture current trace ID
+        response.trace_id = OpikConfig.get_current_trace_id()
         
         # Ensure traces are sent
         OpikConfig.flush()

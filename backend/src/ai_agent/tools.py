@@ -156,6 +156,34 @@ class MarketDataService:
         except:
             return None
 
+    @staticmethod
+    @trace(name="tool_get_market_context")
+    async def get_market_context() -> str:
+        """
+        Fetches real-time market data using CoinGecko API.
+        Covers Global Market Data and Top Cryptocurrencies.
+        """
+        data = await MarketDataService.get_dashboard_data()
+        
+        summary = ["Real-Time Market Data (CoinGecko):"]
+        
+        if data.get("global"):
+            g = data["global"]
+            mc_change = g.get('market_cap_change_percentage_24h_usd', 0)
+            summary.append(f"\n**Global Overview:** Cap Change: {mc_change:.2f}%, BTC Dom: {g.get('market_cap_percentage', {}).get('btc', 0):.2f}%")
+
+        if data.get("top_coins"):
+            summary.append("\n**Top Assets:**")
+            for coin in data["top_coins"][:5]:
+                summary.append(f"- {coin['name']}: ${coin['current_price']:,.2f} ({coin['price_change_percentage_24h']:+.2f}%)")
+
+        if data.get("trending"):
+            summary.append("\n**Trending:**")
+            for t in data["trending"][:3]:
+                summary.append(f"- {t['item']['name']} ({t['item']['symbol']})")
+
+        return "\n".join(summary)
+
 class WeexService:
     """Service to handle financial data from WEEX exchange."""
     
@@ -241,31 +269,3 @@ class WeexService:
             print(f"Growth calculation error: {str(e)}")
             return {"error": str(e)}
 
-    @staticmethod
-    @trace(name="tool_get_market_context")
-    async def get_market_context() -> str:
-        """
-        Fetches real-time market data using CoinGecko API.
-        Covers Global Market Data, Top Cryptocurrencies, and Trending Assets.
-        """
-        # (This method remains same but uses get_dashboard_data logic internally if needed, or keeping it as is for now)
-        data = await MarketDataService.get_dashboard_data()
-        
-        summary = ["Real-Time Market Data (CoinGecko):"]
-        
-        if data["global"]:
-            g = data["global"]
-            mc_change = g.get('market_cap_change_percentage_24h_usd', 0)
-            summary.append(f"\n**Global Overview:** Cap Change: {mc_change:.2f}%, BTC Dom: {g.get('market_cap_percentage', {}).get('btc', 0):.2f}%")
-
-        if data["top_coins"]:
-            summary.append("\n**Top Assets:**")
-            for coin in data["top_coins"][:5]:
-                summary.append(f"- {coin['name']}: ${coin['current_price']:,.2} ({coin['price_change_percentage_24h']:+.2f}%)")
-
-        if data["trending"]:
-            summary.append("\n**Trending:**")
-            for t in data["trending"][:3]:
-                summary.append(f"- {t['item']['name']} ({t['item']['symbol']})")
-
-        return "\n".join(summary)

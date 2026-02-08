@@ -19,6 +19,7 @@ from flask import Blueprint, request, jsonify
 from utils.logger import Logger
 from ai_agent.chat_manager import ChatManager
 from ai_agent.core import AgentOrchestrator
+from utils.opik_client import OpikConfig
 
 agent_blue_print = Blueprint('agent', __name__)
 logger = Logger.get_instance()
@@ -48,6 +49,17 @@ def message_feedback():
         return jsonify({'error': 'messageId and feedback are required'}), 400
     
     ChatManager.update_message_feedback(message_id, feedback)
+    
+    # Also log to Opik if trace_id exists
+    message = ChatManager.get_message_by_id(message_id)
+    if message and message.get('trace_id'):
+        score = 1.0 if feedback == 'up' else 0.0
+        OpikConfig.log_feedback(
+            trace_id=message['trace_id'],
+            name="user_feedback",
+            value=score
+        )
+    
     return jsonify({'success': True})
 
 @agent_blue_print.route('/sessions/<session_id>', methods=['DELETE'])
@@ -109,7 +121,7 @@ def generate_insight():
 
         bot_msg_id = None
         if session_id:
-            bot_msg_id = ChatManager.add_message(session_id, 'bot', result.content)
+            bot_msg_id = ChatManager.add_message(session_id, 'bot', result.content, trace_id=result.trace_id)
 
         # log the successful generation
         logger.info('AI Agent insight generated successfully', user_id, {
@@ -151,7 +163,8 @@ def generate_insight():
                 'steps': steps,
                 'finalAnswer': result.content,
                 'sessionId': session_id,
-                'messageId': bot_msg_id
+                'messageId': bot_msg_id,
+                'traceId': result.trace_id
             }
         })
     except Exception as error:

@@ -19,4 +19,5 @@ class RouterResult:
 class AgentResponse:
     content: str
     intent: AgentIntent
+    trace_id: Optional[str] = None
     metadata: Dict[str, Any] = None

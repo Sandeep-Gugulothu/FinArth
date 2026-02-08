@@ -1,4 +1,19 @@
 # Changelog
+
+## [0.6.0] - 2026-02-08
+### AI Agent Tracing & Feedback
+- **Opik SDK Optimization**: Fixed connection issues by correcting the `host` parameter and removing invalid environment overrides.
+- **Per-Response Feedback System**: 
+  - Redesigned Chat UI with persistent Thumbs Up/Down buttons for individual AI responses.
+  - Implemented real-time feedback logging to Opik using the documented `log_traces_feedback_scores` API.
+  - Added `trace_id` capture to link frontend feedback directly to backend LLM traces.
+- **Data Persistence**:
+  - Expanded `chat_messages` schema with `feedback` and `trace_id` columns via automated migrations.
+  - Updated `ChatManager` to store and retrieve Opik trace metadata for historical accuracy.
+- **Refined Response Quality**: Increased `max_tokens` to 1500 across all specialist handlers to prevent truncation of complex financial strategies.
+### Infrastructure
+- **Folder Restructure**: Moved database migrations from `src/db` to `backend/db` for better separation of static assets and source code.
+
 ## [0.1.0] - 2026-01-19
 ### Added
 - Initial project structure with frontend, backend, and AI services directories

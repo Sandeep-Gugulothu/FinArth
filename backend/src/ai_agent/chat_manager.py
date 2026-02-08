@@ -22,7 +22,7 @@ class ChatManager:
     def get_messages(session_id):
         cursor = db.cursor()
         cursor.execute("""
-            SELECT role, content, timestamp 
+            SELECT id, role, content, timestamp, feedback, trace_id
             FROM chat_messages 
             WHERE session_id = ? 
             ORDER BY timestamp ASC
@@ -42,12 +42,12 @@ class ChatManager:
         return session_id
 
     @staticmethod
-    def add_message(session_id, role, content):
+    def add_message(session_id, role, content, trace_id=None):
         cursor = db.cursor()
         cursor.execute("""
-            INSERT INTO chat_messages (session_id, role, content) 
-            VALUES (?, ?, ?)
-        """, (session_id, role, content))
+            INSERT INTO chat_messages (session_id, role, content, trace_id) 
+            VALUES (?, ?, ?, ?)
+        """, (session_id, role, content, trace_id))
         message_id = cursor.lastrowid
         # Update session timestamp
         cursor.execute("""
@@ -67,6 +67,13 @@ class ChatManager:
             WHERE id = ?
         """, (feedback, message_id))
         db.commit()
+
+    @staticmethod
+    def get_message_by_id(message_id):
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM chat_messages WHERE id = ?", (message_id,))
+        row = cursor.fetchone()
+        return dict(row) if row else None
 
     @staticmethod
     def update_session_title(session_id, title):

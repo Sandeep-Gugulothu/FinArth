@@ -13,7 +13,7 @@ logger = Logger.get_instance()
 class MigrationRunner:
     def __init__(self, db_connection):
         self.db = db_connection
-        self.migrations_path = Path(__file__).parent.parent /'db'/'migrations'
+        self.migrations_path = Path(__file__).parent.parent.parent /'db'/'migrations'
     
     def get_current_version(self):
         """Get current schema version"""
@@ -30,9 +30,17 @@ class MigrationRunner:
     def apply_migration(self, version, sql):
         """Apply a single migration"""
         cursor = self.db.cursor()
-        cursor.executescript(sql)
-        cursor.execute('INSERT INTO schema_version (version) VALUES (?)', (version,))
-        self.db.commit()
+        try:
+            cursor.executescript(sql)
+            cursor.execute('INSERT INTO schema_version (version) VALUES (?)', (version,))
+            self.db.commit()
+        except sqlite3.OperationalError as e:
+            if 'duplicate column name' in str(e):
+                logger.warning(f"Column already exists in migration version {version}, skipping error.")
+                cursor.execute('INSERT INTO schema_version (version) VALUES (?)', (version,))
+                self.db.commit()
+            else:
+                raise
     
     def run_migrations(self):
         """Run all pending migrations"""
