@@ -123,5 +123,3 @@ FinArth
 └── venv                # virtual environment setup to support back-end
                         # system launch
 ```
-
->[TODO] Update with required descriptions

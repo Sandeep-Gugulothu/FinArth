@@ -9,7 +9,7 @@
 # F I N A R T H
 ## 『 FINANCIAL CONFIDENCE ENGINE FOR THE MODERN INVESTOR 』
 
-**[WEB DASHBOARD](https://fin-arth-frontend.vercel.app)** • **[DEMO VIDEO](#)** • **[TECHNICAL DOCUMENTATION](./docs/)**
+**[WEB DASHBOARD](https://fin-arth-frontend.vercel.app)** • **[DEMO VIDEO](https://youtu.be/fg12rBUx_O0)** • **[TECHNICAL DOCUMENTATION](./docs/)**
 
 </div>
 
@@ -39,6 +39,43 @@ As represented in the three-tier architectural diagram above, we have three main
 2. Backend system
 3. Storage system
 
+### Communication API
+
+In order to establish the communication between front and back-end systems we had to choose a communication API and a web-framework. Also, to facilitate AI agent interaction, we had to choose one third-party API.
+
+#### Systems Communication
+
+As FinArth required bi-directional communication, we considered websockets.
+
+#### AI Agent Communication
+
+To provide personalised efficient financial advice by considering user's preferences, we considered the APIs below.
+
+##### AI Agent API Matrix
+
+<table>
+    <tr>
+        <th>API Name</th>
+        <th>Purpose</th>
+    </tr>
+    <tr>
+        <td><code>Opik</code></td>
+        <td>We are using the Opik API to trace, log, debug, and evaluate the AI agent conversations to provide better solutions to our end-user.</td>
+    </tr>
+    <tr>
+        <td><code>OpenAI</code></td>
+        <td>We are using the OpenAI API to send the customized user prompts using OpenRouter defined AI models through opik.</td>
+    </tr>
+    <tr>
+        <td><code>CoinGecko</code></td>
+        <td>We are using the CoinGecko API(Analyst Plan) to refresh the market data.</td>
+    </tr>
+    <tr>
+        <td><code>Weexs</code></td>
+        <td>We are using the Weexs(CEX) API to calculate investment growth.</td>
+    </tr>
+</table>
+
 #### Technology Matrix
 
 There can be more choices when it comes to technology selection, but we stick to the ones below.
@@ -50,7 +87,7 @@ There can be more choices when it comes to technology selection, but we stick to
         <th>Purpose</th>
     </tr>
     <tr>
-        <td rowspan="3"><strong>Frontend System</strong></td>
+        <td rowspan="4"><strong>Frontend System</strong></td>
         <td><code>HTML</code></td>
         <td>We used HTML to render our web-page by embedding executable code.</td>
     </tr>
@@ -63,9 +100,17 @@ There can be more choices when it comes to technology selection, but we stick to
         <td>We are using TypeScript to make our webpage actionable.</td>
     </tr>
     <tr>
-        <td><strong>Backend System</strong></td>
+        <td><code>React</code></td>
+        <td>We are using React to build our interfaces.</td>
+    </tr>
+    <tr>
+        <td rowspan="2"><strong>Backend System</strong></td>
         <td><code>Python</code></td>
         <td>We used Python programming to code our business logic.</td>
+    </tr>
+    <tr>
+        <td><code>Flask</code></td>
+        <td>We used Flask to register api endpoints to ease the communication between client and server.</td>
     </tr>
     <tr>
         <td><strong>Storage System</strong></td>
@@ -79,23 +124,32 @@ There can be more choices when it comes to technology selection, but we stick to
 <table>
     <tr>
         <th>Technology</th>
-        <th>Purpose</th>
+        <th>Significance</th>
     </tr>
     <tr>
         <td><code>HTML</code></td>
-        <td>Hyper Text Mark-up Language is one of widely used languages for webpage development.</td>
+        <td>A standard markup language for documents designed to be displayed in a web browser. Hyper Text Mark-up Language is one of widely used languages for webpage development.</td>
     </tr>
     <tr>
         <td><code>CSS</code></td>
-        <td>Cascading Style Sheet gives us more flexibility to style any kind of webpage.</td>
+        <td>Cascading Style Sheets (CSS) is a style sheet language used for specifying the presentation and styling of a document written in a markup language, such as HTML or XML (including XML dialects such as SVG, MathML, or XHTML). CSS gives us more flexibility to style any kind of webpage.</td>
     </tr>
     <tr>
         <td><code>TypeScript</code></td>
-        <td>As the name suggests, Type Script is a type checked language and gives us convenience to reuse Java Script functionality.</td>
+        <td>TypeScript is a language for application scale JavaScript development. As the name suggests, Type Script is a type checked language and gives us convenience to reuse Java Script functionality.</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>React</code></td>
+        <td>React is a JavaScript library for building user interfaces.</td>
     </tr>
     <tr>
         <td><code>Python</code></td>
-        <td>Python is an Object Oriented Language that was written in C language. It resembles object oriented behaviour.</td>
+        <td>Python is a programming language that lets you work quickly and integrate systems more effectively. It is an Object Oriented Language that was written in C language. It resembles object oriented behaviour.</td>
+    </tr>
+    <tr>
+        <td><code>Flask</code></td>
+        <td>A simple framework for building complex web applications.</td>
     </tr>
     <tr>
         <td><code>Sqlite</code></td>
@@ -179,7 +233,7 @@ What are the features that we offer to the end-user? Let's dive into each one of
 
 ## Data Flow Diagram
 
-How data will flow through the features we listed above? Let's take a look at it.
+How data will flow through the features we listed above? Let's take a look.
 
 ![Data Flow Diagram](./media/data_flow/FinArth_dataflow.svg)
 
@@ -189,24 +243,15 @@ We can view FinArth web interface through the video links below.
 
 ### Home page
 
-<video width="100%" controls>
-  <source src="./media/web_interface/homepage.mp4" type="video/mp4">
-  <p>Your browser does not support the html video. Here is<a href="./media/web_interface/homepage.mp4" download="./media/web_interface/homepage.mp4">a link to the video</a>instead</p>
-</video>
+![Home Page Demo](./media/web_interface/homepage.gif)
 
 ### Onboard page
 
-<video width="100%" controls>
-  <source src="./media/web_interface/preferences.mp4" type="video/mp4">
-  <p>Your browser does not support the html video. Here is<a href="./media/web_interface/preferences.mp4" download="./media/web_interface/preferences.mp4">a link to the video</a>instead</p>
-</video>
+![Onboard Page Demo](./media/web_interface/preferences.gif)
 
 ### Dashboard page
 
-<video width="100%" controls>
-  <source src="./media/web_interface/dashboard.mp4" type="video/mp4">
-  <p>Your browser does not support the html video. Here is<a href="./media/web_interface/dashboard.mp4" download="./media/web_interface/dashboard.mp4">a link to the video</a>instead</p>
-</video>
+![Dashboard Page Demo](./media/web_interface/dashboard.gif)
 
 ## Project Structure
 
@@ -250,8 +295,9 @@ We can find the detailed project structure [here](./docs/project_structure.md).
 
 ## Operative Channels
 
-Live Demo: [Vercel Deployed Link](https://fin-arth-frontend.vercel.app)
+Live Deployment: [Vercel Deployed Link](https://fin-arth-frontend.vercel.app)
 Documentation: [Project Technical Documentation Link](./docs/)
+Manual Demonstration: [YouTube Link](https://youtu.be/fg12rBUx_O0)
 
 ## Build
 

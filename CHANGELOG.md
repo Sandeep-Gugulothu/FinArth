@@ -286,3 +286,9 @@
 - add Opik diagnostics and switch to system logger for production visibility
 ### Documentation Changes
 - README file update
+
+## [0.5.5] - 2026-02-09
+### Frontend Changes
+- Enhancement of the Landing page and user experience
+### Documentation Changes
+- README file update
