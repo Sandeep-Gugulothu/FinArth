@@ -9,7 +9,7 @@
 # F I N A R T H
 ## 『 FINANCIAL CONFIDENCE ENGINE FOR THE MODERN INVESTOR 』
 
-**[WEB DASHBOARD](https://fin-arth-frontend.vercel.app)** • **[DEMO VIDEO](https://youtu.be/fg12rBUx_O0)** • **[TECHNICAL DOCUMENTATION](./docs/)**
+**[WEB DASHBOARD](https://fin-arth-frontend.vercel.app)** • **[DEMO VIDEO](https://youtu.be/fg12rBUx_O0)** • **[TECHNICAL DOCUMENTATION](https://goldenrod-hellebore-558.notion.site/Technical-Documentation-FinArth-302e387f6e588020a73fdf232f4a9611)**
 
 </div>
 
@@ -266,7 +266,7 @@ We can find the detailed project structure [here](./docs/project_structure.md).
 ## Operative Channels
 
 - Live Deployment: [Vercel Deployed Link](https://fin-arth-frontend.vercel.app)
-- Documentation: [Project Technical Documentation Link](./docs/)
+- Documentation: [Project Technical Documentation Link](https://goldenrod-hellebore-558.notion.site/Technical-Documentation-FinArth-302e387f6e588020a73fdf232f4a9611)
 - Manual Demonstration: [YouTube Link](https://youtu.be/fg12rBUx_O0)
 
 ## Build
