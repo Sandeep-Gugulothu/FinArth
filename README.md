@@ -51,7 +51,7 @@ As FinArth required bi-directional communication, we considered websockets.
 
 To provide personalised efficient financial advice by considering user's preferences, we considered the APIs below.
 
-##### AI Agent API Matrix
+##### API Matrix
 
 <table>
     <tr>
@@ -84,76 +84,46 @@ There can be more choices when it comes to technology selection, but we stick to
     <tr>
         <th>System</th>
         <th>Technology</th>
-        <th>Purpose</th>
+        <th>Significance</th>
+        <th>Usage</th>
     </tr>
     <tr>
         <td rowspan="4"><strong>Frontend System</strong></td>
-        <td><code>HTML</code></td>
+        <td><code>Hyper Text Mark-up Language(HTML)</code></td>
+        <td>A standard markup language for documents designed to be displayed in a web browser.</td>
         <td>We used HTML to render our web-page by embedding executable code.</td>
     </tr>
     <tr>
-        <td><code>CSS</code></td>
+        <td><code>Cascading Style Sheets (CSS)</code></td>
+        <td>CSS is a style sheet language used for specifying the presentation and styling of a document written in a markup language, such as HTML or XML (including XML dialects such as SVG, MathML, or XHTML).</td>
         <td>We used Cascading Style Sheet to style our webpage.</td>
     </tr>
     <tr>
         <td><code>TypeScript</code></td>
+        <td>TypeScript is a language for application scale JavaScript development along with type-checking.</td>
         <td>We are using TypeScript to make our webpage actionable.</td>
     </tr>
     <tr>
         <td><code>React</code></td>
+        <td>React is a JavaScript library for building user interfaces.</td>
         <td>We are using React to build our interfaces.</td>
     </tr>
     <tr>
         <td rowspan="2"><strong>Backend System</strong></td>
         <td><code>Python</code></td>
+        <td>Python is a programming language that lets you work quickly and integrate systems more effectively.</td>
         <td>We used Python programming to code our business logic.</td>
     </tr>
     <tr>
         <td><code>Flask</code></td>
+        <td>A simple framework for building complex web applications.</td>
         <td>We used Flask to register api endpoints to ease the communication between client and server.</td>
     </tr>
     <tr>
         <td><strong>Storage System</strong></td>
-        <td><code>Sqlite</code></td>
-        <td>We used sqlite to store user and their financial preference data.</td>
-    </tr>
-</table>
-
-##### Technology Significance
-
-<table>
-    <tr>
-        <th>Technology</th>
-        <th>Significance</th>
-    </tr>
-    <tr>
-        <td><code>HTML</code></td>
-        <td>A standard markup language for documents designed to be displayed in a web browser. Hyper Text Mark-up Language is one of widely used languages for webpage development.</td>
-    </tr>
-    <tr>
-        <td><code>CSS</code></td>
-        <td>Cascading Style Sheets (CSS) is a style sheet language used for specifying the presentation and styling of a document written in a markup language, such as HTML or XML (including XML dialects such as SVG, MathML, or XHTML). CSS gives us more flexibility to style any kind of webpage.</td>
-    </tr>
-    <tr>
-        <td><code>TypeScript</code></td>
-        <td>TypeScript is a language for application scale JavaScript development. As the name suggests, Type Script is a type checked language and gives us convenience to reuse Java Script functionality.</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><code>React</code></td>
-        <td>React is a JavaScript library for building user interfaces.</td>
-    </tr>
-    <tr>
-        <td><code>Python</code></td>
-        <td>Python is a programming language that lets you work quickly and integrate systems more effectively. It is an Object Oriented Language that was written in C language. It resembles object oriented behaviour.</td>
-    </tr>
-    <tr>
-        <td><code>Flask</code></td>
-        <td>A simple framework for building complex web applications.</td>
-    </tr>
-    <tr>
-        <td><code>Sqlite</code></td>
+        <td><code>Sqlite3</code></td>
         <td>A file based storage and best for any kind of projects that are at initial stage. Widely used for desktop based applications etc.</td>
+        <td>We used sqlite to store user and their financial preference data.</td>
     </tr>
 </table>
 
@@ -295,9 +265,9 @@ We can find the detailed project structure [here](./docs/project_structure.md).
 
 ## Operative Channels
 
-Live Deployment: [Vercel Deployed Link](https://fin-arth-frontend.vercel.app)
-Documentation: [Project Technical Documentation Link](./docs/)
-Manual Demonstration: [YouTube Link](https://youtu.be/fg12rBUx_O0)
+- Live Deployment: [Vercel Deployed Link](https://fin-arth-frontend.vercel.app)
+- Documentation: [Project Technical Documentation Link](./docs/)
+- Manual Demonstration: [YouTube Link](https://youtu.be/fg12rBUx_O0)
 
 ## Build
 
